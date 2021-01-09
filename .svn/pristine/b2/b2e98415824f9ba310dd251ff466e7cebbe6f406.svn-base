@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-header zui-header-dark zui-row-center">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">发表评论</div>
+
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+    <div class="zui-content">
+
+        <!--<div class="zui-radiolist order_commit_radio">-->
+            <!--<label class="zui-radiobox">-->
+                <!--<input type="radio" name="type" checked value="1" v-model="FLevel">-->
+                <!--<i class="zui-checked"></i>-->
+                <!--<span class="zui-radiotxt">好评</span>-->
+            <!--</label>-->
+            <!--<label class="zui-radiobox">-->
+                <!--<input type="radio" name="type" value="2" v-model="FLevel">-->
+                <!--<i class="zui-checked"></i>-->
+                <!--<span class="zui-radiotxt">中评</span>-->
+            <!--</label>-->
+            <!--<label class="zui-radiobox">-->
+                <!--<input type="radio" name="type" value="3" v-model="FLevel">-->
+                <!--<i class="zui-checked"></i>-->
+                <!--<span class="zui-radiotxt">差评</span>-->
+            <!--</label>-->
+        <!--</div>-->
+
+
+        <div class="srarbox">
+            <i class="iconfont icon-xing" v-cloak v-for="i in 5" :class="{light:FLevel>=i}" @click="starclick(i)"></i>
+        </div>
+
+
+        <div class="order_commit_text">
+            <textarea rows="8" placeholder="快来说说它的优点和美中不足的地方吧" v-model="FAssess"></textarea>
+        </div>
+
+
+
+        <div id="upload">
+        </div>
+
+
+        <div class="content-text">
+            <div class="zui-radiolist">
+                <label class="zui-radiobox">
+                    <input type="checkbox" name="type" :true-value="0" :false-value="1" v-model="FIsNiM">
+                    <i class="zui-checked"></i>
+                    <span class="zui-radiotxt">匿名</span>
+                </label>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="zui-footer zui-row zui-row-center zui-row-stretch firm_footer">
+        <div class="footer_btn zui-col bg-red color-white" @click="post()" id="fabu">发布</div>
+    </div>
+
+</div>
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../res/weui/jquery-weui.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script src="../../js/ajaxFileUpload.js"></script>
+<script>
+    apiready = function() {
+        var imglistTemp = '';
+        jw.sb.fixStatusBar(".zui-header");
+
+        //显示分数
+        $(".show_number li p").each(function(index, element) {
+            var num=$(this).attr("tip");
+            var www=num*2*16;//
+            $(this).css("width",www);
+            $(this).parent(".atar_Show").siblings("span").text(num+"分");
+        });
+
+
+        //var imglist = [];
+        //var imglists = [];
+        var UIAlbumBrowser = api.require('UIAlbumBrowser');
+
+        function uploadImgs(params,files){
+            api.ajax({
+                //url: jw.config.ip+jw.config.ImgUrl,
+                url: 'http://www.yunpuer.com/selfModel/hander.aspx?cmd=uploadImgList',
+                method: 'post',
+                timeout: 30,
+                dataType: 'json',
+                async:false,
+                returnAll: false,
+                data: {
+                    values: {},
+                    files: files
+                }
+            }, function (ret, err) {
+                //alert(imglist.length+"----4")
+                //alert(JSON.stringify(ret));
+                if (ret.status == "200") {
+                    params.list.push.apply(params.list,ret.data);
+                    imglistTemp = params.list;
+                    params.zinit();
+                }
+            });
+        }
+        var imglist = {};
+        var flag = 0;
+
+        setTimeout(function () {
+            $("#upload").imglist({
+                isother: true,
+                init: function(){
+                    console.log("初始化完成");
+
+                },
+                addclick: function (params) {
+                    UIAlbumBrowser.open({
+                        max: 9,
+                        type: "image",
+                        styles: {
+                            bg: '#fff',
+                            mark: {
+                                icon: '',
+                                position: 'bottom_left',
+                                size: 20
+                            },
+                            nav: {
+                                bg: 'rgba(0,0,0,0.6)',
+                                titleColor: '#fff',
+                                titleSize: 18,
+                                cancelColor: '#fff',
+                                cancelSize: 16,
+                                finishColor: '#fff',
+                                finishSize: 16
+                            }
+                        }
+                    }, function(ret) {
+                        if (ret) {
+                            imglist = {};
+                            var tempI = ret.list.length;
+                            /!* IOS 地址需要另外处理 *!/
+                            for(var i=0;i<ret.list.length;i++){
+                                //var imglist = {};
+                                //alert(ret.list[i].path+"----1")
+                                UIAlbumBrowser.transPath({
+                                    path: ret.list[i].path
+                                }, function(ret, err) {
+                                    if (ret) {
+                                        imglist['file'+Object.keys(imglist).length] = ret.path;
+                                    } 
+                                });
+                                //imglist['file'+i] = ret.list[i].path;
+                            }
+                            setTimeout(function () {
+                                //alert(tempI);
+                                //alert(Object.keys(imglist).length);
+                                if(tempI==Object.keys(imglist).length){
+                                    uploadImgs(params,imglist);
+                                    flag=1;
+                                }
+                            },500);
+
+                            
+
+                            // while(flag1==0){
+                            //     if(flag2==1){
+                            //         uploadImgs(params,imglist);
+                            //     }
+                            // }
+                            //alert(imglist.length+"----3")
+
+                            //alert(JSON.stringify(imglist));
+
+                        }
+                    });
+                }
+            });
+        },1000);
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                FLevel: 5,
+                FAssess: "",
+                FIsNiM: 0,
+                //imglistTemp: '',
+                FBusinessId: api.pageParam.FBusinessId, //商品ID
+                FBusinessOrderId: api.pageParam.FBusinessOrderId, // 订单ID
+                istijiao:false
+            },
+            created: function () {
+                var _this = this;
+            },
+            methods: {
+
+                // 星星点击
+                starclick: function(t){
+                    console.log(t);
+                    this.FLevel = t;
+                },
+                post: function () {
+                    var _this = this;
+
+                    if (_this.FAssess == "") {
+                        jw.ts.toast("请输入评价内容");
+                        return false;
+                    }
+
+                    if(_this.istijiao){
+                      return;
+                    }
+                    //$("#fabu").css("background-color","#d2d2d2");
+                    _this.istijiao=true;
+                    jw.submit("app_发布商品评论",{
+                        FBusinessOrderId: _this.FBusinessOrderId, //  订单id
+                        FBusinessId: _this.FBusinessId, //  商品id
+                        FUserId: jw.data.get("userid"), //   用户id
+                        FLevel: _this.FLevel, //   评级啊等级 12345
+                        FAssess: _this.FAssess, //    内容
+                        FIsNiM: _this.FIsNiM, //    是否匿名0是1否
+                        //FImage: null, //    多张图片以英文逗号隔开
+                        FImage: imglistTemp.toString(), //    多张图片以英文逗号隔开
+                    },function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            jw.ts.toast(ret.ds[0].msg);
+                            setTimeout(function () {
+                                api.closeWin();
+                            },2000);
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+</script>
+
+</body>
+</html>

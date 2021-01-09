@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        html,body{
+            width: auto;
+            height: auto;
+            overflow: auto;
+            background-color: transparent;
+        }
+        .seachbox .zui-col{
+            color: #333333;
+            font-size: 16px;
+            height: 35px;
+            line-height: 35px;
+            text-align: center;
+        }
+        .seachbox .zui-col.selected{
+            background: #0bb20c;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+
+
+    <div class="zui-alert historyalert">
+
+        <div class="zui-alert_box">
+            <div class="seachbox zui-alert_header zui-row zui-row-center">
+                <div class="zui-col" :class="{'selected':nav==1}" @click="navclick(1)">价格<i class="iconfont icon-paixu"></i></div>
+                <div class="zui-col" :class="{'selected':nav==2}" @click="navclick(2)">数量<i class="iconfont icon-paixu"></i></div>
+                <div class="zui-col" :class="{'selected':nav==3}" @click="navclick(3)">时间<i class="iconfont icon-paixu"></i></div>
+            </div>
+            <div class="zui-list" style="max-height: 60%" v-cloak>
+                <div class="zui-item" v-for="item in historylist" >
+                    <p class="fz16">{{item.FYear}} {{item.Column1}}</p>
+                    <p>成交时间：{{item.FPayDate | datatime}}</p>
+                    <p>成交数量：{{item.FBuyNum}}</p>
+                    <p>成交价格：{{item.FTotal}}</p>
+                    <p>成交单价：{{item.FPrice}}</p>
+                </div>
+            </div>
+
+        </div>
+        <div class="zui-alert_bg" @click="close()"></div>
+    </div>
+
+</div>
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function() {
+
+        var myapp = new Vue({
+            "el": "#app",
+            data: {
+                seachtxt: "",
+                historylist: [], // 历史交易列表
+                histroyshow: false, // 历史交易显示
+                nav: 1,
+                FPayDateSort: "",
+                FBuyNumSort: "",
+                FPriceSort: "",
+            },
+            created: function () {
+                this.historybtn();
+            },
+            methods: {
+                close: function(){
+                    api.closeFrame({
+                        name: 'chashi_histroy'
+                    });
+                },
+                navclick: function(t){
+                    var _this = this;
+                    if (this.nav == t){
+                        if(_this.nav == 1){
+                            if (_this.FPriceSort == 0){
+                                _this.FPriceSort = 1;
+                            } else{
+                                _this.FPriceSort = 0;
+                            }
+                            _this.FBuyNumSort = "";
+                            _this.FPayDateSort = "";
+
+                        }else if (_this.nav == 2) {
+                            if (_this.FBuyNumSort == 0){
+                                _this.FBuyNumSort = 1;
+                            } else{
+                                _this.FBuyNumSort = 0;
+                            }
+                            _this.FPriceSort = "";
+                            _this.FPayDateSort = "";
+                        }else if (_this.nav == 3) {
+                            if (_this.FPayDateSort == 0){
+                                _this.FPayDateSort = 1;
+                            } else{
+                                _this.FPayDateSort = 0;
+                            }
+                            _this.FPriceSort = "";
+                            _this.FBuyNumSort = "";
+                        }
+                    } else{
+                        if(_this.nav == 1){
+                            _this.FPriceSort = 1
+                            _this.FBuyNumSort = "";
+                            _this.FPayDateSort = "";
+                        }else if (_this.nav == 2) {
+                            _this.FBuyNumSort = 1;
+                            _this.FPriceSort = "";
+                            _this.FPayDateSort = "";
+                        }else if (_this.nav == 3) {
+                            _this.FPayDateSort = 1;
+                            _this.FPriceSort = "";
+                            _this.FBuyNumSort = "";
+                        }
+                    }
+                    _this.nav = t;
+                    _this.historybtn();
+                },
+                // 历史交易记录
+                historybtn: function (item) {
+                    var _this = this;
+                    jw.submit("app_交易记录",{
+                        FBusinessId: api.pageParam.FBusinessId,  //    商品id
+                        FPayDateSort: _this.FPayDateSort,
+                        FBuyNumSort: _this.FBuyNumSort,
+                        FPriceSort: _this.FPriceSort,
+                    },function (ret) {
+
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            if(ret.ds1.length > 0){
+                                _this.historylist = ret.ds1;
+                                _this.histroyshow = true;
+                            }else{
+                                jw.ts.toast("暂无数据");
+                                _this.historylist = [];
+                                api.closeFrame({
+                                    name: 'chashi_histroy'
+                                });
+                            }
+                        } else {
+                            jw.ts.toast("暂无数据");
+                            _this.historylist = [];
+                            api.closeFrame({
+                                name: 'chashi_histroy'
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

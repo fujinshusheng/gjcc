@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>设置支付密码</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+<div class="zui-app">
+    <div class="zui-header zui-row-center myjifen_header">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">设置支付密码</div>
+    </div>
+    <div class="zui-content" v-show="haveFPayPassword">
+        <div class="fromlist2 zui-col">
+            <div class="item zui-row zui-row-center">
+                <span class="title zui-col-20">旧密码</span>
+                <input type="password" class="zui-col" v-model="oldpassword" maxlength="6" placeholder="请输入旧密码">
+            </div>
+            <div class="item zui-row zui-row-center">
+                <span class="title zui-col-20">新密码</span>
+                <input type="password" class="zui-col" v-model="newpassword" maxlength="6" placeholder="请输入新密码">
+            </div>
+            <div class="item zui-row zui-row-center">
+                <span class="title zui-col-20">确认密码</span>
+                <input type="password" class="zui-col" v-model="newpassword2" maxlength="6" placeholder="请再次输入密码">
+            </div>
+        </div>
+        <p style="padding: 10px 15px;"><span class="color-red">*</span>支付密码设置为6个数字 <span @click="forgetpassword()" class="fr color-red">忘记旧密码？</span></p>
+    </div>
+    <div class="zui-content" v-show="!haveFPayPassword">
+        <div class="fromlist2 zui-col">
+            <div class="item zui-row zui-row-center">
+                <span class="title zui-col-20">支付密码</span>
+                <input type="password" class="zui-col" v-model="newpassword" maxlength="6" placeholder="请输入新密码">
+            </div>
+            <div class="item zui-row zui-row-center">
+                <span class="title zui-col-20">确认密码</span>
+                <input type="password" class="zui-col" v-model="newpassword2" maxlength="6" placeholder="请再次输入密码">
+            </div>
+        </div>
+    </div>
+    <div class="zui-footer zui-row zui-row-stretch">
+        <div class="footer_btn zui-col bg-red color-white" id="setting" @click="setting()">确定</div>
+    </div>
+</div>
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../res/weui/jquery-weui.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function() {
+        jw.sb.fixStatusBar(".zui-header");
+
+        $(".icon-look").changepassword("#password");
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                oldpassword: "",
+                newpassword: "",
+                newpassword2: "",
+                haveFPayPassword:true
+            },
+            created: function () {
+                var _this = this;
+                _this.getuserinfo();
+            },
+            methods: {
+                forgetpassword: function(){
+                    var _this = this;
+                    jw.openWin({
+                        name: "setting_paypassword",
+                        url: "setting_paypassword.html",
+                    })
+                },
+                getuserinfo:function(){
+                  var _this = this;
+                  jw.submit("app_我的信息",{
+                    FUserId:jw.data.get("userid")
+                  },function (ret) {
+                      if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                        _this.haveFPayPassword=ret.ds1[0].FPayPassword!=''?true:false;
+                      } else {
+                          jw.ts.toast(ret.ds[0].msg);
+                      }
+                  });
+                },
+                setting: function () {
+                    var _this = this;
+                    if (_this.haveFPayPassword && _this.oldpassword == ""){
+                        jw.ts.toast("请输入旧密码，格式为6位数字！");
+                        return false;
+                    }
+                    if (_this.newpassword == ""){
+                        jw.ts.toast("请输入新支付密码，格式为6位数字！");
+                        return false;
+                    }
+                    if (_this.newpassword2 == ""){
+                        jw.ts.toast("请输入确认支付密码，格式为6位数字！");
+                        return false;
+                    }
+                    if (!/\d{6}/.test(_this.newpassword) || !/\d{6}/.test(_this.newpassword2)) {
+                        jw.ts.toast("请输入正确格式支付密码，格式为6位数字！");
+                        return false;
+                    }
+                    if (_this.newpassword != _this.newpassword2) {
+                        jw.ts.toast("两次输入密码不一致，请重新输入！");
+                        return false;
+                    }
+                    $("#setting").disabled=true;
+                    jw.submit("app_修改支付密码",{
+                      FUserId:jw.data.get("userid"),
+                      FPayPassword:_this.newpassword,
+                      FOldPayPassword:_this.oldpassword
+                    },function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            jw.ts.toast(ret.ds[0].msg);
+                            setTimeout(function () {
+                                jw.back();
+                            }, 1000);
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                            $("#setting").disabled=false;
+                        }
+                    });
+                }
+            }
+        })
+    }
+</script>
+</body>
+</html>

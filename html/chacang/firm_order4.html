@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../res/mobiscroll/mobiscroll.custom-2.5.0.min.css">
+</head>
+
+<body>
+
+
+    <div class="zui-app">
+        <div class="zui-header zui-header-dark zui-row-center">
+            <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+            <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">我要提货</div>
+             <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+            onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+        </div>
+        <div class="zui-content ordermain">
+            <div class="zui-card myordercard">
+                <div class="zui-card-main">
+
+                    <div class="zui-list">
+                        <div class="zui-item zui-row zui-row-center">
+                            <div class="productbox zui-row zui-row-center zui-row-stretch">
+                                <div class="touxiang" :style="getbgimg(Warehousedetail.FImg)"></div>
+                                <div class="zui-col zui-row zui-row-column">
+                                    <div class="title">{{Warehousedetail.FName}}</div>
+                                    <div class="zui-col"></div>
+                                    <div class="zui-row text"><span
+                                            class="zui-col">买入价格：￥{{Warehousedetail.FTotal}}</span>
+                                        <span>买入数量：{{Warehousedetail.FNum}}</span></div>
+                                    <div class="zui-row text">剩余数量：{{Warehousedetail.FSurplusNum}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="weui-form-preview">
+
+                <div class="weui-form-preview__bd">
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">提货数量</label>
+                        <input type="number" class="weui-form-preview__value fr inputborder text-right"
+                            v-model="FNum" />
+                    </div>
+                    <div class="firm_item">
+                        <div class="firm_navbox zui-row zui-row-center">
+                            <div class="title">仓储费</div>
+                            <div class="zui-col text-right">￥{{WarehousePoundage || 0}}</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="weui-form-preview__item">
+                <!-- <label class="weui-form-preview__label">提货方式</label> -->
+                <div class="weui-form-preview__value">
+                    <div class="zui-radiolist" style="text-align: center;">
+                        <label class="zui-radiobox" v-show="zt">
+                            <input type="radio" name="tihuo" v-model="FPickType" value="0" />
+                            <i class="zui-checked"></i>
+                            <span class="zui-radiotxt">自提</span>
+                        </label>
+                        <label class="zui-radiobox" v-show="kd">
+                            <input type="radio" name="tihuo" v-model="FPickType" value="1" />
+                            <i class="zui-checked"></i>
+                            <span class="zui-radiotxt">快递</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div id="zitibox" class="weui-form-preview" v-cloak v-show="FPickType == 0">
+                <div class="weui-form-preview__bd">
+                    <div class="weui-form-preview__item zui-row zui-row-center">
+                        <label class="weui-form-preview__label">提货时间</label>
+                        <div class="weui-form-preview__value zui-col zui-row zui-row-center">
+                            <input type="text" class="zui-col text-right" id="tihuodata" placeholder="请选择提货时间" />
+                        </div>
+                        <div class="weui-form-preview__ft"><i class="iconfont icon-right"></i></div>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">提货地址</label>
+                        <span class="weui-form-preview__value">{{tihuodata.FPickGoodsAddress}}</span>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">联系人</label>
+                        <span class="weui-form-preview__value">{{tihuodata.FPickGoodsName}}</span>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">联系方式</label>
+                        <span class="weui-form-preview__value">{{tihuodata.FPickGoodsPhone}}</span>
+                    </div>
+                </div>
+            </div>
+            <div id="daofubox" class="weui-form-preview wuliu-border-top wuliu-border-bottom" v-cloak
+                v-show="FPickType == 1" @click="choseplace()">
+                <div class="weui-form-preview__bd">
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">收件人</label>
+                        <div class="weui-form-preview__value" v-show="FShippingAddressId!=''"><span>{{FUserName}}</span>
+                            <span class="fr">{{FMobile}}</span></div>
+                        <div class="weui-form-preview__value" v-show="FShippingAddressId==''">请选择收货地址</div>
+                    </div>
+                    <div class="weui-form-preview__item" style="border-top: none">
+                        <label class="weui-form-preview__label">收件地址</label>
+                        <span class="weui-form-preview__value">{{FShippingAddress}}</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="zui-footer zui-row zui-row-center zui-row-stretch firm_footer">
+            <!-- <div class="footer_btn zui-col bg-red color-white" @click="fasong()">确定</div> -->
+            <div class="footer_btn zui-col bg-red color-white" @click="zhifu()">确定</div>
+
+        </div>
+
+
+        <!-- 输入密码弹出框 -->
+        <!--<div class="zui-alert shop_alert" style="display: none;">-->
+        <div class="zui-alert shop_alert" v-cloak v-show="payshow">
+            <div class="zui-alert_box">
+                <div class="shop_close iconfont icon-del color-red" @click="hidekey()"></div>
+                <div class="tip">
+                    <img src="../../image/money01.png" alt="">
+                </div>
+                <div class="title">请输入支付密码</div>
+                <div class="cont" style="padding: 15px;">
+                    <b style="font-size: 45px;">￥{{WarehousePoundage}}</b>
+                    <div class="clearfix fz14">
+                        <span
+                            onclick="jw.openWin({name:'setting_paypassword',url:'../myself/setting_paypassword.html'})"
+                            class="fl">设置密码</span>
+                        <span
+                            onclick="jw.openWin({name:'setting_newpaypassword',url:'../myself/setting_newpaypassword.html'})"
+                            class="fr color-red">忘记密码？</span>
+                    </div>
+                    <div id="mimabox"></div>
+                </div>
+            </div>
+            <div class="zui-alert_bg"></div>
+        </div>
+
+        <jiaoyima v-show="jiaoyishow" v-on:rdata="jiaoyiback" v-cloak v-on:hide="jiaoyishow=false"></jiaoyima>
+
+    </div>
+    <script src="../../js/jquery-2.1.1.min.js"></script>
+    <script src="../../res/weui/jquery-weui.min.js"></script>
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/vuefilter.js"></script>
+    <script src="../../js/jw.js"></script>
+    <script src="../../js/zui.js"></script>
+    <script src="../../res/mobiscroll/mobiscroll.custom-2.5.0.min.js"></script>
+    <script src="../../js/md5.js"></script>
+    <script src="../../js/layer/layer.js"></script>
+    <script>
+        apiready = function () {
+            jw.sb.fixStatusBar(".zui-header");
+
+            function init() {
+                setTimeout(function () {
+                    $("#tihuodata").mobiscroll().date();
+                    var currYear = (new Date()).getFullYear() - 50;
+                    //初始化日期控件
+                    var opt = {
+                        preset: 'datetime', //日期，可选：date\datetime\time\tree_list\image_text\select
+                        theme: 'Android Holo Light', //皮肤样式，可选：default\android\android-ics light\android-ics\ios\jqm\sense-ui\wp light\wp
+                        display: 'modal', //显示方式 ，可选：modal\inline\bubble\top\bottom
+                        mode: 'mixed', //日期选择模式，可选：scroller\clickpick\mixed
+                        lang: 'zh',
+                        dateFormat: 'yyyy-mm-dd', // 日期格式,
+                        timeFormat: 'HH:ii:ss', //24小时时间
+                        timeWheels: 'HHii', //24小时时间
+                        setText: '确定', //确认按钮名称
+                        cancelText: '取消', //取消按钮名籍我
+                        dateOrder: 'yyyymmdd', //面板中日期排列格式
+                        dayText: '日',
+                        monthText: '月',
+                        yearText: '年', //面板中年月日文字
+                        showNow: false,
+                        nowText: "今",
+                        startYear: currYear, //开始年份
+                        endYear: currYear + 85 //结束年份
+                        //endYear:2099 //结束年份
+                    };
+
+                    $("#tihuodata").mobiscroll(opt);
+
+
+                    $("#mimabox").mimakeywords({
+                        onend: function (v, p) {
+                            myapp.payshow = false;
+                            p.close();
+                            myapp.tihuo(v);
+                        }
+                    });
+                }, 1000);
+            }
+
+            // 获取选择地址
+            jw.data.jtget("chose_address", function (ret) {
+                if (typeof (ret) == "string") {
+                    ret = JSON.parse(ret);
+                }
+                myapp.FShippingAddressId = ret.FShippingAddressId;
+                myapp.FUserName = ret.FUserName;
+                myapp.FMobile = ret.FMobile;
+                myapp.FShippingAddress = ret.FShippingAddress;
+            });
+
+            var myapp = new Vue({
+                "el": ".zui-app",
+                data: {
+                    FWarehouseId: api.pageParam.FWarehouseId, // 茶仓ID
+                    FPickTypeType: api.pageParam.FPickType, //允许的提货方式
+                    Warehousedetail: "", // 茶仓详情
+                    FPickType: 0, //提货类型 0：自提，1：快递
+                    FShippingAddressId: "", // 收获地址ID
+                    FUserName: "", //收货人姓名
+                    FMobile: "", //收货人电话
+                    FShippingAddress: "", //收货地址
+                    tihuodata: "", // 提货信息
+                    FNum: 1, //提货数量
+                    FPrice: 0, //单价
+                    FPickDate: "",
+                    WarehousePoundage: 0, //仓储费
+                    payshow: false,
+                    zt: false,
+                    kd: false,
+                    jiaoyishow: false,
+                },
+                created: function () {
+                    var _this = this;
+                    _this.getdetails();
+                    _this.getWarehousePoundage();
+
+                    if (_this.FPickTypeType.indexOf("快递") != -1) {
+                        _this.kd = true;
+                        _this.FPickType = 1;
+                    }
+                    if (_this.FPickTypeType.indexOf("自提") != -1) {
+                        _this.zt = true;
+                        _this.FPickType = 0;
+                    }
+                    init();
+                },
+                methods: {
+                    hidekey: function () {
+                        var _this = this;
+                        jw.ts.confirm({
+                            msg: "您确定要取消支付吗？"
+                        }, function (index) {
+                            if (index == 1) {
+                                this.payshow = false;
+                                $("#numberkeyobj").hide();
+                                setTimeout(function () {
+                                    api.closeWin();
+                                }, 500);
+                            } else {
+
+                            }
+                        });
+                    },
+                    // 选择地址
+                    choseplace: function () {
+                        jw.openWin({
+                            name: "chose_address",
+                            url: "../shangcheng/chose_address.html"
+                        });
+                    },
+                    // 获取茶仓详情
+                    getdetails: function () {
+                        var _this = this;
+                        jw.submit("app_茶仓详情", {
+                            "FWarehouseId": _this.FWarehouseId
+                        }, function (ret) {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status ==
+                                "000000") {
+                                _this.Warehousedetail = ret.ds1[0];
+                                _this.FPrice = _this.Warehousedetail.FPrice;
+                                _this.gettihuo();
+                                _this.gettihuo1();
+                            } else {
+                                jw.ts.toast(ret.ds[0].msg);
+                            }
+                        });
+                    },
+                    //仓储费
+                    getWarehousePoundage: function () {
+                        var _this = this;
+                        jw.submit("app_仓储费计算20201217", {
+                            "FWarehouseId": _this.FWarehouseId
+                        }, function (ret) {
+                            _this.WarehousePoundage = ret.ds[0].WarehousePoundage;
+                        });
+                    },
+                    // 获取 app_商品提货地址
+                    gettihuo: function () {
+                        var _this = this;
+                        jw.submit("app_商品提货地址", {
+                            FBusinessId: _this.Warehousedetail.FBusinessId
+                        }, function (ret) {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status ==
+                                "000000") {
+                                _this.tihuodata = ret.ds1[0];
+                            } else {}
+                        });
+                    },
+                    // 获取 app_获取默认地址
+                    gettihuo1: function () {
+                        var _this = this;
+                        jw.submit("app_获取默认地址", {
+                            FUserId: jw.data.get("userid")
+                        }, function (ret) {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status ==
+                                "000000") {
+                                _this.FShippingAddressId = ret.ds1[0].FShippingAddressId;
+                                _this.FUserName = ret.ds1[0].FUserName;
+                                _this.FMobile = ret.ds1[0].FMobile;
+                                _this.FShippingAddress = ret.ds1[0].FShippingAddress;
+                            } else {
+                                //jw.ts.toast("内容不能为空");
+                            }
+                        });
+                    },
+                    // 返回价格
+                    returnprice: function () {
+                        var _this = this;
+                        var pr = _this.WarehousePoundage;
+                        if (!pr > 0) {
+                            pr = 0;
+                        }
+                        var n = _this.FNum;
+                        if (n < 1) {
+                            n = 1;
+                        }
+                        _this.FPrice = (parseFloat(pr) * n).toFixed(2);
+                        return _this.Fprice || 0;
+                    },
+                    jiaoyiback: function (t) {
+                        var _this = this;
+
+                        if (_this.WarehousePoundage > 0) {
+                            _this.zhifu(t);
+                        } else {
+                            jw.submit_ykt("yzwxmsg", {
+                                userPhone: jw.data.get("phone"), // 手机号
+                                yzm: t
+                            }, function (ret) {
+                                if (ret == "1") {
+                                    myapp.payshow = true;
+                                    $("#numberkeyobj").show();
+                                } else {
+                                    jw.ts.toast("验证码错误");
+                                    _this.jiaoyishow = true;
+                                }
+                            }, {
+                                jz: false,
+                                Url: jw.config.url3,
+                                Ip: jw.config.ip3
+                            });
+                        }
+
+                    },
+                    //发送验证码
+                    fasong: function () {
+                        var _this = this;
+                        jw.submit_ykt("sendwxmsg", { //发送验证码
+                            userPhone: jw.data.get("phone"), // 手机号
+                        }, function (ret) {
+                            jw.ts.toast("验证码已发送，请注意查收");
+                            _this.jiaoyishow = true;
+
+                        }, {
+                            jz: false,
+                            Url: jw.config.url3,
+                            Ip: jw.config.ip3
+                        });
+                    },
+                    zhifu: function (t) {
+                        //在用
+                        var _this = this;
+
+                        var FPickDate = $("#tihuodata").val();
+                        if (_this.FPickType == 0 && FPickDate == "") {
+                            jw.ts.toast("请选择提货时间");
+                            return false;
+                        }
+
+                        // jw.submit("yzwxmsg", {
+                        //     userPhone: jw.data.get("phone"),// 手机号
+                        //     yzm: t
+                        // }, function (ret) {
+                        //     if (ret == "1") {
+                        jw.ts.actionSheet({
+                            title: '请选择',
+                            buttons: [ "微信支付", '支付宝支付','一网通支付','钱包支付']
+                        }, function (index) {
+                            if (index == 4) {
+                                myapp.payshow = true;
+                                $("#numberkeyobj").show();
+                            } else if (index == 1) {
+                                jw.submit_ykt("WXchacangpay", {
+                                    "body": "提货支付",
+                                    "notifyUrl": "http://www.yunpuer.com/SelfModel/chacangpaysuccess.aspx",
+                                    "FWarehouseId": _this.FWarehouseId,
+                                    "FNum": _this.FNum,
+                                    "FBusinessId": _this.Warehousedetail.FBusinessId,
+                                    "FUserId": jw.data.get("userid"),
+                                    "FPickDate": FPickDate,
+                                    "FShippingAddressId": _this.FShippingAddressId ==
+                                        "" ? 0 : _this.FShippingAddressId,
+                                    "WarehousePoundage": _this.WarehousePoundage,
+                                    "FType": _this.FPickType,
+                                    "shouxufei": 0,
+                                    "Mobile": ""
+                                }, function (ret) {
+                                    if (ret.result_code == "SUCCESS") {
+                                        var now = Date.parse(new Date()) / 1000;
+                                        var stringA =
+                                            "appid=wx7f1cca191b9b3caf&noncestr=" + ret
+                                            .nonce_str +
+                                            "&package=Sign=WXPay&partnerid=1512144871&prepayid=" +
+                                            ret.prepay_id + "&timestamp=" + now;
+                                        var stringSignTemp = stringA +
+                                            "&key=qweasdzxc123456789qazwsxedcrfvtg";
+                                        //console.log(stringSignTemp);
+                                        var sign = hex_md5(stringSignTemp)
+                                            .toUpperCase();
+                                        var wxPay = api.require('wxPayPlus');
+                                        wxPay.payOrder({
+                                            apiKey: "wx7f1cca191b9b3caf", //ret.appid,
+                                            orderId: ret.prepay_id,
+                                            mchId: "1512144871", //ret.mch_id,
+                                            nonceStr: ret.nonce_str,
+                                            timeStamp: now,
+                                            package: 'Sign=WXPay',
+                                            sign: sign
+                                        }, function (ret, err) {
+                                            if (ret.status) {
+                                                jw.ts.toast("支付成功");
+                                                //关闭当前页面
+                                            } else {
+                                                jw.ts.toast("失败");
+                                            }
+                                            setTimeout(function () {
+                                                api.closeWin();
+                                            }, 500);
+                                        });
+                                    } else {
+                                        jw.ts.toast("失败");
+                                    }
+                                }, {
+                                    jz: true,
+                                    Url: jw.config.url3,
+                                    Ip: jw.config.ip3
+                                });
+                            } else if (index == 2) {
+                                jw.submit_ykt("Alichacangpay", {
+                                    "Body": "仓储费支付",
+                                    "Subject": "仓储费支付",
+                                    "NotifyUrl": "http://www.yunpuer.com/SelfModel/hander.aspx?cmd=AlichacangpayNotify",
+                                    "FWarehouseId": _this.FWarehouseId,
+                                    "FNum": _this.FNum,
+                                    "FBusinessId": _this.Warehousedetail.FBusinessId,
+                                    "FUserId": jw.data.get("userid"),
+                                    "FPickDate": FPickDate,
+                                    "FShippingAddressId": _this.FShippingAddressId ==
+                                        "" ? 0 : _this.FShippingAddressId,
+                                    "WarehousePoundage": _this.WarehousePoundage,
+                                    "FType": _this.FPickType,
+                                    "shouxufei": 0,
+                                    "Mobile": ""
+                                }, function (ret) {
+                                    if (ret != "") {
+                                        var aliPayPlus = api.require('aliPayPlus');
+                                        aliPayPlus.payOrder({
+                                            orderInfo: ret
+                                        }, function (ret, err) {
+                                            if (ret.code == "9000") {
+                                                jw.ts.toast("支付成功");
+                                            } else {
+                                                jw.ts.toast("失败");
+                                            }
+                                            setTimeout(function () {
+                                                api.closeWin();
+                                            }, 500);
+                                        });
+                                    }
+                                }, {
+                                    jz: true,
+                                    Url: jw.config.url3,
+                                    Ip: jw.config.ip3
+                                });
+                            }else if(index == 3){
+                                //一网通
+                                console.log('茶仓提货');
+                                jw.submit('app_提交茶仓操作',{
+                                    "FWarehouseId": _this.FWarehouseId,
+                                    "FUserId": jw.data.get("userid"), //   用户id
+                                    "FNum": _this.FNum,
+                                    "Mobile": _this.Mobile,
+                                    "shouxufei": _this.shouxufei,
+                                    "WarehousePoundage": _this.WarehousePoundage,
+                                    "FType": _this.FPickType,
+                                    "FPickDate": "",
+                                    "FShippingAddressId": 0,
+                                    "FBusinessId": _this.Warehousedetail.FBusinessId,
+                                },function(ret){
+                                    if('000000'==ret.ds[0].status&&null!=ret.ds[0].id){
+                                        layer.open({
+                                            type:2,
+                                            title:'一网通支付',
+                                            shadeClose:true,
+                                            shade:0.3,
+                                            area:['100%','90%'],//_this.WarehousePoundage
+                                            end:function(){
+                                                location.reload();
+                                            },
+                                            content: "http://www.yunpuer.com/SelfModel/Payment.aspx?mark=2&transactionName=transaction_id&payType=4&amount="+0.01+"&orderNo="+ret.ds[0].id+"&id="+ret.ds[0].id
+                                        });
+                                    }
+                                });
+                            }
+                        })
+                        //     } else {
+                        //         jw.ts.toast("验证码错误");
+                        //         _this.jiaoyishow = true;
+                        //     }
+                        // }, {
+                        //     jz: false,
+                        //     Url: jw.config.url3
+                        // });
+
+                    },
+                    // 获取茶仓详情
+                    tihuo: function (PayPassword) {
+                        var _this = this;
+                        if (_this.FNum <= 0) {
+                            jw.ts.toast("请选择数量");
+                            return false;
+                        }
+
+                        var FPickDate = $("#tihuodata").val();
+                        if (_this.FPickType == 0 && FPickDate == "") {
+                            jw.ts.toast("请选择提货时间");
+                            return false;
+                        }
+
+                        if (_this.FPickType == 1 && _this.FShippingAddressId == "") {
+                            jw.ts.toast("请选择发货地址");
+                            return false;
+                        }
+                        jw.ts.confirm({
+                            msg: "确认提货？"
+                        }, function (index) {
+                            if (index == 1) {
+                                jw.submit("app_我要提货", {
+                                    "FPickType": _this.FPickType,
+                                    "FWarehouseId": _this.FWarehouseId,
+                                    "FNum": _this.FNum,
+                                    "FBusinessId": _this.Warehousedetail.FBusinessId,
+                                    "FUserId": jw.data.get("userid"),
+                                    "FPickDate": FPickDate,
+                                    "FShippingAddressId": _this.FShippingAddressId,
+                                    "WarehousePoundage": _this.WarehousePoundage,
+                                    PayPassword: PayPassword
+                                }, function (ret) {
+                                    if (ret.ds != undefined && ret.ds != "" && ret.ds[0]
+                                        .status == "000000") {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                        setTimeout(function () {
+                                            api.closeWin();
+                                        }, 500);
+                                    } else if (ret.ds[0].status == "111111") {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                    } else {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                    }
+                                });
+                            }
+                        });
+
+                    },
+
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

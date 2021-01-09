@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>个人中心</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-header zui-row-center myjifen_header">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">关于我们</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+    <div class="zui-content aboutus_content" v-cloak>
+        <div class="logo"><img :src="imgsrcfilter(news.FImageUrl)" alt=""></div>
+        <h1 v-cloak>{{news.FName}}</h1>
+        <div class="aboutus_main" v-html="news.FContent"></div>
+        <div class="zui-row zui-row-center" style="padding: 5px;">
+            <div class="zui-col" style="padding: 10px;">
+                <img class="imgblock" :src="imgsrcfilter(news.FWxUrl)" alt="">
+            </div>
+            <div class="zui-col">
+                <img class="imgblock" :src="imgsrcfilter(news.FAppUrl)" alt="">
+            </div>
+        </div>
+    </div>
+
+    <div class="zui-footer zui-row zui-row-stretch">
+        <div class="footer_btn zui-col bg-red color-white" @click="share()">一键分享</div>
+    </div>
+</div>
+
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function() {
+        jw.sb.fixStatusBar(".zui-header");
+
+        var sharedModule = api.require('shareAction');
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                news: {}
+            },
+            created: function () {
+                this.getnews();
+            },
+            methods: {
+                // 获取积分规则
+                getnews: function () {
+                    var _this = this;
+                    jw.submit("app_关于我们",{
+
+                    },function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            _this.news = ret.ds1[0];
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                },
+                /* 分享 */
+                share: function () {
+                    var _this = this;
+                    jw.openFrame({
+                        name: 'share',
+                        url: '../share.html',
+                        pageParam: {
+                            text: "关于我们",
+                            FType: '2',
+                            Fid: "",
+                            path: "http://www.yunpuer.com/web_index.html"
+                        }
+                    })
+                    /*sharedModule.share({
+                        text: "关于我们",
+                        type: 'url',
+                        path: "http://www.yunpuer.com/web_index.html"
+                    });*/
+                },
+            }
+        });
+    }
+</script>
+</body>
+</html>

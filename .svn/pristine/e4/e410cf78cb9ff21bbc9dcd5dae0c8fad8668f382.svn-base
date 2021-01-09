@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>Title</title>
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <style media="screen">
+        .touxiang {
+              border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-header zui-header-dark zui-row-center">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">种树详情</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+    <div class="zui-content ordermain" >
+
+        <div class="order_status">
+            <div class="tip zui-row zui-row-center">
+                <div class="zui-col">
+                    <i class="iconfont icon-gantanhao color-orange"></i><span class="text">{{order.statusname}}</span>
+                </div>
+            </div>
+            <img class="imgblock" src="../../image/order02.jpg" alt="">
+        </div>
+
+        <div class="weui-form-preview">
+
+            <div class="order_imgbox zui-row zui-row-center zui-row-stretch" v-cloak>
+                <div class="touxiang" :style="getbgimg(order.FImg)"></div>
+                <div class="zui-col zui-row zui-row-column">
+                    <div class="title">{{order.FTreeName}}</div>
+                    <div class="zui-col"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="weui-form-preview ddxq" v-cloak>
+            <div class="weui-form-preview__bd dd_warp">
+                <div class="weui-form-preview__item">
+                    <span class="weui-form-preview__label">提货类型</span>
+                    <div class="weui-form-preview__value">{{order.FPickType}}</div>
+                </div>
+                <div class="weui-form-preview__item">
+                    <span class="weui-form-preview__label">提货地址</span>
+                    <div class="weui-form-preview__value">{{order.FPickAddress}}</div>
+                </div>
+                <div class="weui-form-preview__item">
+                    <span class="weui-form-preview__label">创建时间</span>
+                    <div class="weui-form-preview__value">{{order.FCreateDate}}</div>
+                </div>
+                <div class="weui-form-preview__item">
+                    <span class="weui-form-preview__label">更新时间</span>
+                    <div class="weui-form-preview__value">{{order.FUpdateDate}}</div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../res/weui/jquery-weui.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script src="../../js/md5.js"></script>
+<script>
+    apiready = function () {
+        jw.sb.fixStatusBar(".zui-header");
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                FId:api.pageParam.FId, //种树订单id
+                order: {},
+            },
+            created: function () {
+                var _this = this;
+                _this.getorderdetails();
+            },
+            methods: {
+                // 获取订单详情
+                getorderdetails: function () {
+                    var _this = this;
+                    jw.submit("api44246", {
+                        "FId": _this.FId
+                    }, function (ret) {
+                        if (ret.ds[0].status == "000000") {
+                            _this.order = ret.ds1[0];
+                        }else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                },
+            }
+        });
+    }
+</script>
+</body>
+</html>

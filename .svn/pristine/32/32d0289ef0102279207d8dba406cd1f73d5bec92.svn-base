@@ -1,0 +1,49 @@
+@import "../../base/fn";
+
+.color-gray3{
+  color: #333333!important;
+}
+.color-gray6{
+  color: #666666!important;
+}
+.color-gray9{
+  color: #999999!important;
+}
+.color-white{
+  color: #ffffff!important;
+}
+.color-red{
+  color: @red!important;
+}
+.color-blue{
+  color: @blue!important;
+}
+.color-green{
+  color: @green!important;
+}
+.color-orange{
+  color: @orange!important;
+}
+.color-yellow{
+  color: @yellow!important;
+}
+
+.bg-white{background-color: #ffffff!important;}
+.bg-red{
+  background-color: @red!important;
+}
+.bg-blue{
+  background-color: @blue!important;
+}
+.bg-green{
+  background-color: @green!important;
+}
+.bg-orange{
+  background-color: @orange!important;
+}
+.bg-yellow{
+  background-color: @yellow!important;
+}
+.bg-cancel{
+  background-color: #cccccc!important;
+}

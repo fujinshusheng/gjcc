@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>个人中心</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-header zui-header-dark zui-row-center">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">赚取积分</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+
+    <div class="zui-content">
+
+        <div class="zui-list my_jifenlist">
+            <div class="zui-item zui-row" v-for="item in list" v-cloak>
+                <div class="zui-col">
+                    <p class="fz16">{{item.FTitle}}</p>
+                    <p class="fz16"><span class="color-red" v-if="item.FNum>0">+{{item.FNum}}积分</span></p>
+                </div>
+                <div class="text-center">
+                    <img width="35" src="../../image/jifen2.png" alt="">
+                    <!--<div class="z-btn z-btn-red">去注册</div>-->
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function() {
+        jw.sb.fixStatusBar(".zui-header");
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                logininfo: "",
+                list: [],
+            },
+            created: function () {
+                this.logininfo = JSON.parse(jw.data.get("logininfo"));
+
+                this.getjifenlist();
+            },
+            methods: {
+                getjifenlist: function () {
+                    var _this = this;
+                    jw.submit("app_赚取积分",{},function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            _this.list = ret.ds1;
+
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    })
+                }
+            }
+        })
+    }
+</script>
+</body>
+</html>

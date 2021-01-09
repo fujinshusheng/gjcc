@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <style media="screen">
+
+        .touxiang {
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <div class="zui-app">
+        <div class="zui-header zui-header-dark zui-row-center">
+            <div class="iconfont icon-back zui-header-icon zui-header-left" @click="back()"></div>
+            <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">订单详情</div>
+             <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+            onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+        </div>
+        <div class="zui-content ordermain">
+
+            <div class="order_status">
+                <div class="tip zui-row zui-row-center">
+                    <div class="zui-col">
+                        <template v-if="order.FOrderStatus == 0" v-cloak>
+                            <i class="iconfont icon-gantanhao color-orange"></i><span class="text">未付款</span>
+                        </template>
+
+                        <template v-if="order.FOrderStatus == 1" v-cloak>
+                            <i class="iconfont icon-success color-green"></i><span class="text">买家已付款</span>
+                        </template>
+
+                        <template v-if="order.FOrderStatus == 2" v-cloak>
+                            <i class="iconfont icon-gantanhao color-orange"></i><span class="text">申请退款中</span>
+                        </template>
+
+                        <template v-if="order.FOrderStatus == 3" v-cloak>
+                            <i class="iconfont icon-success color-green"></i><span class="text">退款成功</span>
+                        </template>
+
+                        <template v-if="order.FOrderStatus == 4 && order.FPickType == 0" v-cloak>
+                            <i class="iconfont icon-success color-green"></i><span class="text">已提货</span>
+                        </template>
+
+                        <template v-if="order.FOrderStatus == 4 && order.FPickType == 1" v-cloak>
+                            <i class="iconfont icon-success color-green"></i><span class="text">卖家已发货</span>
+                        </template>
+
+                        <template v-if="order.FOrderStatus == 4 && order.FPickType == 2" v-cloak>
+                            <i class="iconfont icon-success color-green"></i><span class="text">已转到茶仓</span>
+                        </template>
+
+                        <template v-if="order.FOrderStatus == 5" v-cloak>
+                            <i class="iconfont icon-success color-green"></i><span class="text">买家已收货</span>
+                        </template>
+
+                        <template v-if="order.FOrderStatus == 6" v-cloak>
+                            <i class="iconfont icon-gantanhao color-gray9"></i><span class="text">交易取消</span>
+                        </template>
+                    </div>
+                </div>
+                <img class="imgblock" src="../../image/order02.jpg" alt="">
+            </div>
+
+            <div class="weui-form-preview">
+
+                <div class="order_imgbox zui-row zui-row-center zui-row-stretch" v-cloak>
+                    <div class="touxiang" :style="getbgimg(order.FImg)"></div>
+                    <div class="zui-col zui-row zui-row-column">
+                        <div class="title">{{order.FName}}</div>
+                        <div class="zui-col"></div>
+                        <div class="text"><span class="color-red fz20">￥{{order.FPrice}}</span> <span
+                                class="fr">×{{order.FBuyNum}}</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="weui-form-preview" v-cloak>
+                <div class="weui-form-preview__bd">
+                    <div class="weui-form-preview__item" v-if="order.FReturnIntegral>0">
+                        <label class="weui-form-preview__label">单件可返积分</label>
+                        <span class="weui-form-preview__value">{{order.FReturnIntegral}}</span>
+                    </div>
+                    <label class="weui-form-preview__item" style="display: block;">
+                        <span class="weui-form-preview__label">商品总额</span>
+                        <div class="weui-form-preview__value">￥{{order.FSubTotal}}</div>
+                    </label>
+                    <label class="weui-form-preview__item" style="display: block;" v-show="order.FPreferentialPrice>0">
+                        <span class="weui-form-preview__label">积分抵扣</span>
+                        <div class="weui-form-preview__value">￥{{order.FPreferentialPrice}}</div>
+                    </label>
+                    <label class="weui-form-preview__item" style="display: block;"
+                        v-show="order.FMerchantpreferences>0">
+                        <span class="weui-form-preview__label">商家优惠</span>
+                        <div class="weui-form-preview__value">￥{{order.FMerchantpreferences}}</div>
+                    </label>
+                    <label class="weui-form-preview__item" style="display: block;">
+                        <span class="weui-form-preview__label">支付总额</span>
+                        <div class="weui-form-preview__value">￥{{order.FTotal}}</div>
+                    </label>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">提货方式</label>
+                        <div class="weui-form-preview__value">{{tihuotxt(order.FPickType)}}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 订单详情 时显示 start -->
+            <div class="weui-form-preview" v-cloak>
+                <div class="weui-form-preview__bd">
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">订单编号</label>
+                        <span class="weui-form-preview__value">{{order.FOrderNum}}</span>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">下单时间</label>
+                        <span class="weui-form-preview__value">{{order.FCreateDate | datatime}}</span>
+                    </div>
+                    <div class="weui-form-preview__item" v-if="order.FOrderStatus > 0 && order.FOrderStatus != 6">
+                        <label class="weui-form-preview__label">支付时间</label>
+                        <span class="weui-form-preview__value">{{order.FPayDate | datatime}}</span>
+                    </div>
+                    <div class="weui-form-preview__item" v-if="order.FOrderStatus == 6">
+                        <label class="weui-form-preview__label">取消时间</label>
+                        <span class="weui-form-preview__value">{{order.FCancelDate | datatime}}</span>
+                    </div>
+                    <div class="weui-form-preview__item" v-if="order.FOrderStatus == 0">
+                        <label class="weui-form-preview__label">最晚支付时间</label>
+                        <span class="weui-form-preview__value">{{order.FLastPayDate | datatime}}</span>
+                    </div>
+                </div>
+            </div>
+            <!-- 订单详情 时显示 end -->
+
+
+            <div class="weui-form-preview" v-cloak
+                v-if="order.FPickType == 0 && order.FOrderStatus != 0 && order.FOrderStatus != 6">
+                <div class="weui-form-preview__bd">
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">预计提货时间</label>
+                        <span class="weui-form-preview__value">{{order2.FPickDate}}</span>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">提货地址</label>
+                        <span class="weui-form-preview__value">{{order2.FPickAddress}}</span>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">联系人</label>
+                        <span class="weui-form-preview__value">{{order2.FPickName}}</span>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">联系方式</label>
+                        <span class="weui-form-preview__value">{{order2.FPickPhone}}</span>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">提货码</label>
+                        <span class="weui-form-preview__value">{{order2.FPickCode}}</span>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">提货状态</label>
+                        <span
+                            class="weui-form-preview__value">{{order2.FStatus==0?'未提货':'已提货，提货时间：'+order2.FUpdateDate}}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="weui-form-preview wuliu-border-top wuliu-border-bottom" v-cloak
+                v-if="order.FPickType == 1 && order.FOrderStatus != 0 && order.FOrderStatus != 6">
+                <div class="weui-form-preview__bd">
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">收件人</label>
+                        <div class="weui-form-preview__value"><span>{{order2.FShippingName}}</span> <span
+                                class="fr">{{order2.FShippingPhone}}</span>
+                        </div>
+                    </div>
+                    <div class="weui-form-preview__item" style="border-top: none">
+                        <label class="weui-form-preview__label">收件地址</label>
+                        <span class="weui-form-preview__value">{{order2.FShippingAddress}}</span>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+
+        <!-- 未支付 底部按钮-->
+        <template v-if="order.FOrderStatus == 0" v-cloak>
+            <div class="zui-footer zui-row zui-row-center zui-row-stretch firm_footer">
+                <div class="footer_btn zui-col z-btn-blue" @click="payway()" id="qrbtn">付款</div>
+                <div class="footer_btn zui-col z-btn-cancel" @click="btn_order_cancel()">取消订单</div>
+            </div>
+        </template>
+
+        <!-- 已支付 底部按钮-->
+        <template v-if="order.FPickType!=2 && order.FOrderStatus == 1 && order.FIfCancel==true && order.FOrderType!=2"
+            v-cloak>
+            <div class="zui-footer zui-row zui-row-center zui-row-stretch firm_footer">
+                <div class="footer_btn zui-col z-btn-red" @click="btn_tuikuan()">申请退款</div>
+                <!--<div v-if="order.FPickType == 0 && order2.FStatus == 0" class="footer_btn zui-col z-btn-blue" @click="btn_tihuo()">确认提货</div> -->
+            </div>
+        </template>
+        <!-- 到茶仓 底部按钮-->
+        <template v-if="order.FPickType==2 && order.FOrderStatus>0 && order.FOrderStatus<6" v-cloak>
+            <div class="zui-footer zui-row zui-row-center zui-row-stretch firm_footer">
+                <div class="footer_btn zui-col z-btn-blue" @click="btn_chacang()">我的茶仓</div>
+            </div>
+        </template>
+
+        <!-- 退款中 底部按钮-->
+        <template v-if="order.FOrderStatus == 2" v-cloak>
+            <div class="zui-footer zui-row zui-row-center zui-row-stretch firm_footer">
+                <div class="footer_btn zui-col z-btn-red" @click="btn_tuikuan_cancel()">取消退款</div>
+            </div>
+        </template>
+
+        <!-- 已退款 底部按钮-->
+        <template v-if="order.FOrderStatus == 3" v-cloak>
+
+        </template>
+
+        <!-- 已提货 底部按钮-->
+        <template v-if="order.FOrderStatus == 1 && order.FPickType == 0" v-cloak>
+            <div class="zui-footer zui-row zui-row-center zui-row-stretch firm_footer" @click="btn_tihuo()">
+                <div class="footer_btn zui-col z-btn-blue">确认提货</div>
+            </div>
+        </template>
+        <!-- 已提货待评价 底部按钮-->
+        <template v-if="order.FOrderStatus == 4 && order.FPickType == 0" v-cloak>
+            <div class="zui-footer zui-row zui-row-center zui-row-stretch firm_footer">
+                <div class="footer_btn zui-col z-btn-blue" v-if="order.FIsAssess==0" @click="btn_commit()">去评价</div>
+            </div>
+        </template>
+
+        <!-- 已发货 底部按钮-->
+        <template v-if="order.FOrderStatus == 4 && order.FPickType == 1" v-cloak>
+            <div class="zui-footer zui-row zui-row-center zui-row-stretch firm_footer">
+                <div class="footer_btn zui-col z-btn-orange" @click="look_wuliu()">查看物流</div>
+                <div class="footer_btn zui-col z-btn-blue" @click="btn_shouhuo()">确认收货</div>
+            </div>
+        </template>
+
+        <!-- 已转到茶仓 底部按钮-->
+        <template v-if="order.FOrderStatus == 4 && order.FPickType == 2" v-cloak>
+        </template>
+
+        <!-- 确认收货 底部按钮-->
+        <template v-if="order.FOrderStatus == 5" v-cloak>
+            <div class="zui-footer zui-row zui-row-center zui-row-stretch firm_footer">
+                <div class="footer_btn zui-col z-btn-orange" @click="look_wuliu()">查看物流</div>
+                <div class="footer_btn zui-col z-btn-blue" v-if="order.FIsAssess==0" @click="btn_commit()">去评价</div>
+            </div>
+        </template>
+
+        <!-- 订单取消 底部按钮-->
+        <template v-if="order.FOrderStatus == 6" v-cloak>
+        </template>
+
+
+        <!-- 输入密码弹出框 -->
+        <div class="zui-alert shop_alert" v-cloak v-show="payshow">
+            <div class="zui-alert_box">
+                <div class="shop_close iconfont icon-del color-red" @click="hidekey()"></div>
+                <div class="tip">
+                    <img src="../../image/money01.png" alt="">
+                </div>
+                <div class="title">请输入支付密码</div>
+                <div class="cont" style="padding: 15px;">
+                    <b style="font-size: 45px;">￥{{order.FTotal}}</b>
+                    <div class="clearfix fz14">
+                        <span
+                            onclick="jw.openWin({name:'setting_paypassword',url:'../myself/setting_paypassword.html'})"
+                            class="fl">设置密码</span>
+                        <span
+                            onclick="jw.openWin({name:'setting_newpaypassword',url:'../myself/setting_newpaypassword.html'})"
+                            class="fr color-red">忘记密码？</span>
+                    </div>
+                    <div id="mimabox"></div>
+                </div>
+            </div>
+            <div class="zui-alert_bg"></div>
+        </div>
+
+    </div>
+
+
+    <script src="../../js/jquery-2.1.1.min.js"></script>
+    <script src="../../res/weui/jquery-weui.min.js"></script>
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/vuefilter.js"></script>
+    <script src="../../js/jw.js"></script>
+    <script src="../../js/zui.js"></script>
+    <script src="../../js/md5.js"></script>
+    <script src="../../js/dsf.js"></script>
+    <script src="../../js/layer/layer.js"></script>
+    <script>
+        apiready = function () {
+            jw.sb.fixStatusBar(".zui-header");
+            api.addEventListener({
+                name: 'keyback'
+            }, function (ret, err) {
+                myapp.back();
+            });
+
+            function init() {
+                setTimeout(function () {
+                    $("#jiaoyibox").find(".nimainput").on("touchend", function () {
+                        $("#jiaoyi").focus();
+                    });
+
+                    $("#jiaoyi").on("keyup", function () {
+                        var text = $(this).val();
+                        var list = text.split("");
+                        if (text.length > 6) {
+                            var laststr = list[list.length - 1];
+                            list.pop();
+                            list[5] = laststr;
+
+                            text = "";
+                            for (var i in list) {
+                                text += list[i];
+                            }
+                            $(this).val(text);
+                        }
+
+                        $("#jiaoyibox").find(".nimainput").each(function (index, item) {
+                            if (list[index] == undefined) {
+                                $(this).text("");
+                            } else {
+                                $(this).text(list[index]);
+                            }
+                        });
+                    });
+
+                    $("#okbtn").on("touchend", function () {
+                        $("#jiaoyipop").show();
+                    });
+
+                    $(".z-popup_bg").on("touchend", function () {
+                        $("#jiaoyipop").hide();
+                    });
+
+                    $("#mimabox").mimakeywords({
+                        onend: function (v, p) {
+                            myapp.payshow = false;
+                            p.close();
+                            myapp.orderpay(v);
+                        }
+                    });
+
+                }, 1000);
+
+            }
+
+            var myapp = new Vue({
+                "el": ".zui-app",
+                data: {
+                    FBusinessOrderId: api.pageParam.FId, // 订单ID
+                    order: {
+                        FOrderStatus: ""
+                    }, // 订单内容
+                    order2: {}, //订单内容
+                    payshow: false, // 支付密码显示
+                },
+                created: function () {
+                    var _this = this;
+                    _this.getorderdetails();
+                    // 输入支付密码
+                    init();
+                },
+                methods: {
+                    hidekey: function () {
+                        var _this = this;
+                        jw.ts.confirm({
+                            msg: "您确定要取消支付吗？"
+                        }, function (index) {
+                            if (index == 1) {
+                                _this.payshow = false;
+                                $("#numberkeyobj").hide();
+                                _this.getorderdetails();
+                            } else {
+
+                            }
+                        });
+                    },
+                    // 返回
+                    back: function () {
+                        var _this = this;
+                        jw.data.jtset("ordershuaxin", 1);
+                        if (api.pageParam.ly != undefined && api.pageParam.ly != "") {
+                            //alert(api.pageParam.ly)
+                            api.closeToWin({
+                                name: api.pageParam.ly,
+                            });
+                        } else {
+                            //alert(api.pageParam.ly+'1111')
+                            api.closeWin();
+                        }
+                    },
+                    // 更新外部列表状态
+                    updataorder: function () {
+                        jw.data.jtset("myorderupdata", 1);
+                    },
+                    tihuotxt: function (t) {
+                        if (t == 0) {
+                            return "自提"
+                        } else if (t == 1) {
+                            return "快递"
+                        } else if (t == 2) {
+                            return "到茶仓"
+                        }
+                    },
+                    // 获取订单详情
+                    getorderdetails: function () {
+                        var _this = this;
+                        jw.submit("api46084", {
+                            "FId": _this.FBusinessOrderId,
+                            FOrderNum: "",
+                        }, function (ret) {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status ==
+                                "000000") {
+                                if (ret.ds1 != undefined && ret.ds1.length > 0) {
+                                    _this.order = ret.ds1[0];
+                                    _this.order2 = ret.ds2[0];
+                                    _this.updataorder();
+                                }
+                            } else {
+                                jw.ts.toast(ret.ds[0].msg);
+                            }
+                        });
+                    },
+                    /* app_取消订单 */
+                    btn_order_cancel: function () {
+                        var _this = this;
+                        jw.ts.confirm({
+                            msg: "确定取消订单？"
+                        }, function (index) {
+                            if (index == 1) {
+                                jw.submit("api46627", {
+                                    FId: _this.FBusinessOrderId, // 订单id
+                                }, function (ret) {
+                                    if (ret.ds != undefined && ret.ds != "" && ret.ds[0]
+                                        .status == "000000") {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                        _this.getorderdetails();
+                                    } else {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                    }
+                                });
+                            }
+                        });
+                    },
+                    // 付款
+                    payway: function () {
+                        console.log('茶器订单支付');
+                        var _this = this;
+                        jw.ts.actionSheet({
+                            title: '请选择',
+                            buttons: [ "微信支付", '支付宝支付', '一网通支付','钱包支付']
+                        }, function (index) {
+                            if (index == 4) {
+                                myapp.payshow = true;
+                                $("#numberkeyobj").show();
+                            } else if (index == 1) {
+                                // alert(jw.data.get("zfid"))
+                                jw.submit_ykt("", {
+                                    FOrderNum: _this.order.FOrderNum,notifyUrl: "http://www.yunpuer.com/SelfModel/WxPayNotify.aspx"
+                                }, function (ret) {
+                                    if (ret.result_code == "SUCCESS") {
+                                        dsf.wxsdk1(ret.nonce_str, ret.prepay_id,function (ret, err) {
+                                            if (ret.status) {
+                                                jw.ts.toast("支付成功");
+                                                _this.getzfwk();
+                                            } else {
+                                                jw.ts.toast("已取消支付！");
+                                            }
+                                        })
+                                    } else {
+                                        jw.ts.toast("失败");
+                                    }
+                                }, {
+                                    jz: true,returnall: true,Url: "/SelfModel/getWXPayStr.aspx",Ip: jw.config.ip3
+                                });
+                                /*jw.submit("", {
+                                    FOrderNum: _this.order.FOrderNum,
+                                    notifyUrl: "http://www.yunpuer.com/SelfModel/WxPayNotify.aspx"
+                                }, function (ret) {
+                                    if (ret.status == "200") {
+                                        var now = Date.parse(new Date()) / 1000;
+                                        var stringA = "appid=wx7f1cca191b9b3caf&noncestr=" + ret.data.nonce_str + "&package=Sign=WXPay&partnerid=1512144871&prepayid=" + ret.data.prepay_id + "&timestamp=" + now;
+                                        var stringSignTemp = stringA + "&key=qweasdzxc123456789qazwsxedcrfvtg";
+                                        //console.log(stringSignTemp);
+                                        var sign = hex_md5(stringSignTemp).toUpperCase();
+                                        var wxPay = api.require('wxPayPlus');
+                                        wxPay.payOrder({
+                                            apiKey: "wx7f1cca191b9b3caf", //ret.appid,
+                                            orderId: ret.data.prepay_id,
+                                            mchId: "1512144871", //ret.mch_id,
+                                            nonceStr: ret.data.nonce_str,
+                                            timeStamp: now,
+                                            package: 'Sign=WXPay',
+                                            sign: sign
+                                        }, function (ret, err) {
+                                            if (ret.status) {
+                                                jw.ts.toast("支付成功");
+                                                _this.getzfwk();
+                                            } else {
+                                                jw.ts.toast("已取消支付！");
+                                            }
+                                        });
+                                    } else {
+                                        jw.ts.toast("失败");
+                                    }
+                                }, {
+                                    jz: true,
+                                    returnall: true,
+                                    Url: "/SelfModel/getWXPayStr.aspx",
+                                    Ip: jw.config.ip3
+                                });*/
+                            } else if (index == 2) {
+
+                                dsf.zfbsubmit ('',{
+                                    FOrderNum: _this.order.FOrderNum,
+                                    notifyUrl: "http://www.yunpuer.com/SelfModel/AliPayNotify.aspx"
+                                },{
+                                    jz: true,
+                                    Url: "/SelfModel/getAliPayStr.aspx",
+                                    Ip: jw.config.ip3
+                                },function (ret, err) {
+                                    if (ret.code == "9000") {
+                                        jw.ts.toast("支付成功");
+                                        _this.getzfwk();
+                                    } else {
+                                        jw.ts.toast("已取消支付！");
+                                    }
+                                })
+
+                                /*jw.submit("", {
+                                    FOrderNum: _this.order.FOrderNum,
+                                    notifyUrl: "http://www.yunpuer.com/SelfModel/AliPayNotify.aspx"
+                                }, function (ret) {
+                                    if (ret != "") {
+                                        var aliPayPlus = api.require('aliPayPlus');
+                                        aliPayPlus.payOrder({
+                                            orderInfo: ret
+                                        }, function (ret, err) {
+                                            if (ret.code == "9000") {
+                                                jw.ts.toast("支付成功");
+                                                _this.getzfwk();
+                                            } else {
+                                                jw.ts.toast("已取消支付！");
+                                            }
+                                        });
+                                    }
+                                }, {
+                                    jz: true,
+                                    Url: "/SelfModel/getAliPayStr.aspx",
+                                    Ip: jw.config.ip3
+                                });*/
+                            }else if(index == 3){
+                                //一网通
+
+                                jw.submit('api42705',{
+                                    FOrderNum: _this.order.FOrderNum
+                                },function(ret){
+                                    if('000000'==ret.ds[0].status){
+                                        layer.open({
+                                            type:2,
+                                            title:'一网通支付',
+                                            shadeClose:true,
+                                            shade:0.3,
+                                            area:['100%','90%'],
+                                            end:function(){
+                                                myapp.getzfwk();
+                                            },
+                                            content: "http://www.yunpuer.com/SelfModel/Payment.aspx?mark=4&transactionName=transaction_id&payType=4&amount="+ret.ds1[0].FTotalPrice+"&orderNo="+_this.order.FOrderNum+"&FOrderNum="+_this.order.FOrderNum
+                                        });
+                                    }
+                                });
+                            }
+                        })
+                    },
+                    // 订单支付
+                    orderpay: function (password) {
+                        var _this = this;
+                        jw.submit("api42707", {
+                            FOrderNum: _this.order.FOrderNum, //订单号
+                            FUserId: jw.data.get("userid"), //用户ID
+                            PayPassword: password, // 支付密码
+                        }, function (ret) {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status ==
+                                "000000") {
+                                jw.ts.toast(ret.ds[0].msg);
+                                _this.getorderdetails();
+                            } else {
+                                jw.ts.toast(ret.ds[0].msg);
+                            }
+                        });
+                    },
+                    /* app申请退款 */
+                    btn_tuikuan: function () {
+                        var _this = this;
+                        jw.ts.confirm({
+                            msg: "是否确定申请退款？"
+                        }, function (index) {
+                            if (index == 1) {
+                                jw.submit("api47096", {
+                                    FId: _this.FBusinessOrderId, // 订单id
+                                }, function (ret) {
+                                    if (ret.ds != undefined && ret.ds != "" && ret.ds[0]
+                                        .status == "000000") {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                        _this.getorderdetails();
+                                    } else {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                    }
+                                });
+                            }
+                        })
+                    },
+                    /* app_取消退款 */
+                    btn_tuikuan_cancel: function () {
+                        var _this = this;
+                        jw.ts.confirm({
+                            msg: "是否确定取消退款？"
+                        }, function (index) {
+                            if (index == 1) {
+                                jw.submit("api47097", {
+                                    FId: _this.FBusinessOrderId, // 订单id
+                                }, function (ret) {
+                                    if (ret.ds != undefined && ret.ds != "" && ret.ds[0]
+                                        .status == "000000") {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                        _this.getorderdetails();
+                                    } else {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                    }
+                                });
+                            }
+                        })
+                    },
+                    /* app_取消订单 */
+                    // btn_order_cancel: function () {
+                    //     var _this = this;
+                    //     jw.ts.confirm({msg: "是否确定取消订单？"}, function (index) {
+                    //         if (index == 1) {
+                    //             jw.submit("app_取消订单", {
+                    //                 FBusinessOrderId: _this.FBusinessOrderId, // 订单id
+                    //             }, function (ret) {
+                    //                 if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                    //                     jw.ts.toast(ret.ds[0].msg);
+                    //                     _this.getorderdetails();
+                    //                 } else {
+                    //                     jw.ts.toast(ret.ds[0].msg);
+                    //                 }
+                    //             });
+                    //         }
+                    //     })
+                    // },
+                    /* app_确认提货 */
+                    btn_tihuo: function () {
+                        var _this = this;
+                        jw.ts.confirm({
+                            msg: "是否确认提货？"
+                        }, function (index) {
+                            if (index == 1) {
+                                jw.submit("api47099", {
+                                    FId: _this.FBusinessOrderId, // 订单id
+                                }, function (ret) {
+                                    if (ret.ds != undefined && ret.ds != "" && ret.ds[0]
+                                        .status == "000000") {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                        _this.getorderdetails();
+                                    } else {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                    }
+                                });
+                            }
+                        })
+                    },
+                    /* app_确认收货 */
+                    btn_shouhuo: function () {
+                        var _this = this;
+                        jw.ts.confirm({
+                            msg: "是否确认收货？"
+                        }, function (index) {
+                            if (index == 1) {
+                                jw.submit("api47098", {
+                                    FId: _this.FBusinessOrderId, // 订单id
+                                }, function (ret) {
+                                    if (ret.ds != undefined && ret.ds != "" && ret.ds[0]
+                                        .status == "000000") {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                        _this.getorderdetails();
+                                    } else {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                    }
+                                });
+                            }
+                        })
+                    },
+                    /* 查看物流*/
+                    look_wuliu: function () {
+                        jw.openWin({
+                            name: "look_wuliu",
+                            url: "../shangcheng/look_wuliu.html",
+                            pageParam: {
+                                FBusinessOrderId: this.FBusinessOrderId, // 订单ID
+                            }
+                        })
+                    },
+                    /* 去评价 */
+                    btn_commit: function () {
+                        var _this = this;
+                        jw.openWin({
+                            name: "order_commit",
+                            url: "../shangcheng/order_commit.html",
+                            pageParam: {
+                                FBusinessId: _this.order.FTeaSetId,
+                                FBusinessOrderId: _this.FOrderNum
+                            }
+                        })
+                    },
+                    /* 到茶仓 */
+                    btn_chacang: function () {
+                        var _this = this;
+                        jw.openWin({
+                            // name: "my_chacang",
+                            // url: "../chacang/my_chacang.html",
+                            name: "my_chacang_list_first",
+                            url: "../chacang/my_chacang_list_first.html"
+                            // pageParam: {
+                            //     FWarehouseId: _this.order2.FWarehouseId
+                            // }
+                        })
+                    },
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

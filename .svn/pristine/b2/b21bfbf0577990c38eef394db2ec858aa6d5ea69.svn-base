@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>报名人数</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+
+<div class="zui-app main_bin">
+    <div class="zui-header zui-header-dark zui-row-center">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">报名人数</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+    <div class="zui-content main_top">
+      <!-- <div class="top_bmrs">报名人数</div> -->
+      <div class="bmrs_imgbox">
+          <p class="text-center fz18" v-show="cjryl.length <=0">{{nutxt}}</p>
+          <div class="warp_img" v-for="item in cjryl">
+              <div class="war_box">
+                  <div style="width:50%;float: left;">
+                      <img class="image" :src="item.FHanderImg" alt=""/>
+                      <span class="span span_left_text" style="height: 80px;padding-left:3px;line-height: 80px;word-break: break-all;text-overflow: ellipsis;overflow: hidden;
+                      display: -webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical;">{{item.FName}}</span>
+                  </div>
+                  <div style="width:50%;float: left;text-align: center;height: 80px;line-height: 80px;">
+                      <span class="span span_right left_time">{{item.FCreateDate}}</span>
+                  </div>
+                  <div style="clear: both;"></div>
+              </div>
+          </div>
+      </div>
+    </div>
+
+</div>
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function () {
+
+        jw.sb.fixStatusBar(".zui-header");
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                cjryl:[],//已报名人员
+                nutxt: "当前暂无人报名",
+            },
+            created: function () {
+                this.getshoplist();
+            },
+            methods: {
+                //已报名人员
+                getshoplist:function(){
+                    var _this=this;
+                    //api42122  参加人员列表
+                    jw.submit("api42122",{
+                        FActiviteID:api.pageParam.FActiviteID //活动id
+                    },function(data){
+                        if (data.ds != undefined && data.ds[0].status == "999999") {
+                            jw.ts.toast(data.ds[0].msg);
+                            _this.nutxt = data.ds[0].msg
+                        }else {
+                            _this.cjryl=data.ds
+                        }
+                    })
+                },
+            }
+        })
+    }
+</script>
+</body>
+</html>

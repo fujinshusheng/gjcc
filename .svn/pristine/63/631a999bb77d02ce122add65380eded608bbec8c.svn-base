@@ -1,0 +1,2294 @@
+@charset "UTF-8";
+@import "zui/font/iconfont.css";
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+i,
+u,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+fieldset,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  vertical-align: baseline;
+  font-family: "Microsoft YaHei", "微软雅黑", Helvetica, "黑体", Arial, Tahoma;
+  font-size: 100%;
+}
+ol,
+ul {
+  list-style: none;
+}
+blockquote,
+q {
+  quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: '';
+  content: none;
+}
+/**
+ * Prevent modern browsers from displaying `audio` without controls.
+ * Remove excess height in iOS 5 devices.
+ */
+audio:not([controls]) {
+  display: none;
+  height: 0;
+}
+/**
+ * Hide the `template` element in IE, Safari, and Firefox < 22.
+ */
+[hidden],
+template {
+  display: none;
+}
+script {
+  display: none !important;
+}
+/* ==========================================================================
+   Base
+   ========================================================================== */
+/**
+ * 1. Set default font family to sans-serif.
+ * 2. Prevent iOS text size adjust after orientation change, without disabling
+ *  user zoom.
+ */
+html {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  font-family: "Microsoft YaHei", "微软雅黑", Helvetica, "黑体", Arial, Tahoma;
+  /* 1 */
+  -ms-text-size-adjust: 100%;
+  /* 2 */
+  -webkit-text-size-adjust: 100%;
+  /* 2 */
+}
+/**
+ * Remove default margin.
+ */
+body {
+  margin: 0;
+  line-height: 1;
+}
+/**
+ * Remove default outlines.
+ */
+a,
+button,
+:focus,
+a:focus,
+button:focus,
+a:active,
+a:hover {
+  text-decoration: none;
+  outline: 0;
+}
+/* *
+ * Remove tap highlight color
+ */
+a {
+  -webkit-user-drag: none;
+  -webkit-tap-highlight-color: transparent;
+}
+a[href]:hover {
+  cursor: pointer;
+}
+/* ==========================================================================
+   Typography
+   ========================================================================== */
+/**
+ * Address style set to `bolder` in Firefox 4+, Safari 5, and Chrome.
+ */
+b,
+strong {
+  font-weight: bold;
+}
+/**
+ * Address styling not present in Safari 5 and Chrome.
+ */
+dfn {
+  font-style: italic;
+}
+/**
+ * Address differences between Firefox and other browsers.
+ */
+hr {
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  height: 0;
+}
+/**
+ * Correct font family set oddly in Safari 5 and Chrome.
+ */
+code,
+kbd,
+pre,
+samp {
+  font-size: 1em;
+  font-family: "Microsoft YaHei", "微软雅黑", Helvetica, "黑体", Arial, Tahoma;
+}
+/**
+ * Improve readability of pre-formatted text in all browsers.
+ */
+pre {
+  white-space: pre-wrap;
+}
+/**
+ * Set consistent quote types.
+ */
+q {
+  quotes: "\201C" "\201D" "\2018" "\2019";
+}
+/**
+ * Address inconsistent and variable font size in all browsers.
+ */
+small {
+  font-size: 80%;
+}
+/**
+ * Prevent `sub` and `sup` affecting `line-height` in all browsers.
+ */
+sub,
+sup {
+  position: relative;
+  vertical-align: baseline;
+  font-size: 75%;
+  line-height: 0;
+}
+sup {
+  top: -0.5em;
+}
+sub {
+  bottom: -0.25em;
+}
+/**
+ * Define consistent border, margin, and padding.
+ */
+fieldset {
+  margin: 0 2px;
+  padding: 0.35em 0.625em 0.75em;
+  border: 1px solid #c0c0c0;
+}
+/**
+ * 1. Correct `color` not being inherited in IE 8/9.
+ * 2. Remove padding so people aren't caught out if they zero out fieldsets.
+ */
+legend {
+  padding: 0;
+  /* 2 */
+  border: 0;
+  /* 1 */
+}
+/**
+ * 1. Correct font family not being inherited in all browsers.
+ * 2. Correct font size not being inherited in all browsers.
+ * 3. Address margins set differently in Firefox 4+, Safari 5, and Chrome.
+ * 4. Remove any default :focus styles
+ * 5. Make sure webkit font smoothing is being inherited
+ * 6. Remove default gradient in Android Firefox / FirefoxOS
+ */
+button,
+input,
+select,
+textarea {
+  margin: 0;
+  /* 3 */
+  font-size: 100%;
+  /* 2 */
+  font-family: "Microsoft YaHei", "微软雅黑", Helvetica, "黑体", Arial, Tahoma;
+  /* 1 */
+  outline-offset: 0;
+  /* 4 */
+  outline-style: none;
+  /* 4 */
+  outline-width: 0;
+  /* 4 */
+  -webkit-font-smoothing: inherit;
+  /* 5 */
+  background-image: none;
+  /* 6 */
+}
+/**
+ * Address Firefox 4+ setting `line-height` on `input` using `importnt` in
+ * the UA stylesheet.
+ */
+button,
+input {
+  line-height: normal;
+}
+/**
+ * Address inconsistent `text-transform` inheritance for `button` and `select`.
+ * All other form control elements do not inherit `text-transform` values.
+ * Correct `button` style inheritance in Chrome, Safari 5+, and IE 8+.
+ * Correct `select` style inheritance in Firefox 4+ and Opera.
+ */
+button,
+select {
+  text-transform: none;
+}
+/**
+ * 1. Avoid the WebKit bug in Android 4.0.* where (2) destroys native `audio`
+ *  and `video` controls.
+ * 2. Correct inability to style clickable `input` types in iOS.
+ * 3. Improve usability and consistency of cursor style between image-type
+ *  `input` and others.
+ */
+button,
+html input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+  cursor: pointer;
+  /* 3 */
+  -webkit-appearance: button;
+  /* 2 */
+}
+/**
+ * Re-set default cursor for disabled elements.
+ */
+button[disabled],
+html input[disabled] {
+  cursor: default;
+}
+/**
+ * 1. Address `appearance` set to `searchfield` in Safari 5 and Chrome.
+ * 2. Address `box-sizing` set to `border-box` in Safari 5 and Chrome
+ *  (include `-moz` to future-proof).
+ */
+input[type="search"] {
+  -webkit-box-sizing: content-box;
+  /* 2 */
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  -webkit-appearance: textfield;
+  /* 1 */
+}
+/**
+ * Remove inner padding and search cancel button in Safari 5 and Chrome
+ * on OS X.
+ */
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+/**
+ * Remove inner padding and border in Firefox 4+.
+ */
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+  padding: 0;
+  border: 0;
+}
+/**
+ * 1. Remove default vertical scrollbar in IE 8/9.
+ * 2. Improve readability and alignment in all browsers.
+ */
+textarea {
+  overflow: auto;
+  /* 1 */
+  vertical-align: top;
+  /* 2 */
+}
+img {
+  -webkit-user-drag: none;
+}
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+/**
+ * Remove most spacing between table cells.
+ */
+table {
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+/**
+ * Scaffolding
+ * --------------------------------------------------
+ */
+*,
+*:before,
+*:after {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+html {
+  overflow: hidden;
+  -ms-touch-action: pan-y;
+  touch-action: pan-y;
+}
+body {
+  -webkit-touch-callout: none;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+  -webkit-text-size-adjust: none;
+  -moz-text-size-adjust: none;
+  text-size-adjust: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  word-wrap: break-word;
+  font-size: 14px;
+  font-family: "Microsoft YaHei", "微软雅黑", Helvetica, "黑体", Arial, Tahoma;
+  line-height: 1.5;
+  text-rendering: optimizeLegibility;
+  -webkit-backface-visibility: hidden;
+  -webkit-user-drag: none;
+  -ms-content-zooming: none;
+  color: #333333;
+  background-color: #f3f3f3;
+}
+/*滚动条优化*/
+::-webkit-scrollbar {
+  width: 0;
+  height: 10px;
+}
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-thumb {
+  border-radius: 50%;
+  border: 5px solid transparent;
+}
+::-webkit-scrollbar-track {
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1) inset;
+}
+::-webkit-scrollbar-thumb {
+  min-height: 20px;
+  background-clip: content-box;
+  box-shadow: 0 0 0 5px rgba(0, 0, 0, 0.3) inset;
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+/**
+ * Typography
+ * --------------------------------------------------
+ */
+p {
+  margin: 0;
+}
+small {
+  font-size: 85%;
+}
+cite {
+  font-style: normal;
+}
+.text-left {
+  text-align: left;
+}
+.text-right {
+  text-align: right;
+}
+.text-center {
+  text-align: center;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+  color: #000;
+  font-weight: 500;
+  font-family: "微软雅黑", Helvetica, "黑体", Arial, Tahoma;
+  line-height: 1.2;
+}
+h1 small,
+h2 small,
+h3 small,
+h4 small,
+h5 small,
+h6 small,
+.h1 small,
+.h2 small,
+.h3 small,
+.h4 small,
+.h5 small,
+.h6 small {
+  font-weight: normal;
+  line-height: 1;
+}
+h1:first-child,
+.h1:first-child,
+h2:first-child,
+.h2:first-child,
+h3:first-child,
+.h3:first-child {
+  margin-top: 0;
+}
+h1 + h1,
+h1 + .h1,
+h1 + h2,
+h1 + .h2,
+h1 + h3,
+h1 + .h3,
+.h1 + h1,
+.h1 + .h1,
+.h1 + h2,
+.h1 + .h2,
+.h1 + h3,
+.h1 + .h3,
+h2 + h1,
+h2 + .h1,
+h2 + h2,
+h2 + .h2,
+h2 + h3,
+h2 + .h3,
+.h2 + h1,
+.h2 + .h1,
+.h2 + h2,
+.h2 + .h2,
+.h2 + h3,
+.h2 + .h3,
+h3 + h1,
+h3 + .h1,
+h3 + h2,
+h3 + .h2,
+h3 + h3,
+h3 + .h3,
+.h3 + h1,
+.h3 + .h1,
+.h3 + h2,
+.h3 + .h2,
+.h3 + h3,
+.h3 + .h3 {
+  margin-top: 10px;
+}
+h1,
+.h1 {
+  font-size: 36px;
+}
+h2,
+.h2 {
+  font-size: 30px;
+}
+h3,
+.h3 {
+  font-size: 24px;
+}
+h4,
+.h4 {
+  font-size: 18px;
+}
+h5,
+.h5 {
+  font-size: 14px;
+}
+h6,
+.h6 {
+  font-size: 12px;
+}
+h1 small,
+.h1 small {
+  font-size: 24px;
+}
+h2 small,
+.h2 small {
+  font-size: 18px;
+}
+h3 small,
+.h3 small,
+h4 small,
+.h4 small {
+  font-size: 14px;
+}
+dl {
+  margin-bottom: 20px;
+}
+dt,
+dd {
+  line-height: 1.42857;
+}
+dt {
+  font-weight: bold;
+}
+blockquote {
+  margin: 0 0 20px;
+  padding: 10px 20px;
+  border-left: 5px solid gray;
+}
+blockquote p {
+  font-weight: 300;
+  font-size: 17.5px;
+  line-height: 1.25;
+}
+blockquote p:last-child {
+  margin-bottom: 0;
+}
+blockquote small {
+  display: block;
+  line-height: 1.42857;
+}
+blockquote small:before {
+  content: '\2014 \00A0';
+}
+q:before,
+q:after,
+blockquote:before,
+blockquote:after {
+  content: "";
+}
+address {
+  display: block;
+  margin-bottom: 20px;
+  font-style: normal;
+  line-height: 1.42857;
+}
+a {
+  color: #387ef5;
+}
+a.subdued {
+  padding-right: 10px;
+  color: #888;
+  text-decoration: none;
+}
+a.subdued:hover {
+  text-decoration: none;
+}
+a.subdued:last-child {
+  padding-right: 0;
+}
+/**
+ * Forms
+ * --------------------------------------------------
+ */
+form {
+  margin: 0 0 1.42857;
+}
+legend {
+  display: block;
+  margin-bottom: 1.42857;
+  padding: 0;
+  width: 100%;
+  border: 1px solid #ddd;
+  color: #444;
+  font-size: 21px;
+  line-height: 2.85714;
+}
+legend small {
+  color: #f8f8f8;
+  font-size: 1.07143;
+}
+label,
+input,
+button,
+select,
+textarea {
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 1.42857;
+  appearance: none;
+  -webkit-appearance: none;
+  /* Safari 和 Chrome */
+  background: transparent;
+  border: none;
+}
+input,
+button,
+select,
+textarea {
+  font-family: "Microsoft YaHei", "微软雅黑", Helvetica, "黑体", Arial, Tahoma;
+}
+textarea,
+input[type="text"],
+input[type="password"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="date"],
+input[type="month"],
+input[type="time"],
+input[type="week"],
+input[type="number"],
+input[type="email"],
+input[type="url"],
+input[type="search"],
+input[type="tel"],
+input[type="color"] {
+  display: block;
+  padding: 0;
+  height: 34px;
+  color: #111;
+  vertical-align: middle;
+  font-size: 16px;
+  line-height: 16px;
+}
+.item-input input,
+.item-input textarea {
+  width: 100%;
+}
+textarea {
+  padding-left: 0;
+}
+textarea::-moz-placeholder {
+  color: #aaaaaa;
+}
+textarea:-ms-input-placeholder {
+  color: #aaaaaa;
+}
+textarea::-webkit-input-placeholder {
+  color: #aaaaaa;
+}
+textarea {
+  height: auto;
+}
+textarea,
+input[type="text"],
+input[type="password"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="date"],
+input[type="month"],
+input[type="time"],
+input[type="week"],
+input[type="number"],
+input[type="email"],
+input[type="url"],
+input[type="search"],
+input[type="tel"],
+input[type="color"] {
+  -webkit-appearance: none;
+  /*去除input默认样式*/
+  background-color: #ffffff;
+  border: 0;
+}
+input[type="radio"],
+input[type="checkbox"] {
+  margin: 0;
+  line-height: normal;
+}
+.item-input input[type="file"],
+.item-input input[type="image"],
+.item-input input[type="submit"],
+.item-input input[type="reset"],
+.item-input input[type="button"],
+.item-input input[type="radio"],
+.item-input input[type="checkbox"] {
+  width: auto;
+}
+input[type="file"] {
+  line-height: 34px;
+}
+.previous-input-focus,
+.cloned-text-input + input,
+.cloned-text-input + textarea {
+  position: absolute !important;
+  left: -9999px;
+  width: 200px;
+}
+input::-moz-placeholder,
+textarea::-moz-placeholder {
+  color: #aaaaaa;
+}
+input:-ms-input-placeholder,
+textarea:-ms-input-placeholder {
+  color: #aaaaaa;
+}
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+  color: #aaaaaa;
+  text-indent: 0;
+}
+input[disabled],
+select[disabled],
+textarea[disabled],
+input[readonly]:not(.cloned-text-input),
+textarea[readonly]:not(.cloned-text-input),
+select[readonly] {
+  background-color: #ffffff;
+  cursor: not-allowed;
+}
+input[type="radio"][disabled],
+input[type="checkbox"][disabled],
+input[type="radio"][readonly],
+input[type="checkbox"][readonly] {
+  background-color: transparent;
+}
+/**
+ * Utility Classes
+ * --------------------------------------------------
+ */
+.hide {
+  display: none;
+}
+.opacity-hide {
+  opacity: 0;
+}
+.grade-b .opacity-hide,
+.grade-c .opacity-hide {
+  opacity: 1;
+  display: none;
+}
+.show {
+  display: block;
+}
+.opacity-show {
+  opacity: 1;
+}
+.invisible {
+  visibility: hidden;
+}
+.inline {
+  display: inline-block;
+}
+.disable-pointer-events {
+  pointer-events: none;
+}
+.enable-pointer-events {
+  pointer-events: auto;
+}
+.disable-user-behavior {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-drag: none;
+  -ms-touch-action: none;
+  -ms-content-zooming: none;
+}
+.no-resize {
+  resize: none;
+}
+.block {
+  display: block;
+  clear: both;
+}
+.block:after {
+  display: block;
+  visibility: hidden;
+  clear: both;
+  height: 0;
+  content: ".";
+}
+.full-image {
+  width: 100%;
+}
+.clearfix {
+  *zoom: 1;
+}
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+.clearfix:after {
+  clear: both;
+}
+.color-gray3 {
+  color: #333333 !important;
+}
+.color-gray6 {
+  color: #666666 !important;
+}
+.color-gray9 {
+  color: #999999 !important;
+}
+.color-white {
+  color: #ffffff !important;
+}
+.color-red {
+  color: #c23a4d !important;
+}
+.color-blue {
+  color: #38f !important;
+}
+.color-green {
+  color: #06bf04 !important;
+}
+.color-orange {
+  color: #ff7e17 !important;
+}
+.color-yellow {
+  color: #e2d645 !important;
+}
+.bg-white {
+  background-color: #ffffff !important;
+}
+.bg-red {
+  background-color: #c23a4d !important;
+}
+.bg-blue {
+  background-color: #38f !important;
+}
+.bg-green {
+  background-color: #06bf04 !important;
+}
+.bg-orange {
+  background-color: #ff7e17 !important;
+}
+.bg-yellow {
+  background-color: #e2d645 !important;
+}
+.bg-cancel {
+  background-color: #cccccc !important;
+}
+.z-btn {
+  background-color: #eeeeee;
+  border: solid 1px #dddddd;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  height: 45px;
+  line-height: 45px;
+  font-size: 18px;
+  padding: 0 15px;
+  text-align: center;
+  white-space: nowrap;
+}
+.z-btn-inline {
+  display: inline-block;
+}
+.z-btn.z-btn-s {
+  height: 30px;
+  line-height: 28px;
+  font-size: 16px;
+  padding: 0 10px;
+}
+.z-btn.z-btn-ms {
+  height: 25px;
+  line-height: 25px;
+  font-size: 14px;
+  padding: 0 5px;
+}
+.z-btn.z-btn-bolck {
+  width: 100%;
+  display: block;
+}
+.z-btn-radius50 {
+  -webkit-border-radius: 50px;
+  -moz-border-radius: 50px;
+  border-radius: 50px;
+}
+.z-btn-noradius {
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+}
+.z-btn-red {
+  background-color: #c23a4d;
+  color: #ffffff;
+  border-color: #c23a4d;
+}
+.z-btn-red__plane {
+  color: #c23a4d;
+  border: solid 1px #c23a4d;
+  background-color: transparent;
+}
+.z-btn-greed {
+  background-color: #06bf04;
+  color: #ffffff;
+  border-color: #06bf04;
+}
+.z-btn-greed__plane {
+  color: #06bf04;
+  border: solid 1px #06bf04;
+  background-color: transparent;
+}
+.z-btn-blue {
+  background-color: #38f;
+  color: #ffffff;
+  border-color: #38f;
+}
+.z-btn-blue__plane {
+  color: #38f;
+  border: solid 1px #38f;
+  background-color: transparent;
+}
+.z-btn-orange {
+  background-color: #ff7e17;
+  color: #ffffff;
+  border-color: #ff7e17;
+}
+.z-btn-orange__plane {
+  color: #ff7e17;
+  border: solid 1px #ff7e17;
+  background-color: transparent;
+}
+.z-btn-cancel {
+  background-color: #d2d2d2;
+  color: #0a0a0a;
+  border: none;
+}
+.z-btn-grey__plane {
+  color: #a0a0a0;
+  border: solid 1px #a0a0a0;
+  background-color: transparent;
+}
+.z-btn-white__plane {
+  color: #6b6b6b;
+  border: solid 1px #e5e5e5;
+  background-color: #ffffff;
+}
+.z-btn-gray {
+  background-color: #999;
+  color: #ffffff;
+  border-color: #999;
+}
+.z-btn-gray5 {
+  background-color: #555555;
+  color: #ffffff;
+  border-color: #555555;
+}
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+.zui-app {
+  height: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -moz-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+.fl {
+  float: left;
+}
+.fr {
+  float: right;
+}
+.zui-header {
+  height: 44px;
+  text-align: center;
+  background: #1ba1e2;
+  color: #ffffff;
+  position: relative;
+  z-index: 1;
+  -webkit-box-sizing: content-box !important;
+  -moz-box-sizing: content-box !important;
+  box-sizing: content-box !important;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -moz-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+}
+.zui-header .zui-header-icon {
+  width: 45px;
+  height: 44px;
+  line-height: 45px;
+  display: block;
+  position: absolute;
+  bottom: 0;
+  font-size: 18px;
+}
+.zui-header .zui-header_text {
+  width: auto;
+  font-size: 12px;
+}
+.zui-header .zui-header-left {
+  left: 0;
+}
+.zui-header .zui-header-left.zui-header_text {
+  padding-left: 15px;
+}
+.zui-header .zui-header-right {
+  right: 0;
+}
+.zui-header .zui-header-right.zui-header_text {
+  padding-right: 15px;
+}
+.zui-header .zui-header-title {
+  margin: 0 45px;
+  font-size: 18px;
+  height: 44px;
+  line-height: 44px;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  -moz-box-flex: 1;
+  -moz-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  display: block;
+  width: 100%;
+  font-family: "Microsoft YaHei", "微软雅黑", Helvetica, "黑体", Arial, Tahoma;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.zui-header .zui-header-seach {
+  margin: 0 45px;
+  font-size: 18px;
+  height: 30px;
+  line-height: 30px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  -moz-box-flex: 1;
+  -moz-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  display: block;
+  width: 100%;
+  font-family: "Microsoft YaHei", "微软雅黑", Helvetica, "黑体", Arial, Tahoma;
+}
+.zui-header-dark {
+  background-color: #303030;
+}
+.zui-header-dark .zui-header-seach {
+  background-color: #454545;
+  color: #8b8b8b;
+}
+.zui-content {
+
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  -moz-box-flex: 1;
+  -moz-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.zui-footer {
+  font-size: 18px;
+  min-height: 44px;
+}
+.zui-footer-btn {
+  padding: 10px;
+}
+.footer_btn {
+  line-height: 45px;
+  text-align: center;
+}
+.text-nowrap {
+  white-space: nowrap;
+}
+.text-over {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.touxiang {
+  background-size: cover;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+}
+
+
+.font-bold {
+  font-weight: bold;
+}
+.fz12 {
+  font-size: 12px!important;
+}
+.fz14 {
+  font-size: 14px!important;
+}
+.fz16 {
+  font-size: 16px!important;
+}
+.fz18 {
+  font-size: 18px!important;
+}
+.fz20 {
+  font-size: 20px!important;
+}
+.imgblock {
+  width: 100%;
+  display: block;
+}
+.z-title {
+  height: 35px;
+  line-height: 35px;
+  font-size: 16px;
+  color: #333333;
+  padding: 0 15px;
+}
+.z-numbercol {
+  display: inline-block;
+  height: 30px;
+  line-height: 30px;
+}
+.z-numbercol:after,
+.z-numbercol:before {
+  content: '';
+  display: block;
+  clear: both;
+}
+.z-numbercol div {
+  display: inline-block;
+  float: left;
+}
+.z-numbercol .z-numbercol_text {
+  width: 45px;
+  float: left;
+  background-color: #e5e5e5;
+  color: #333333;
+  margin: 0 10px;
+  text-align: center;
+}
+.noborder {
+  border: none!important;
+}
+.zui-item {
+  background-color: #ffffff;
+  padding: 5px 15px;
+  line-height: 1.5;
+  font-size: 14px;
+  color: #333333;
+}
+.zui-item .text,
+.zui-item .title {
+  font-size: 16px;
+}
+.zui-item > .title {
+  margin-right: 10px;
+}
+.zui-item .title_line {
+  font-size: 16px;
+  height: 35px;
+  line-height: 35px;
+  display: block;
+}
+.zui-item .select,
+.zui-item .input {
+  border: solid 1px #cccccc;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  height: 35px;
+  line-height: 35px;
+  color: #333333;
+  font-size: 16px;
+  padding: 0 10px;
+}
+.zui-item .select:disabled,
+.zui-item .input:disabled,
+.zui-item .select.disabled,
+.zui-item .input.disabled {
+  background: #ededed !important;
+}
+.zui-list {
+  background-color: #ffffff;
+  padding: 0 15px;
+}
+.zui-list .zui-item {
+  padding: 5px 0;
+}
+.zui-list .zui-item .img img {
+  width: 100%;
+  display: block;
+}
+.zui-list .zui-item + .zui-item {
+  border-top: solid 1px #eeeeee;
+}
+.zui-list.noborder .zui-item + .zui-item {
+  border: none;
+}
+.zui-list.inlist {
+  padding: 0;
+  border-top: solid 1px #eeeeee;
+  border-bottom: solid 1px #eeeeee;
+}
+.zui-list.inlist + .zui-list.inlist {
+  margin-top: 0;
+  border-top: none;
+}
+.zui-imagelist {
+  padding: 5px;
+}
+.zui-imagelist:after,
+.zui-imagelist:before {
+  content: "";
+  display: block;
+  clear: both;
+}
+.zui-imagelist .item {
+  width: 33.3333%;
+  padding: 5px;
+  float: left;
+}
+.zui-imagelist .item img {
+  display: block;
+  width: 100%;
+}
+.zui-imagelist .item .zui-imgbox {
+  width: 100%;
+  display: block;
+  background-size: cover;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+}
+.zui-list2 .item {
+  background-color: #ffffff;
+  padding: 15px;
+  position: relative;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -moz-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  -webkit-align-items: center;
+  -moz-align-items: center;
+  align-items: center;
+  -webkit-box-align: stretch;
+  -ms-flex-align: stretch;
+  -webkit-align-items: stretch;
+  -moz-align-items: stretch;
+  align-items: stretch;
+}
+.zui-list2 .item .img {
+  width: 30%;
+  display: block;
+  overflow: hidden;
+  margin-right: 15px;
+}
+.zui-list2 .item .img img {
+  display: block;
+  width: 100%;
+}
+.zui-list2 .item .tmain {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  -moz-box-flex: 1;
+  -moz-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  display: block;
+  font-family: "Microsoft YaHei", "微软雅黑", Helvetica, "黑体", Arial, Tahoma;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -moz-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.zui-list2 .item .tmain .title {
+  font-size: 16px;
+  color: #000;
+}
+.zui-list2 .item + .item {
+  border-top: solid 1px #eeeeee;
+}
+.zui-cboxlist {
+  padding: 5px;
+}
+.zui-cboxlist:after,
+.zui-cboxlist:before {
+  display: block;
+  content: '';
+  height: 0;
+  width: 100%;
+  clear: both;
+}
+.zui-cboxlist .zui-cbox {
+  width: 33.3333%;
+  padding: 5px;
+  float: left;
+  text-align: center;
+}
+.form_list {
+  padding: 10px;
+  background-color: #ffffff;
+}
+.form_list .form_item .z-title {
+  width: 80px;
+  text-align: right;
+}
+.form_list .form_item + .form_item {
+  border-top: solid 1px #eeeeee;
+}
+.zui-addbox {
+  max-width: 100px;
+  border: solid 1px #c6c6c6;
+}
+.zui-addbox .addbox_input {
+  background: transparent;
+  height: 30px;
+  line-height: 30px;
+  width: 30px;
+  text-align: center;
+}
+.zui-addbox .iconfont {
+  width: 30px;
+  height: 30px;
+  display: block;
+  text-align: center;
+  line-height: 30px;
+}
+.zui-addbox .icon-add {
+  border-right: solid 1px #c6c6c6;
+}
+.zui-addbox .icon-jian {
+  border-left: solid 1px #c6c6c6;
+}
+.jifen_list {
+  padding: 10px;
+}
+.jifen_list .zui-cbox {
+  width: 50%;
+  padding: 10px;
+}
+.jifen_list .zui-cbox .box {
+  border: solid 1px #eaeaea;
+  padding: 20px;
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+  border-radius: 15px;
+}
+.jifen_list .zui-cbox .box .icoimg {
+  width: 40%;
+}
+.jifen_list .zui-cbox .box .icoimg img {
+  width: 100%;
+  display: block;
+}
+/**
+ * Grid
+ * --------------------------------------------------
+ * Using flexbox for the grid, inspired by Philip Walton:
+ * http://philipwalton.github.io/solved-by-flexbox/demos/grids/
+ * By default each .zui-col within a .zui-row will evenly take up
+ * available width, and the height of each .zui-col with take
+ * up the height of the tallest .zui-col in the same .zui-row.
+ */
+.zui-row.zui-col,
+.zui-row {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -moz-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+}
+.zui-row-wrap {
+  -webkit-flex-wrap: wrap;
+  -moz-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
+.zui-col {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  -moz-box-flex: 1;
+  -moz-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  display: block;
+  width: 100%;
+  font-family: "Microsoft YaHei", "微软雅黑", Helvetica, "黑体", Arial, Tahoma;
+}
+/* Vertically Align.zui-columns */
+/* .zui-row-* vertically aligns every .zui-col in the .zui-row */
+.zui-row-top {
+  -webkit-box-align: start;
+  -ms-flex-align: start;
+  -webkit-align-items: flex-start;
+  -moz-align-items: flex-start;
+  align-items: flex-start;
+}
+.zui-row-bottom {
+  -webkit-box-align: end;
+  -ms-flex-align: end;
+  -webkit-align-items: flex-end;
+  -moz-align-items: flex-end;
+  align-items: flex-end;
+}
+.zui-row-center {
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  -webkit-align-items: center;
+  -moz-align-items: center;
+  align-items: center;
+}
+.zui-row-stretch {
+  -webkit-box-align: stretch;
+  -ms-flex-align: stretch;
+  -webkit-align-items: stretch;
+  -moz-align-items: stretch;
+  align-items: stretch;
+}
+.zui-row-baseline {
+  -webkit-box-align: baseline;
+  -ms-flex-align: baseline;
+  -webkit-align-items: baseline;
+  -moz-align-items: baseline;
+  align-items: baseline;
+}
+.zui-row-column {
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+/* .zui-col-* vertically aligns an individual .zui-col */
+.zui-col-top {
+  -webkit-align-self: flex-start;
+  -moz-align-self: flex-start;
+  -ms-flex-item-align: start;
+  align-self: flex-start;
+}
+.zui-col-bottom {
+  -webkit-align-self: flex-end;
+  -moz-align-self: flex-end;
+  -ms-flex-item-align: end;
+  align-self: flex-end;
+}
+.zui-col-center {
+  -webkit-align-self: center;
+  -moz-align-self: center;
+  -ms-flex-item-align: center;
+  align-self: center;
+}
+.row-space-between {
+  justify-content: space-between;
+}
+/*.zui-column Offsets */
+.zui-col-offset-10 {
+  margin-left: 10%;
+}
+.zui-col-offset-20 {
+  margin-left: 20%;
+}
+.zui-col-offset-25 {
+  margin-left: 25%;
+}
+.zui-col-offset-33,
+.zui-col-offset-34 {
+  margin-left: 33.3333%;
+}
+.zui-col-offset-50 {
+  margin-left: 50%;
+}
+.zui-col-offset-66,
+.zui-col-offset-67 {
+  margin-left: 66.6666%;
+}
+.zui-col-offset-75 {
+  margin-left: 75%;
+}
+.zui-col-offset-80 {
+  margin-left: 80%;
+}
+.zui-col-offset-90 {
+  margin-left: 90%;
+}
+/* Explicit.zui-column Percent Sizes */
+/* By default each grid.zui-column will evenly distribute */
+/* across the grid. However, you can specify individual */
+/*.zui-columns to take up a certain size of the available area */
+.zui-col-10 {
+  -webkit-box-flex: 0;
+  -webkit-flex: 0 0 10%;
+  -moz-box-flex: 0;
+  -moz-flex: 0 0 10%;
+  -ms-flex: 0 0 10%;
+  flex: 0 0 10%;
+  max-width: 10%;
+}
+.zui-col-20 {
+  -webkit-box-flex: 0;
+  -webkit-flex: 0 0 20%;
+  -moz-box-flex: 0;
+  -moz-flex: 0 0 20%;
+  -ms-flex: 0 0 20%;
+  flex: 0 0 20%;
+  max-width: 20%;
+}
+.zui-col-25 {
+  -webkit-box-flex: 0;
+  -webkit-flex: 0 0 25%;
+  -moz-box-flex: 0;
+  -moz-flex: 0 0 25%;
+  -ms-flex: 0 0 25%;
+  flex: 0 0 25%;
+  max-width: 25%;
+}
+.zui-col-33,
+.zui-col-34 {
+  -webkit-box-flex: 0;
+  -webkit-flex: 0 0 33.3333%;
+  -moz-box-flex: 0;
+  -moz-flex: 0 0 33.3333%;
+  -ms-flex: 0 0 33.3333%;
+  flex: 0 0 33.3333%;
+  max-width: 33.3333%;
+}
+.zui-col-40 {
+  -webkit-box-flex: 0;
+  -webkit-flex: 0 0 40%;
+  -moz-box-flex: 0;
+  -moz-flex: 0 0 40%;
+  -ms-flex: 0 0 40%;
+  flex: 0 0 40%;
+  max-width: 40%;
+}
+.zui-col-50 {
+  -webkit-box-flex: 0;
+  -webkit-flex: 0 0 50%;
+  -moz-box-flex: 0;
+  -moz-flex: 0 0 50%;
+  -ms-flex: 0 0 50%;
+  flex: 0 0 50%;
+  max-width: 50%;
+}
+.zui-col-60 {
+  -webkit-box-flex: 0;
+  -webkit-flex: 0 0 60%;
+  -moz-box-flex: 0;
+  -moz-flex: 0 0 60%;
+  -ms-flex: 0 0 60%;
+  flex: 0 0 60%;
+  max-width: 60%;
+}
+.zui-col-66,
+.zui-col-67 {
+  -webkit-box-flex: 0;
+  -webkit-flex: 0 0 66.6666%;
+  -moz-box-flex: 0;
+  -moz-flex: 0 0 66.6666%;
+  -ms-flex: 0 0 66.6666%;
+  flex: 0 0 66.6666%;
+  max-width: 66.6666%;
+}
+.zui-col-75 {
+  -webkit-box-flex: 0;
+  -webkit-flex: 0 0 75%;
+  -moz-box-flex: 0;
+  -moz-flex: 0 0 75%;
+  -ms-flex: 0 0 75%;
+  flex: 0 0 75%;
+  max-width: 75%;
+}
+.zui-col-80 {
+  -webkit-box-flex: 0;
+  -webkit-flex: 0 0 80%;
+  -moz-box-flex: 0;
+  -moz-flex: 0 0 80%;
+  -ms-flex: 0 0 80%;
+  flex: 0 0 80%;
+  max-width: 80%;
+}
+.zui-col-90 {
+  -webkit-box-flex: 0;
+  -webkit-flex: 0 0 90%;
+  -moz-box-flex: 0;
+  -moz-flex: 0 0 90%;
+  -ms-flex: 0 0 90%;
+  flex: 0 0 90%;
+  max-width: 90%;
+}
+.zui-loading {
+  width: 100px;
+  height: 100px;
+  display: inline-block;
+  vertical-align: middle;
+  animation: weuiLoading 1s steps(12, end) infinite;
+  background: transparent url("data:image/svg+xml;charset=utf8, %3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 100 100'%3E%3Cpath fill='none' d='M0 0h100v100H0z'/%3E%3Crect width='7' height='20' x='46.5' y='40' fill='%23E9E9E9' rx='5' ry='5' transform='translate(0 -30)'/%3E%3Crect width='7' height='20' x='46.5' y='40' fill='%23989697' rx='5' ry='5' transform='rotate(30 105.98 65)'/%3E%3Crect width='7' height='20' x='46.5' y='40' fill='%239B999A' rx='5' ry='5' transform='rotate(60 75.98 65)'/%3E%3Crect width='7' height='20' x='46.5' y='40' fill='%23A3A1A2' rx='5' ry='5' transform='rotate(90 65 65)'/%3E%3Crect width='7' height='20' x='46.5' y='40' fill='%23ABA9AA' rx='5' ry='5' transform='rotate(120 58.66 65)'/%3E%3Crect width='7' height='20' x='46.5' y='40' fill='%23B2B2B2' rx='5' ry='5' transform='rotate(150 54.02 65)'/%3E%3Crect width='7' height='20' x='46.5' y='40' fill='%23BAB8B9' rx='5' ry='5' transform='rotate(180 50 65)'/%3E%3Crect width='7' height='20' x='46.5' y='40' fill='%23C2C0C1' rx='5' ry='5' transform='rotate(-150 45.98 65)'/%3E%3Crect width='7' height='20' x='46.5' y='40' fill='%23CBCBCB' rx='5' ry='5' transform='rotate(-120 41.34 65)'/%3E%3Crect width='7' height='20' x='46.5' y='40' fill='%23D2D2D2' rx='5' ry='5' transform='rotate(-90 35 65)'/%3E%3Crect width='7' height='20' x='46.5' y='40' fill='%23DADADA' rx='5' ry='5' transform='rotate(-60 24.02 65)'/%3E%3Crect width='7' height='20' x='46.5' y='40' fill='%23E2E2E2' rx='5' ry='5' transform='rotate(-30 -5.98 65)'/%3E%3C/svg%3E") no-repeat;
+  background-size: 100%;
+}
+.zui-loadbox {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin-left: -50px;
+  margin-top: -50px;
+}
+@-webkit-keyframes weuiLoading {
+  0% {
+    transform: rotate3d(0, 0, 1, 0deg);
+  }
+  100% {
+    transform: rotate3d(0, 0, 1, 360deg);
+  }
+}
+@keyframes weuiLoading {
+  0% {
+    transform: rotate3d(0, 0, 1, 0deg);
+  }
+  100% {
+    transform: rotate3d(0, 0, 1, 360deg);
+  }
+}
+/*
+
+<div class="zui-steps">
+    <div class="zui-step">
+        <p>名字</p>
+    </div>
+</div>
+
+*/
+.zui-steps {
+  overflow: hidden;
+  background-color: #fff;
+  padding: 0 0 0 36px;
+}
+.zui-steps .zui-step {
+  position: relative;
+  padding: 1px;
+}
+.zui-steps .zui-step:after {
+  content: '';
+  display: block;
+  position: absolute;
+  left: -18px;
+  bottom: 0;
+  width: 1px;
+  background: #999999;
+  height: 100%;
+  top: 5px;
+  z-index: 5;
+}
+.zui-steps .zui-step:before {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 5px;
+  left: -22px;
+  background: #999999;
+  width: 10px;
+  height: 10px;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+  z-index: 8;
+}
+.zui-tag {
+  position: relative;
+  font-style: normal;
+  display: inline-block;
+  padding: 2px 5px;
+  line-height: normal;
+  border-radius: 3px;
+  font-size: 10px;
+  background: #c9c9c9;
+  color: #fff;
+}
+.zui-tag:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 200%;
+  -webkit-transform: scale(0.5);
+  transform: scale(0.5);
+  -webkit-transform-origin: 0 0;
+  transform-origin: 0 0;
+  pointer-events: none;
+  box-sizing: border-box;
+  border: 0 solid #e5e5e5;
+  border-color: currentColor;
+  border-radius: 4px;
+  border-width: 1px;
+}
+.zui-tag-red {
+  background: #c23a4d;
+}
+.zui-tag-blue {
+  background: #38f;
+}
+.zui-tag-yellow {
+  background: #e2d645;
+}
+.zui-tag-orange {
+  background: #ff7e17;
+}
+.zui-tag-green {
+  background: #06bf04;
+}
+.zui-tag-greg {
+  background: #f1f1f1;
+  color: #8d8d8d;
+}
+.zui-tag--plain {
+  background: #fff;
+  color: #c9c9c9;
+}
+.zui-tag--plain.zui-tag-red {
+  color: #c23a4d;
+}
+.zui-tag--plain.zui-tag-blue {
+  color: #38f;
+}
+.zui-tag--plain.zui-tag-yellow {
+  color: #e2d645;
+}
+.zui-tag--plain.zui-tag-orange {
+  color: #ff7e17;
+}
+.zui-tag--plain.zui-tag-green {
+  color: #06bf04;
+}
+.zui-tag--r50 {
+  -webkit-border-radius: 50px;
+  -moz-border-radius: 50px;
+  border-radius: 50px;
+  padding: 2px 10px!important;
+}
+.zui-tag--r50:after {
+  display: none;
+}
+/*
+<div class="zui-radiolist">
+    <label class="zui-radiobox">
+        <input type="radio">
+        <i class="zui-checked"></i>
+        <span class="zui-radiotxt">货物或应税劳务、服务</span>
+    </label>
+</div>
+*/
+.zui-radiobox {
+  height: 30px;
+  line-height: 30px;
+}
+.zui-radiobox .zui-radiotxt {
+  display: inline-block;
+  margin-left: 5px;
+  line-height: 30px;
+}
+.zui-radiobox .zui-radio,
+.zui-radiobox input[type=checkbox],
+.zui-radiobox input[type=radio] {
+  display: none;
+}
+.zui-radiobox .zui-radio + .zui-checked,
+.zui-radiobox input[type=checkbox] + .zui-checked,
+.zui-radiobox input[type=radio] + .zui-checked {
+  display: inline-block;
+  width: 23px;
+  position: relative;
+  top: 3px;
+  height: 23px;
+  background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' width='200px' height='200px' viewBox='0 0 200 200' enable-background='new 0 0 200 200' xml:space='preserve'%3E%3Ccircle fill='none' stroke='%23d8d8d8' stroke-width='4' stroke-miterlimit='10' cx='100' cy='100' r='98'/%3E%3C/svg%3E") no-repeat;
+  background-size: 100%;
+  float: left;
+}
+.zui-radiobox .zui-radio:checked + .zui-checked,
+.zui-radiobox input[type=checkbox]:checked + .zui-checked,
+.zui-radiobox input[type=radio]:checked + .zui-checked {
+  background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%230fc464' x='0px' y='0px' width='200px' height='200px' viewBox='0 0 200 200' enable-background='new 0 0 200 200' xml:space='preserve'%3E%3Cpath d='M100,0C44.771,0,0,44.772,0,100c0,55.229,44.772,100.001,100,100.001S200,155.229,200,100C200,44.772,155.229,0,100,0z M80.488,143.581l-34.688-34.702l13.008-13.013l21.68,21.688l60.704-60.727L154.2,69.84L80.488,143.581z'/%3E%3C/svg%3E%0A") no-repeat;
+  background-size: 100%;
+}
+.zui-radiolist .zui-radiobox {
+  display: inline-block;
+}
+/*
+<div class="zui-checklist">
+    <label class="zui-checkbox">
+        <input type="checkbox">
+        <i class="zui-checked"></i>
+        <span class="zui-checktxt">货物或应税劳务、服务</span>
+    </label>
+</div>
+*/
+.zui-checkbox {
+  height: 30px;
+  line-height: 30px;
+}
+.zui-checkbox .zui-checktxt {
+  display: inline-block;
+  margin-left: 5px;
+  line-height: 30px;
+}
+.zui-checkbox input[type=radio],
+.zui-checkbox input[type=checkbox] {
+  display: none;
+}
+.zui-checkbox input[type=radio] + .zui-checked,
+.zui-checkbox input[type=checkbox] + .zui-checked {
+  display: inline-block;
+  width: 23px;
+  position: relative;
+  top: 3px;
+  height: 23px;
+  background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200px' height='200px' viewBox='0 0 200 200'%3E%3Cpath fill='%23ccc' d='M161.666,12.5H37.917C23.75,12.5,12.5,24.167,12.5,38.333v123.333c0,14.168,11.25,25.834,25.417,25.834 h123.75c14.168,0,25.834-11.666,25.834-25.416V38.333C187.5,24.167,175.834,12.5,161.666,12.5z M177.084,162.084 c0,8.332-7.084,15.416-15.418,15.416H37.917c-8.333,0-15.417-7.084-15.417-15.416V38.333c0-8.333,7.083-15.417,15.417-15.417h123.75 c8.334,0,15.418,7.083,15.418,15.417V162.084L177.084,162.084z'/%3E%3C/svg%3E%0A") no-repeat;
+  background-size: 100%;
+  float: left;
+}
+.zui-checkbox input[type=radio]:checked + .zui-checked,
+.zui-checkbox input[type=checkbox]:checked + .zui-checked {
+  background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 1024' width='200' height='200'%3E%3Cdefs%3E%3Cstyle type='text/css'%3E%3C/style%3E%3C/defs%3E%3Cpath d='M827.733333 64H194.133333C121.6 64 64 123.733333 64 196.266667v631.466666C64 900.266667 121.6 960 194.133333 960h633.6c72.533333 0 132.266667-59.733333 132.266667-130.133333V196.266667C960 123.733333 900.266667 64 827.733333 64z m78.933334 765.866667c0 42.666667-36.266667 78.933333-78.933334 78.933333H194.133333c-42.666667 0-78.933333-36.266667-78.933333-78.933333V196.266667c0-42.666667 36.266667-78.933333 78.933333-78.933334h633.6c42.666667 0 78.933333 36.266667 78.933334 78.933334v633.6z' fill='%231bc416' p-id='4624'%3E%3C/path%3E%3Cpath d='M814.933333 279.466667c-8.533333-8.533333-23.466667-8.533333-32 0L439.466667 625.066667c-6.4 6.4-14.933333 6.4-21.333334 0L243.2 448c-8.533333-8.533333-23.466667-8.533333-32 0l-32 29.866667c-8.533333 8.533333-8.533333 23.466667 0 32l232.533333 234.666666c8.533333 10.666667 23.466667 10.666667 32 0l403.2-401.066666c8.533333-8.533333 8.533333-23.466667 0-32l-32-32z' fill='%231bc416' p-id='4625'%3E%3C/path%3E%3C/svg%3E") no-repeat;
+  background-size: 100%;
+}
+.zui-checklist .zui-checkbox {
+  display: inline-block;
+}
+/* 自定义选择框 */
+.z-select {
+  position: relative;
+  color: #333333;
+  font-size: 16px;
+}
+.z-select .z-input {
+  height: 35px;
+  line-height: 35px;
+  color: #333333;
+  font-size: 16px;
+}
+.z-select .z-select-text2,
+.z-select .z-select-text {
+  padding: 0 10px;
+  min-height: 35px;
+  height: 35px;
+  line-height: 35px;
+  width: 100%;
+}
+.z-select .z-select-model {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 35px;
+  border: solid 1px #eeeeee;
+  background: #ffffff;
+  max-height: 175px;
+  overflow: auto;
+  z-index: 10;
+  display: none;
+}
+.z-select .z-select-model::-webkit-scrollbar {
+  display: none;
+}
+.z-select .z-select-model .z-select-item {
+  padding: 0 10px;
+  line-height: 35px;
+  min-height: 35px;
+}
+.z-select .z-select-model .z-select-item:hover {
+  background: #f8f8f8;
+}
+.z-select .z-select-item + .z-select-item {
+  border-top: solid 1px #eeeeee;
+}
+.z-select .z-select-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+.zui-alert .zui-alert_box {
+  position: fixed;
+  width: 90%;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  overflow: auto;
+  background: #ffffff;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  z-index: 15;
+}
+.zui-alert .zui-alert_box .zui-alert_header {
+  border-bottom: solid 1px #dddddd;
+}
+.zui-alert .zui-alert_box .zui-alert_footer {
+  border-top: solid 1px #dddddd;
+}
+.zui-alert .zui-alert_bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 10;
+}
+.z-popup .z-popup_bg {
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.z-popup .z-popup_modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  background-color: #ffffff;
+}
+.z-popup .popup-bottom {
+  top: auto;
+  max-height: 100%;
+}
+.zui-card {
+  position: relative;
+  background-color: #ffffff;
+  padding: 0;
+  display: block;
+}
+.zui-card:after,
+.zui-card:before {
+  content: " ";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  color: #e5e5e5;
+  z-index: 2;
+}
+.zui-card:before {
+  top: 0;
+  border-top: 1px solid #e5e5e5;
+  -webkit-transform-origin: 0 0;
+  transform-origin: 0 0;
+  -webkit-transform: scaleY(0.5);
+  transform: scaleY(0.5);
+}
+.zui-card:after {
+  bottom: 0;
+  border-bottom: 1px solid #e5e5e5;
+  -webkit-transform-origin: 0 100%;
+  transform-origin: 0 100%;
+  -webkit-transform: scaleY(0.5);
+  transform: scaleY(0.5);
+}
+.zui-card .zui-card-footer,
+.zui-card .zui-card-header {
+  font-size: 16px;
+  color: #333333;
+  padding: 10px 15px;
+}
+.zui-card .zui-card-footer:after,
+.zui-card .zui-card-header:after,
+.zui-card .zui-card-footer:before,
+.zui-card .zui-card-header:before {
+  content: " ";
+  position: absolute;
+  left: 15px;
+  right: 15px;
+  height: 1px;
+  color: #e5e5e5;
+  z-index: 2;
+}
+.zui-card .zui-card-header:after {
+  bottom: 0;
+  border-bottom: 1px solid #e5e5e5;
+  -webkit-transform-origin: 0 100%;
+  transform-origin: 0 100%;
+  -webkit-transform: scaleY(0.5);
+  transform: scaleY(0.5);
+}
+.zui-card .zui-card-footer:before {
+  top: 0;
+  border-top: 1px solid #e5e5e5;
+  -webkit-transform-origin: 0 0;
+  transform-origin: 0 0;
+  -webkit-transform: scaleY(0.5);
+  transform: scaleY(0.5);
+}
+.zui-card .zui-card-main {
+  font-size: 14px;
+  color: #666666;
+  padding: 15px 15px;
+}
+.zui-card .zui-card-main .title {
+  font-size: 18px;
+  color: #111111;
+}
+.zui-card .zui-card-main .subtitle {
+  font-size: 16px;
+  color: #444444;
+}
+.zui-card .zui-card-main .text {
+  font-size: 14px;
+  color: #999999;
+}
+.zui-card + .zui-card {
+  margin-top: 10px;
+}
+.zui-uploader {
+  padding: 5px;
+  background-color: #ffffff;
+}
+.zui-uploader:before,
+.zui-uploader:after {
+  content: '';
+  display: block;
+  clear: both;
+}
+.zui-uploader .zui-upload {
+  display: inline-block;
+  float: left;
+  width: 33.3333%;
+  padding: 5px;
+  position: relative;
+}
+.zui-uploader .zui-upload .zui-upload-addbox,
+.zui-uploader .zui-upload .zui-upload-img {
+  width: 100%;
+  min-height: 100px;
+  display: block;
+  background-size: cover;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+}
+.zui-uploader .zui-upload .zui-upload-addimgbox img {
+  width: 100%;
+  display: block;
+}
+.zui-uploader .zui-upload .zui-upload-addbox {
+  border: dashed 1px #999999;
+  background: transparent url("data:image/svg+xml;charset=utf8, %3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23a8a8a8' viewBox='0 0 1024 1024' width='128' height='128'%3E%3Cpath d='M875.998 259.999l-128.79 0-67.21-112L343.999 147.999l-67.197 112L148 259.999c-28 0-84 28-84 83.125l0 448.874c0 46.37 42 84 78.162 84l735.586 0c36.75 0 82.25-39.38 82.25-83.13L959.998 343.999C959.998 315.999 931.998 259.999 875.998 259.999zM903.998 792.873c0 11.045-17.91 26.495-26.25 27.125L142.327 819.998c-6.482-0.52-22.327-13.15-22.327-28L120 343.124c0-17.747 23.83-26.688 28-27.125l128.802 0 31.705 0 16.313-27.207L375.704 204l274.434 0 49.985 84.82 15.395 27.18 31.69 0 128.79 0c19.74 0 27.73 25.785 28 28L903.998 792.873 903.998 792.873zM511.999 343.999c-108.252 0-196 87.745-196 196 0 108.25 87.747 196 196 196 108.255 0 196-87.75 196-196C707.998 431.744 620.253 343.999 511.999 343.999zM511.999 679.998c-77.19 0-140-62.81-140-140 0-77.192 62.81-140 140-140 77.19 0 140 62.807 140 140C651.998 617.188 589.188 679.998 511.999 679.998z' p-id='1919'%3E%3C/path%3E%3C/svg%3E") no-repeat;
+  background-size: 50%;
+  background-position: center center;
+}
+.zui-uploader .zui-upload-del {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 30px;
+  height: 30px;
+  background: transparent url("data:image/svg+xml;charset=utf8, %3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23f60f20' viewBox='0 0 1024 1024' width='60' height='60'%3E%3Cdefs%3E%3Cstyle type='text/css'%3E%3C/style%3E%3C/defs%3E%3Cpath d='M511.674077 66.707284c-246.52265 0-446.347744 199.835328-446.347744 446.347744s199.825095 446.356954 446.347744 446.356954c246.50423 0 446.348768-199.844537 446.348768-446.356954S758.177284 66.707284 511.674077 66.707284zM744.967424 667.159826c21.8701 21.8701 21.8701 57.310264 0 79.199807-21.8701 21.851681-57.30924 21.851681-79.198783-0.019443L511.674077 592.264045 357.56007 746.359632c-21.8701 21.8701-57.30924 21.851681-79.17934-0.019443s-21.8701-57.290821 0-79.160921L432.493713 513.065262 278.379707 358.950232c-21.8701-21.86089-21.8701-57.328683 0-79.18855 21.8701-21.87931 57.30924-21.87931 79.17934 0l154.114007 154.104797 154.095587-154.104797c21.889543-21.87931 57.32766-21.87931 79.198783-0.010233 21.8701 21.8701 21.8701 57.348126 0 79.207993L590.89128 513.065262 744.967424 667.159826z' p-id='1919'%3E%3C/path%3E%3C/svg%3E") no-repeat;
+  background-size: 100%;
+  background-position: center center;
+}
+.zui-cells-tips {
+  background: #e9ffe0;
+  padding: 10px 15px;
+  font-size: 16px;
+  color: #000000;
+}
+.zui-login {
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -moz-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  justify-content: center;
+}
+.loginlist {
+  padding: 0 15px;
+}
+.loginlist .item {
+  height: 45px;
+  line-height: 45px;
+  margin-bottom: 15px;
+  border-bottom: solid 1px #ffffff;
+}
+.loginlist .item .icon {
+  width: 45px;
+  height: 30px;
+  line-height: 30px;
+  font-size: 24px;
+  text-align: center;
+  display: block;
+  color: #ffffff;
+  cursor: pointer;
+}
+.loginlist .item input {
+  background: transparent;
+  padding: 0 10px;
+  color: #ffffff;
+}
+.zui-login_btn {
+  display: block;
+  width: 100%;
+  background: rgba(207, 0, 8, 0.3);
+  color: #ffffff;
+  font-size: 18px;
+  height: 45px;
+  line-height: 45px;
+  text-align: center;
+}
+.z-popup .z-popup_bg {
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.z-popup .z-popup_modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  background-color: #ffffff;
+}
+.z-popup .popup-bottom {
+  top: auto;
+  max-height: 100%;
+}
+.z-keywords__password {
+  border-top: solid 1px #dcdcdc;
+}
+.z-keywords__password:after,
+.z-keywords__password:before {
+  content: '';
+  display: block;
+  clear: both;
+  width: 100%;
+  height: 0;
+}
+.z-keywords__password .z-numberkey {
+  width: 33.3333%;
+  float: left;
+  font-size: 28px;
+  font-weight: bold;
+  height: 40px;
+  line-height: 40px;
+  color: #000;
+  text-align: center;
+  border-bottom: solid 1px #dcdcdc;
+}
+.z-keywords__password .z-numberkey:nth-child(3n-1) {
+  border-left: solid 1px #dcdcdc;
+}
+.z-keywords__password .z-numberkey:nth-child(3n) {
+  border-left: solid 1px #dcdcdc;
+}
+.z-sharebox {
+  width: auto;
+  min-width: 100%;
+  overflow-x: auto;
+  background: #ffffff;
+}
+.z-sharebox:after,
+.z-sharebox:before {
+  content: '';
+  display: block;
+  clear: both;
+}
+.z-sharebox .z-share {
+  float: left;
+  padding: 0 1em;
+  text-align: center;
+}
+.z-sharebox .z-share .iconfont {
+  font-size: 3em;
+}
+.z-sharebox .z-share .title {
+  font-size: 12px;
+  white-space: nowrap;
+  color: #c0c0c0;
+  display: block;
+  position: relative;
+  top: -10px;
+}
+/*# sourceMappingURL=zui.css.map */

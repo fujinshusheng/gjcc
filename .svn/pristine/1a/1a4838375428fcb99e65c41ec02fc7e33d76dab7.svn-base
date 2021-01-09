@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-content">
+        <div class="shop_fl_list">
+
+            <div class="item" v-for="item in BusinessType">
+                <div class="shop_fl_item_title zui-row zui-row-center">
+                    <div class="zui-col">{{item.FName}}</div>
+                    <i class="iconfont icon-down" @click="item.show=!item.show"></i>
+                </div>
+                <div class="shop_fl_item_main" v-show="item.show">
+                    <div class="zui-cboxlist shop_fl_cboxlist">
+                        <div class="zui-cbox" v-for="data in item.list" @click="Ftypechose(data)" v-cloak>
+                            <div class="box" :class="{'active':item.select}">{{item.FName}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="shop_fl_footer zui-row zui-row-center">
+        <div class="zui-col btn1" @click="reset()">重置</div>
+        <div class="zui-col btn2" @click="post()">确定</div>
+    </div>
+
+</div>
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function() {
+
+        jw.sb.fixStatusBar("",function (ret) {
+            $(".zui-content").css({
+                "padding-top": ret+"px"
+            });
+        });
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                BusinessType:[],//商品分类
+            },
+            created: function () {
+                var _this = this;
+                //_this.getBusinessType();
+                _this.getBusinessType();
+                // var w = api.winWidth - 200;
+                // $(".zui-app").width(w);
+            },
+            methods: {
+                // 获取商品分类
+                  getBusinessType:function(){
+                      var _this = this;
+                      jw.submit("api47043",{},function (ret) {
+                          if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+
+                              var list1 = ret.ds1;
+                              var list2 = ret.ds2;
+                              for (var i=0;i<list1.length;i++){
+                                  list1[i].show = true;
+                                  if (list1[i].list == undefined){
+                                      list1[i].list = [];
+                                  }
+                                  for (var j=0;j<list2.length;j++){
+                                      if (list1[i].FTypeId == list2[j].FParentId){
+                                          list2[j].select = false;
+                                          list1[i].list.push(list2[j]);
+                                      }
+                                  }
+                              }
+                              _this.BusinessType = list1;
+
+                          } else {
+                              _this.FYears = [];
+                              jw.ts.toast(ret.ds[0].msg);
+                          }
+                      });
+                  },
+                /* 分类选择 */
+                Ftypechose: function (item) {
+                    console.log(JSON.stringify(item));
+                    if (this.FtypeID == item.FBusinessTypeId){
+                        this.FtypeID = "";
+                    }else{
+                        this.FtypeID = item.FBusinessTypeId;
+                    }
+                },
+                /* 年份选择 */
+                Fyearchose: function (item) {
+                    console.log(JSON.stringify(item));
+                    if (this.Year == item.FYear){
+                        this.Year = "";
+                    }else{
+                        this.Year = item.FYear;
+                    }
+                },
+                /* 净含量选择 */
+                jinghanliang: function (item) {
+                    console.log(JSON.stringify(item));
+                    console.log(JSON.stringify(this.jhl));
+                    if (this.jhl == item) {
+                        this.jhl = "";
+                    }else{
+                        this.jhl = item;
+                    }
+                },
+                /* 重置 */
+                reset: function () {
+                    var list1 = this.BusinessType;
+                    for (var i=0;i<list1.length;i++){
+                        list1[i].show = true;
+                        if (list1[i].list == undefined){
+                            list1[i].list = [];
+                        }
+                        for (var j=0;j<list1[i].list.length;j++){
+                            list1[i].list[j].select = false;
+                        }
+                    }
+                    this.BusinessType = list1;
+                },
+                /* 确定 */
+                post: function () {
+
+                    var list1 = this.BusinessType;
+                    var ids = [];
+                    for (var i=0;i<list1.length;i++){
+                        for (var j=0;j<list1[i].list.length;j++){
+                            list1[i].list[j].select = false;
+                            if (list1[i].list[j].select == true){
+                                ids.push(list1[i].list[j].FTypeId);
+                            }
+                        }
+                    }
+
+                    jw.data.jtset("shopping_shaixuan", ids.join());
+                    api.closeDrawerPane();
+                }
+            }
+        });
+
+    }
+</script>
+</body>
+</html>

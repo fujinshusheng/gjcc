@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>Title</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        html,
+        body {
+            width: auto;
+            height: auto;
+            overflow: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="app" class="zui-app">
+    <div class="zui-content" style="background-color: #fff;" >
+        <div class="zui-cboxlist indexpaimai_list">
+            <div class="zui-cbox" v-for="(items,index) in shoplist">
+                <div class="box" style="overflow: hidden;">
+                    <!--                    <div class="touxiang img">-->
+                    <!--                        <img src="http://www.yunpuer.com/upload/app/20200609091144_s.jpg">-->
+                    <!--                    </div>-->
+                    <!-- 动态生成图片 -->
+                    <div class="touxiang img" :style="getbgimg(items.FImageUrl)" @click="goshop(items,2)" style="border-top-left-radius:10px;border-top-right-radius:10px;"></div>
+                    <div class="tmain" style="padding-top: 8px; ">
+                        <!-- 茶品选购 -->
+                        <p class="title" @click="goshop(items,2)" v-cloak  style="font-size: 12px;">{{items.FName}}</p>
+                        <p class="title" v-cloak style="font-size: 12px;">{{items.FTypeName}}</p>
+                        <p><span style="color: red;" style="font-size: 12px;">￥{{items.FPrice}}</span></p>
+                        <p class="fz12">{{items.FCont}}</p>
+                        <!--<i class="iconfont icon-gouwuche color-red" @click.stop="addshopcar(items)"></i>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--        <p class="text-center fz12 color-gray9">---------我是底线--------</p>-->
+    </div>
+</div>
+
+
+<!--    <div id="app">-->
+<!--        &lt;!&ndash;全部商品&ndash;&gt;-->
+<!--        <div class="zui-cboxlist shop_list2" v-cloak>-->
+<!--            &lt;!&ndash; v-show="navindex==2" &ndash;&gt;-->
+<!--            &lt;!&ndash;<div class="warp_nf">{{item.year}}</div>&ndash;&gt;-->
+<!--            <div class="zui-cbox" v-cloak v-for="(items,index) in shoplist">-->
+<!--                <div class="box" style="overflow: hidden;">-->
+<!--                    <div class="touxiang img" :style="getbgimg(items.FImageUrl)" @click="goshop(items,2)"></div>-->
+<!--                    &lt;!&ndash;<div class="img" @click="goshop(item,2)">&ndash;&gt;-->
+<!--                    &lt;!&ndash;<img :src="item.FImageUrl | url" alt="">&ndash;&gt;-->
+<!--                    &lt;!&ndash;</div>&ndash;&gt;-->
+<!--                    <div class="tmain">-->
+<!--                        <p class="title fz18 text-over" @click="goshop(items,2)" v-cloak>{{items.FName}}</p>-->
+<!--&lt;!&ndash;                        <p class="title fz14" style="display: block!important;" v-cloak>竞价</p>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <p class="title fz14" style="display: block!important;" v-cloak>{{item.FTypeName}}</p>&ndash;&gt;-->
+<!--                        <div class="zui-row zui-row-center">-->
+<!--&lt;!&ndash;                            <p class="title" v-cloak>{{item.FTypeName}}</p>&ndash;&gt;-->
+<!--                            <div class="zui-col fz16 color-red">￥{{items.FPrice}}</div>-->
+<!--                            <i class="iconfont icon-gouwuche color-red" @click.stop="addshopcar(items)"></i>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function () {
+
+
+      console.log(444444444)
+        /**
+         * 初始化页面监听事件
+         */
+        function fnInitEvent() {
+            /**上拉加载 */
+            api.addEventListener({
+                name: 'scrolltobottom',
+                extra: {
+                    threshold: 10
+                }
+            }, function (ret, err) {
+                //页码+1，继续请求数据
+                myapp.getshoplist(2);
+            });
+            /** 下拉刷新 */
+            api.setRefreshHeaderInfo({
+                bgColor: '#ccc',
+                textColor: '#fff',
+                textDown: '下拉刷新...',
+                textUp: '松开刷新...'
+            }, function (ret, err) {
+                //重置页码、页面数据，请求数据
+                myapp.getshoplist(1);
+            });
+        };
+        fnInitEvent();
+
+        jw.data.jtget("keywords", function (ret) {
+            myapp.keywords = ret;
+            myapp.getshoplist(1);
+        });
+
+        var myapp = new Vue({
+            "el": "#app",
+            data: {
+                navindex2: 1, // 1:最新 2：销量 3：价格 4: 筛选
+                FYear: '', // 当前年份
+                xianshilist: [], // 限时抢购列表
+                page_index: 1,
+                page_length: 20,
+                page_TotalCount: 1,
+                shoplist: [], // 商品列表
+                shopYear: [], //商品年份
+                Keywords: "", // 搜索词
+                FPriceSort: 0, // 价格 0升 1 降
+                FSalesSort: 0, //销量 0升 1 降
+                FNewSort: 0, //最新 0升 1 降
+                FNetWeight: "", // 净含量
+                FPricemin: "", //最小价格
+                FPricemax: "", //最大价格
+                FTypeId: "", // 分类ID
+            },
+            mounted() {
+            },
+            methods: {
+                // 获取产品
+                getshoplist: function (ftype) {
+
+                    var _this = this;
+                    // 分类ID
+                    var FTypeId = _this.FTypeId;
+                    //年份
+                    var FYear = _this.FYear;
+                    // 品牌id
+                    var FBusinessBrandId = "";
+                    // >=净含量区间
+                    var FNetWeight = _this.FNetWeight;
+                    // <=净含量区间
+                    var FNetWeight1 = "";
+                    // >价格区间
+                    var FPrice = _this.FPricemin;
+                    // <价格区间
+                    var FPrice1 = _this.FPricemax;
+                    var l = _this.page_index;
+                    if (ftype == 1) {
+                        _this.page_index = 1;
+                    } else {
+                        l = parseInt(_this.page_index) + 1;
+                        if (l > _this.page_TotalCount) {
+                            return false;
+                        } else {
+                            _this.page_index = l;
+                        }
+                    }
+
+                    // jw.submit("app_所有产品", {
+                    //     start: _this.page_index, //	开始页数
+                    //     length: _this.page_length, //		每页长度
+                    //     FTypeId: FTypeId, //	分类id
+                    //     FYear: FYear, //年份
+                    //     FBusinessBrandId: FBusinessBrandId, //	品牌id
+                    //     FNetWeight: FNetWeight, //		>=净含量区间
+                    //     FNetWeight1: FNetWeight1, //	<=净含量区间
+                    //     FPrice: FPrice, //		>价格区间
+                    //     FPrice1: FPrice1, //		<价格区间
+                    //     keywords: _this.keywords, //    关键词搜索
+                    //     FPriceSort: _this.navindex2 == 3 ? _this.FPriceSort :
+                    //     '', // 价格 0升 1 降
+                    //     FSalesSort: _this.navindex2 == 2 ? _this.FSalesSort :
+                    //     '', //     销量 0升 1 降
+                    //     FNewSort: _this.navindex2 == 1 ? _this.FNewSort :
+                    //     '', //     最新 0升 1 降
+                    // }, function (ret) {
+                    //     setTimeout(function () {
+                    //         api.refreshHeaderLoadDone();
+                    //     }, 500);
+                    //     if (ret.ds != undefined && ret.ds != "" && ret.ds.length > 0) {
+                    //         if (ret.ds1[0].TotalCount == undefined || ret.ds1[0]
+                    //             .TotalCount == "") {
+                    //             _this.page_TotalCount = 1;
+                    //         } else {
+                    //             _this.page_TotalCount = ret.ds1[0].TotalCount;
+                    //         }
+                    //
+                    //         // var list = ret.ds;
+                    //         // var list2 = [];
+                    //         // list.forEach(function (item,index) {
+                    //         //     var s = 0;
+                    //         //     for (var i in list2){
+                    //         //         if(list2[i].year == item.FYear){
+                    //         //             s++;
+                    //         //             list2[i].list.push(item);
+                    //         //         }
+                    //         //     }
+                    //         //     if (s <= 0){
+                    //         //         list2.push({
+                    //         //             year: item.FYear,
+                    //         //             list: [item]
+                    //         //         })
+                    //         //     }
+                    //         // });
+                    //         if (ftype == 1) {
+                    //
+                    //             _this.shoplist = ret.ds;
+                    //         } else {
+                    //             _this.shoplist.push.apply(_this.shoplist, ret.ds);
+                    //         }
+                    //         // _this.shoplist.sort(function (a,b) {
+                    //         //     return a.year-b.year;
+                    //         // })
+                    //         _this.$nextTick(function () {
+                    //             // 列表图片大小重置
+                    //             $(".shop_list2").find(".box").css("height", "auto");
+                    //             $(".shop_list2").find(".img").height($(
+                    //                 ".shop_list2").find(".img").width());
+                    //         });
+                    //     } else {
+                    //         _this.shoplist = [];
+                    //         _this.page_TotalCount = 0;
+                    //     }
+                    // });
+
+                    jw.submit("api43074", {
+                        keywords: _this.keywords
+                    }, function (ret) {
+                        setTimeout(function () {
+                            api.refreshHeaderLoadDone();
+                        }, 500);
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds.length > 0) {
+                            _this.shoplist.push.apply(_this.shoplist, ret.ds);
+
+                            if (ret.ds.length == undefined || ret.ds.length == 0) {
+                                _this.page_TotalCount = 1;
+                            } else {
+                                _this.page_TotalCount = ret.ds.length;
+                            }
+
+
+                            var list = ret.ds;
+                            var list2 = [];
+                            list.forEach(function (item, index) {
+                                var s = 0;
+                                for (var i in list2) {
+                                    if (list2[i].year == item.FYear) {
+                                        s++;
+                                        list2[i].list.push(item);
+                                    }
+                                }
+                                if (s <= 0) {
+                                    list2.push({
+                                        year: item.FYear,
+                                        list: [item]
+                                    })
+                                }
+                            });
+                            if (ftype == 1) {
+
+                                _this.shoplist = ret.ds;
+                            } else {
+                                _this.shoplist.push.apply(_this.shoplist, ret.ds);
+                            }
+                            // _this.shoplist.sort(function (a,b) {
+                            //     return a.year-b.year;
+                            // })
+                            _this.$nextTick(function () {
+                                $(".indexpaimai_list").find(".touxiang").height($(
+                                    ".indexpaimai_list").find(".touxiang")
+                                    .width());
+                            });
+
+                            _this.$nextTick(function () {
+                                // 列表图片大小重置
+                                $(".shop_list2").find(".box").css("height", "auto");
+                                $(".shop_list2").find(".img").height($(
+                                    ".shop_list2").find(".img").width());
+                            });
+                        } else {
+                            _this.shoplist = [];
+                            _this.page_TotalCount = 0;
+                        }
+                    });
+                },
+                // 去抢购 打开 商品详情页
+                goshop: function (item, t) {
+                    var option = {
+
+                       FBusinessId: item.FId,
+                        // FPageType: t, // 1： 限时抢购 2 普通商品
+                        FPageType: item.FType, // 1： 普通商品 2 限时抢购
+                        Ftype: 0, // 1 茶商城
+                        FlashSaleId: "",
+                    };
+                    if (t == 1) {
+                        option.FlashSaleId = item.FlashSaleId
+                    }
+                    console.error(JSON.stringify(option));
+                    /* 普通商品*/
+                    jw.openWin({
+                        name: "shopdetails",
+                        url: "shopdetails.html",
+                        pageParam: option
+                    });
+                },
+                /* 加入购物车 */
+                addshopcar: function (item) {
+                    var _this = this;
+                    jw.submit("app_加入购物车New", {
+                        FUserId: jw.data.get("userid"), //  用户id
+                        FBusinessId: item.FBusinessId, //    商品id
+                        FNumber: 1, //    数量
+                        FType: "0", //    来源0商城1茶市
+                        FOnekeyResaleId: "", //    FType为1时茶市转卖表id
+                    }, function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status ==
+                            "000000") {
+                            jw.ts.toast(ret.ds[0].msg);
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                }
+            }
+        });
+
+    }
+</script>
+</body>
+
+</html>

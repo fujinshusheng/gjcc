@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>Title</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+    <form class="zui-header zui-header-dark zui-row-center" style="height: 55px;" onsubmit="return post()">
+        <div class="iconfont icon-back" style="padding: 0 10px;" onclick="jw.back()"></div>
+        <div class="shop_header_seach zui-col zui-row zui-row-center" >
+
+            <div class="zui-header-seach zui-col zui-row zui-row-center" style="  border-radius: 30px; padding-right: 20px; margin: 0 20px;">
+                <input id="seach" type="text" class="zui-header-seach"
+                       placeholder="搜索商品" style="padding: 0px 20px!important; margin: 0 auto!important; border-radius: 30px; font-size:12px;">
+                <i class="iconfont icon-sousuo" onclick="post()"></i>
+            </div>
+        </div>
+    </form>
+
+    <div class="zui-content">
+    </div>
+
+</div>
+
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    var post = function () {
+    }
+    apiready = function () {
+        jw.sb.fixStatusBar(".zui-header");
+
+        /* 打开列表 */
+        function openlist(year) {
+            var y = $(".zui-content").offset().top;
+            jw.openFrame({
+                name: "shoping_list2",
+                url: "shoping_list2.html",
+                rect: {
+                    x: 0,
+                    y: y,
+                    w: "auto",
+                    h: "auto"
+                },
+                pageParam: {
+                    FYear: year
+                },
+            })
+        }
+
+        post = function () {
+            var keyword = $("#seach").val();
+            myapp.savedata(keyword);
+            return false;
+        }
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                keywords: "",
+                list: []
+            },
+            created: function () {
+                openlist();
+            },
+            methods: {
+                savedata: function (e) {
+                    this.list.push(e);
+                    jw.data.jtset("keywords", e)
+                }
+            }
+        });
+
+    }
+</script>
+</body>
+</html>

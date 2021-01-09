@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>个人中心</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-header zui-row-center myjifen_header">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">添加新地址</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+    <div class="zui-content">
+
+        <div class="fromlist2 zui-col">
+            <div class="item zui-row zui-row-center bb1">
+                <span class="tip">收货人</span>
+                <input type="text" class="zui-col" v-model="FUserName" placeholder="请输入收货人">
+            </div>
+            <div class="item zui-row zui-row-center bb1">
+                <span class="tip">联系电话</span>
+                <input type="tel" class="zui-col" v-model="FMobile" placeholder="请输入联系电话">
+            </div>
+            <div class="item zui-row zui-row-center bb1">
+                <span class="tip">所在区域</span>
+                <input id="city-picker" type="text" class="zui-col" readonly>
+                <i class="iconfont icon-left1"></i>
+            </div>
+            <div class="item zui-row zui-row-center">
+                <span class="tip">详细地址</span>
+                <input type="text" class="zui-col" v-model="FAddress" placeholder="请输入详细地址">
+            </div>
+            <label class="item2 zui-row zui-row-center">
+                <span class="tip">设为默认地址</span>
+                <div class="zui-col"></div>
+                <div class="zui-radiobox">
+                    <input type="checkbox" :true-value="1" :false-value="0" v-model="FIsDefault">
+                    <i class="zui-checked"></i>
+                </div>
+            </label>
+        </div>
+
+    </div>
+
+    <div class="zui-footer zui-row zui-row-stretch">
+        <div class="footer_btn zui-col bg-red color-white" @click="addpost()">保存</div>
+    </div>
+
+</div>
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../res/weui/jquery-weui.min.js"></script>
+<script src="../../res/weui/city-picker.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function() {
+        jw.sb.fixStatusBar(".zui-header");
+
+
+        function init() {
+            setTimeout(function () {
+                $("#city-picker").cityPicker({
+                    title: "请选择收货地址"
+                });
+                $("#city-picker").on("touchend",function () {
+                    $("input").blur();
+                })
+                if (api.pageParam.edit == true){
+                    myapp.addressinfo = JSON.parse(api.pageParam.info);
+                    myapp.FUserName = myapp.addressinfo.FUserName;
+                    myapp.FMobile = myapp.addressinfo.FMobile;
+                    myapp.FIsDefault = myapp.addressinfo.FIsDefault;
+                    myapp.FAddress = myapp.addressinfo.FAddress;
+                    $("#city-picker").val(myapp.addressinfo.FProvince+" "+myapp.addressinfo.FCity+" "+myapp.addressinfo.FArea);
+                }
+            },1000)
+        }
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                FUserName: "", //收货人
+                FMobile: "", //收货人电话
+                FAddress: "", //详细地址
+                FIsDefault: "0", //是否为默认收货地址0-否1是
+                addressinfo: "",
+            },
+            created: function () {
+                init();
+            },
+            methods: {
+                // 获取积分规则
+                addpost: function () {
+                    var _this = this;
+                    if (_this.FUserName == "") {
+                        jw.ts.toast("请填写收货人")
+                        return false;
+                    }
+                    if (_this.FMobile == "") {
+                        jw.ts.toast("请填写收货人电话")
+                        return false;
+                    }
+                    if (_this.FMobile.length < 11){
+                        jw.ts.toast("电话格式不正确")
+                        return false;
+                    }
+                    var t = /(^(\d{3,4}-)?\d{7,8})$|(1[3-9][0-9]{9})/
+                    if (!t.test(_this.FMobile)){
+                        jw.ts.toast("电话格式不正确")
+                        return false;
+                    }
+
+
+                    if (_this.FAddress == "") {
+                        jw.ts.toast("请填写详细地址")
+                        return false;
+                    }
+
+                    var FShippingAddressID = "";
+                    if (api.pageParam.edit == false){
+
+                    } else{
+                        FShippingAddressID = _this.addressinfo.FShippingAddressId
+                    }
+
+                    var place = $("#city-picker").val();
+                    if (place == ""){
+                        jw.ts.toast("请选择收获地址")
+                        return false;
+                    }
+                    place = place.split(" ");
+                    var FProvince="",FCity="",FArea="";
+                    if (place.length == 3) {
+                        FProvince = place[0];
+                        FCity = place[1];
+                        FArea = place[2];
+                    }else{
+                        FCity = place[0];
+                        FArea = place[1];
+                    }
+
+                    jw.submit("app_添加收货地址",{
+                        FShippingAddressID: FShippingAddressID,//收货地址表id（修改时有值，添加时无值）
+                        FUserID: jw.data.get("userid"),//用户id
+                        FUserName: _this.FUserName,//收货人姓名
+                        FMobile: _this.FMobile,//收货人电话
+                        FProvince: FProvince,//省
+                        FCity: FCity,//市
+                        FArea: FArea,//区
+                        FAddress: _this.FAddress,//详细地址
+                        FIsDefault: _this.FIsDefault,//是否为默认收货地址0-否1是
+                    },function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            jw.ts.toast(ret.ds[0].msg);
+                            jw.data.jtset("addresschange",1);
+                            setTimeout(function () {
+                                api.closeWin();
+                            },1000);
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                },
+            }
+        });
+    }
+</script>
+</body>
+</html>

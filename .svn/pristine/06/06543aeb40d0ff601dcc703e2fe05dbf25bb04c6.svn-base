@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../css/zui.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../js/jw.js"></script>
+    <script src="../js/zui.js"></script>
+</head>
+
+<body>
+
+
+    <div class="zui-login login_bg">
+        <div class="logo">
+            <img src="../image/logo.png" />
+        </div>
+        <div class="zui-loginbox zui-col zui-row zui-row-center">
+            <div class="loginlist zui-col">
+                <div class="item zui-row zui-row-center">
+                    <div class="icon iconfont icon-ren"></div>
+                    <input id="admin" type="text" class="zui-col" value="" name="admin" placeholder="请输入手机号码">
+                </div>
+                <div class="item zui-row zui-row-center">
+                    <div class="icon iconfont icon-authcode"></div>
+                    <input id="yzm" type="text" class="zui-col" value="" name="yzm" placeholder="请输入验证码">
+                    <div id="yzmbtn" class="yzmbtn z-btn z-btn-s">获取验证码</div>
+                </div>
+                <div class="item zui-row zui-row-center">
+                    <div class="icon iconfont icon-password"></div>
+                    <input id="password" type="password" class="zui-col" value="" name="password" placeholder="请输入密码">
+                    <i class="icon iconfont icon-look"></i>
+                </div>
+                <div id="post" class="zui-login_btn">注册</div>
+                <div class="zui-checklist text-right" style="margin: 10px 0;">
+                    <div class="zui-checkbox" id="xieyi">
+                        <span class="color-white">注册协议</span>
+                        <input id="xieyiinput" type="checkbox" name="xieyi">
+                        <i class="zui-checked"></i>
+                    </div>
+                </div>
+                <!--<div class="dsfbox zui-row zui-row-center color-white">
+                    <div class="zui-col x"></div>
+                    <div class="text">第三方登录</div>
+                    <div class="zui-col x"></div>
+                </div>-->
+            </div>
+        </div>
+        <!--<div class="otherlogin">
+            <div class="box"><img src="../image/QQ.png" alt=""></div>
+            <div class="box"><img src="../image/wx.png" alt=""></div>
+        </div>-->
+    </div>
+
+
+    <script>
+        apiready = function () {
+            $(".icon-look").changepassword("#password");
+
+            $(".zui-login").height(api.winHeight);
+
+            $("#yzmbtn").on("touchend", function () {
+                var phone = $("#admin").val();
+                if (phone == "") {
+                    jw.ts.toast("手机号不能为空");
+                    return false;
+                } else if (phone.length != 11) {
+                    jw.ts.toast("请输入有效的手机号");
+                    return false;
+                }
+                jw.submit("app_验证注册用户", {
+                    FMobile: phone, // 手机号
+                }, function (ret) {
+                    if (ret.ds != undefined && ret.ds[0].status == "000000") {
+                        time();
+                        jw.submit_ykt("sendwxmsg", {
+                        //jw.submit("sendwxmsg", { //发送验证码
+                            userPhone: phone, // 手机号
+                        }, function (ret) {
+                            //jw.ts.toast(ret);
+                        }, {
+                            jz: true,
+                            Url: jw.config.url3,
+                            Ip: jw.config.ip3
+                        });
+                    } else {
+                        jw.ts.toast(ret.ds[0].msg);
+                    }
+                });
+
+
+            });
+
+            jw.data.jtget("zcxieyi", function (ret) {
+                $("#xieyiinput").attr("checked", true);
+
+            })
+
+            $("#xieyi").on("touchend", function () {
+                jw.openWin({
+                    name: "xieyi",
+                    url: "xieyi.html"
+                });
+            });
+
+            $("#post").on("touchend", function () {
+                var xieyi = $("#xieyiinput").attr("checked");
+                if (xieyi == undefined || xieyi == "" || xieyi == false) {
+                    jw.ts.toast("请先同意注册协议");
+                    return false;
+                }
+                var phone = $("#admin").val();
+                var password = $("#password").val();
+                var yzm = $("#yzm").val();
+                if (phone == "") {
+                    jw.ts.toast("手机号不能为空");
+                    return false;
+                } else if (phone.length != 11) {
+                    jw.ts.toast("请输入有效的手机号");
+                    return false;
+                }
+                if (yzm == "") {
+                    jw.ts.toast("验证码不能为空");
+                    return false;
+                } else if (yzm.length != 6) {
+                    jw.ts.toast("请输入正确的验证码");
+                    return false;
+                }
+                if (password == "") {
+                    jw.ts.toast("密码不能为空");
+                    return false;
+                }
+                //验证手机验证码
+                jw.submit_ykt("yzwxmsg", {
+                    userPhone: phone, // 手机号
+                    yzm: yzm
+                }, function (ret) {
+                    if (ret == "1") {
+                        register(phone, password);
+                    } else {
+                        jw.ts.toast("验证码错误");
+                    }
+                }, {
+                    jz: false,
+                    Url: jw.config.url3,
+                    Ip: jw.config.ip3
+                });
+            });
+
+            function register(phone, password) {
+                jw.submit("app_register", {
+                    FMobile: phone, //  手机号
+                    FPassword: password, // 密码
+                }, function (ret) {
+                    jw.ts.jiazaiShow();
+                    if (ret.ds != undefined && ret.ds[0].status == "000000") {
+                        jw.ts.toast(ret.ds[0].msg);
+                        var data = {
+                            phone: phone,
+                            password: password
+                        }
+                        jw.data.jtset("register", JSON.stringify(data));
+                        setTimeout(function () {
+                            api.closeWin();
+                        }, 2000);
+
+                        // jw.submit("app_获取积分", {
+                        //     FIntegralEarnID: 1,//  积分赚取表id（1注册  2推荐注册  3完善资料）
+                        //     FMobile: phone,// 手机号
+                        // }, function (ret) {
+                        //     jw.ts.jiazaiHide()
+                        //     if (ret.ds != undefined && ret.ds[0].status == "000000") {
+                        //         jw.ts.toast(ret.ds[0].msg);
+                        //         setTimeout(function () {
+                        //             api.closeWin();
+                        //         }, 2000);
+                        //     } else {
+                        //         jw.ts.toast(ret.ds[0].msg);
+                        //     }
+                        // }, {
+                        //     jz: false
+                        // });
+
+                    } else {
+                        jw.ts.jiazaiHide();
+                        jw.ts.toast(ret.ds[0].msg);
+                    }
+                }, {
+                    jz: false
+                });
+            }
+
+            //验证码
+            var s = 60;
+
+            function time() {
+                $(".yzmbtn").off("touchend");
+                $(".yzmbtn").addClass("active")
+                $(".yzmbtn").html(s + "s后重新发送");
+                var a = setInterval(function () {
+                    if (s > 1) {
+                        s = s - 1;
+                        $(".yzmbtn").html(s + "s后重新发送");
+                    } else {
+                        $(".yzmbtn").html("发送验证码");
+                        $(".yzmbtn").removeClass("active");
+                        clearInterval(a);
+                        $(".yzmbtn").on("touchend", time);
+                        s = 30;
+                    }
+                }, 1000);
+            }
+        }
+    </script>
+</body>
+
+</html>

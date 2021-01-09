@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>Title</title>
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+<div class="zui-app">
+    <div class="zui-header zui-header-dark zui-row-center">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">茶友集市</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="right: 90px;font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+        <div class="iconfont icon-gouwuche zui-header-icon zui-header-right" style="right: 45px;" onclick="jw.openWin({name:'my_Shopping_Cart',url:'../myself/my_Shopping_Cart.html'})"></div>
+        <div class="iconfont zui-header-icon icon-sousuo zui-header-right" onclick="jw.openWin({'name':'shop_seach','url':'shop_search.html'})"></div>
+    </div>
+    <!-- <div class="zui-row shop_nav">
+        <div class="zui-col nav" :class="{'selected':navindex==1}" @click="navclick1(1)">限时抢购</div>
+        <div class="zui-col nav" :class="{'selected':navindex==2}" @click="navclick1(2)">全部商品</div>
+    </div> -->
+    <div id="jilu" class="swiper-container jilu">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide" v-for="item in jilulist"><p class="text-over">{{item.FPayDate}}  | {{item.FName}}  | 成交数量：{{item.FBuyNum}} | ￥{{item.FTotal}}</p></div>
+        </div>
+    </div>
+
+    <div class="zui-row shop_nav2" >
+        <div class="zui-col nav" :class="{'selected':navindex2==1}" @click="navclick2(1)">最新</div>
+        <div class="zui-col nav" :class="{'selected':navindex2==3}" @click="navclick2(3)">价格 <i class="iconfont icon-paixu"></i></div>
+        <div class="zui-col nav" :class="{'selected':navindex2==2}" @click="navclick2(2)">数量 <i class="iconfont icon-paixu"></i></div>
+        <div class="zui-col nav" :class="{'selected':navindex2==4}" @click="navclick2(4)">筛选</div>
+    </div>
+    <div style="padding: 0 15px;" v-if="Keywords != ''" v-cloak>搜索关键词：{{Keywords}}
+        <i class="iconfont icon-del" @click="nokeywords()"></i>
+    </div>
+    <div class="zui-content">
+
+    </div>
+</div>
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../res/weui/jquery-weui.min.js"></script>
+<script src="../../res/weui/swiper.min.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function () {
+        jw.sb.fixStatusBar(".zui-header");
+
+        /* 打开列表 */
+        function openlist() {
+            var y = $(".zui-content").offset().top;
+            jw.openFrame({
+                name: "chashi_list",
+                url: "chashi_list.html",
+                rect: {
+                    x: 0,
+                    y: y,
+                    w: "auto",
+                    h: "auto"
+                },
+                bounces: true,
+                pageParam: {
+                    FBusinessBrandId: api.pageParam.FBusinessBrandId,
+                    FYear:api.pageParam.FYear
+                },
+            });
+        }
+
+        function setlist() {
+            var y = $(".zui-content").offset().top;
+            api.setFrameAttr({
+                name: 'chashi_list',
+                rect: {
+                    x: 0,
+                    y: y,
+                    w: "auto",
+                    h: "auto"
+                },
+            });
+        }
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                FBusinessBrandId: api.pageParam.FBusinessBrandId, // 商品品牌ID
+                FYear:api.pageParam.FYear,
+                navindex2: 1, // 1:最新 2：销量 3：价格 4: 筛选
+                xianshilist: [], // 限时抢购列表
+                page_index: 1,
+                page_length: 20,
+                page_TotalCount: 1,
+                shoplist: [], //商品列表
+                Keywords: "", //搜索词
+                FPriceSort: 0, //价格 0升 1 降
+                FSalesSort: 0, //销量 0升 1 降
+                FNewSort: 0, //最新 0升 1 降
+                jilulist: []
+            },
+            created: function () {
+                openlist();
+
+                this.getjilu()
+            },
+            watch: {
+                Keywords: function (newval, oldval) {
+                    setTimeout(function () {
+                        setlist();
+                    }, 500);
+                }
+            },
+            methods: {
+                init: function () {
+                    var _this = this;
+                    jw.data.jtset("chashi_list_nav1", "nav2");
+                },
+                // 获取交易记录
+                getjilu: function(){
+                    var _this = this;
+                    jw.submit("app_最新交易记录",{},function (ret) {
+                        if (ret.ds[0].status == "000000"){
+                            _this.jilulist = ret.ds1;
+                            _this.$nextTick(function () {
+                                $("#jilu").swiper({
+                                    direction: "vertical",
+                                    onlyExternal : true,
+                                    loop : true,
+                                    autoplay: 2000,//可选选项，自动滑动
+                                });
+                            })
+                        } else{
+
+                        }
+                    })
+                },
+                // 清空筛选字段
+                clearshopsx: function () {
+
+                },
+                // 排序选择
+                navclick2: function (t) {
+                    myapp.navindex2 = t;
+                    jw.data.jtset("chashi_list_nav2", t);
+                    if (t == 4) {
+                        api.openDrawerPane({
+                            type: 'right'
+                        });
+                    }
+                },
+                nokeywords: function () {
+                    this.Keywords = "";
+                    jw.data.jtset("keywords", "");
+                }
+            }
+        });
+
+        jw.data.jtget("keywords", function (ret) {
+            myapp.Keywords = ret;
+        });
+
+    }
+</script>
+</body>
+</html>

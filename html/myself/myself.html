@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>个人中心</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-content">
+        <div class="myself_header">
+            <div class="iconfont icon-back" onclick="jw.back()"></div>
+            <img class="imgblock" src="../../image/myself_header_bg.jpg" alt="" />
+            <div class="myself_header_txtbox zui-row zui-row-center zui-row-column">
+                <div class="zui-col"></div>
+                <div class="touxiang" :style="getbgimg(logininfo.FHanderImg)"></div>
+                <div class="name">{{logininfo.FName}}</div>
+                <div class="tip" onclick="jw.openWin({'name':'jifen','url':'../jifen/jifen.html'})">{{logininfo.FIntegral}}</div>
+            </div>
+        </div>
+        <div class="zui-list myself_list">
+            <div class="zui-item zui-row zui-row-center" onclick="jw.openWin({'name':'my_order','url':'my_order2.html'})">
+                <div class="zui-col">我的订单</div>
+                <i class="iconfont icon-left1"></i>
+            </div>
+            <div class="zui-item zui-row zui-row-center" onclick="jw.openWin({'name':'my_Shopping_Cart','url':'my_Shopping_Cart.html'})">
+                <div class="zui-col">购物车</div>
+                <i class="iconfont icon-left1"></i>
+            </div>
+            <div class="zui-item zui-row zui-row-center" onclick="jw.openWin({'name':'Account_Info','url':'Account_Info.html'})">
+                <div class="zui-col">用户信息</div>
+                <i class="iconfont icon-left1"></i>
+            </div>
+            <div class="zui-item zui-row zui-row-center" onclick="jw.openWin({'name':'news_manage','url':'news_manage.html'})">
+                <div class="zui-col">消息管理</div>
+                <i class="iconfont icon-left1"></i>
+            </div>
+            <div class="zui-item zui-row zui-row-center" onclick="jw.openWin({'name':'chacangmx','url':'chacangmx.html'})">
+                <div class="zui-col">茶仓明细</div>
+                <i class="iconfont icon-left1"></i>
+            </div>
+            <div class="zui-item zui-row zui-row-center" onclick="jw.openWin({'name':'my_wallet','url':'my_wallet.html'})">
+                <div class="zui-col">我的钱包</div>
+                <i class="iconfont icon-left1"></i>
+            </div>
+            <div class="zui-item zui-row zui-row-center" onclick="jw.openWin({'name':'address','url':'address.html'})">
+                <div class="zui-col title">收货地址管理</div>
+                <i class="iconfont icon-left1"></i>
+            </div>
+            <!--<div class="zui-item zui-row zui-row-center" onclick="jw.openWin({'name':'my_faiao','url':'my_faiao.html'})">
+                <div class="zui-col">我的发票</div>
+                <i class="iconfont icon-left1"></i>
+            </div>-->
+        </div>
+
+        <div class="zui-list myself_list">
+            <div class="zui-item zui-row zui-row-center" onclick="jw.openWin({'name':'feedback','url':'feedback.html'})">
+                <div class="zui-col">意见反馈</div>
+                <i class="iconfont icon-left1"></i>
+            </div>
+            <div class="zui-item zui-row zui-row-center" onclick="jw.openWin({'name':'aboutus','url':'about_us.html'})">
+                <div class="zui-col">关于我们</div>
+                <i class="iconfont icon-left1"></i>
+            </div>
+            <!-- <div class="zui-item zui-row zui-row-center" @click="updata()">
+                <div class="zui-col">版本更新</div>
+                <span class="fz12 color-gray9">{{appVersion}}</span>
+                <i class="iconfont icon-left1"></i>
+            </div> -->
+        </div>
+
+    </div>
+</div>
+
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function () {
+
+        jw.sb.fixStatusBar("", function (ret) {
+            $(".icon-back").css({
+                "top": ret + 15 + "px"
+            })
+        });
+
+        jw.data.jtget("infochange", function (ret) {
+
+            myapp.logininfo = JSON.parse(jw.data.get("logininfo"));
+        });
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                logininfo: "",
+                appVersion: api.appVersion
+            },
+            created: function () {
+                this.logininfo = JSON.parse(jw.data.get("logininfo"));
+                console.log(jw.data.get("logininfo"))
+                this.getinfo();
+            },
+            methods: {
+                // 获取我的信息
+                getinfo: function () {
+                    var _this = this;
+                    jw.submit("app_我的信息", {
+                        FUserId: jw.data.get("userid"), //  用户id
+                    }, function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            _this.logininfo = ret.ds1[0];
+                            jw.data.set("logininfo", JSON.stringify(ret.ds1[0]));
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                },
+                //检查版本更新
+                updata: function (type) {
+                    var _this = this;
+                    if (api.systemType == "ios") {
+                        jw.ts.toast("请打开App Store更新")
+                    }else{
+                        var mybanben = api.appVersion;
+                        var urls = 'http://erp.jiwanginfo.com:11984/PCodeClient/api.ashx?cmdapi=getapkInfo';
+
+                        $.getJSON(urls,{},function(ret){
+                            if (ret != undefined && ret != null && ret.status == '200') {
+                                //检查版本更新
+                                if (mybanben == ret.V || jw.compare(mybanben, ret.V)){
+                                    if (type == undefined) {
+                                        jw.ts.toast("当前版本号与服务器版本号一致,无需更新");
+                                    }
+                                }else {
+                                    jw.openFrame({
+                                        name:"banben",
+                                        url:"../banben.html",
+                                        pageParam:{
+                                            banben: ret.V,
+                                            url: "http://erp.jiwanginfo.com:11984/"+ret.path,
+                                            GXNR: ""
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                },
+            }
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+@import "../../base/fn";
+@import "../zui-flex/zui-flex";
+
+
+.zui-item{
+  background-color: #ffffff;
+  padding: @itempaddingtop @textpadding;
+  line-height: 1.5;
+  font-size: 14px;
+  color: #333333;
+  .text,
+  .title{
+    font-size: 16px;
+  }
+  &>.title{
+    margin-right: 10px;
+  }
+  .title_line{
+    font-size: 16px;
+    height: 35px;
+    line-height: 35px;
+    display: block;
+  }
+  .select,
+  .input{
+    border: solid 1px #cccccc;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;;
+    height: 35px;
+    line-height: 35px;
+    color: #333333;
+    font-size: 16px;
+    padding: 0 10px;
+    &:disabled,
+    &.disabled{
+      background: #ededed !important;
+    }
+  }
+}
+.zui-list{
+  background-color: #ffffff;
+  padding: 0 @textpadding;
+  .zui-item{
+    padding: @itempaddingtop 0;
+    .img{
+      img{
+        width: 100%;
+        display: block;
+      }
+    }
+  }
+  .zui-item{
+    &:hover{
+      //background-color: #f4f4f4;
+    }
+  }
+  .zui-item + .zui-item{
+    border-top: solid 1px @bordercolor;
+  }
+}
+.zui-list.noborder{
+  .zui-item + .zui-item{
+    border: none;
+  }
+}
+
+.zui-list.inlist{
+  padding: 0;
+  border-top: solid 1px @bordercolor;
+  border-bottom: solid 1px @bordercolor;
+}
+.zui-list.inlist +
+.zui-list.inlist{
+  margin-top: 0;
+  border-top: none;
+}
+
+.zui-imagelist{
+  padding: @imagelistpadding;
+  &:after, &:before {
+    content: "";
+    display: block;
+    clear: both;
+  }
+  .item{
+    width: 33.3333%;
+    padding: @imagelistpadding;
+    float: left;
+    img{
+      display: block;
+      width: 100%;
+    }
+    .zui-imgbox{
+      width: 100%;
+      display: block;
+      background-size: cover;
+      background-position: 50% 50%;
+      background-repeat: no-repeat;
+    }
+  }
+}
+
+
+.zui-list2{
+  .item{
+    background-color: #ffffff;
+    padding: 15px;
+    position: relative;
+    .zui-row;
+    .zui-row-center;
+    .zui-row-stretch;
+
+    .img{
+      width: 30%;
+      display: block;
+      overflow: hidden;
+      margin-right: 15px;
+      img {
+        display: block;
+        width: 100%;
+      }
+    }
+    .tmain{
+      .zui-col;
+      .zui-row;
+      .zui-row-column;
+      .row-space-between;
+
+      .title{
+        font-size: 16px;
+        color: #000;
+      }
+    }
+  }
+  .item + .item{
+    border-top: solid 1px @bordercolor;
+  }
+}
+
+.zui-cboxlist{
+  padding: 5px;
+  &:after,
+  &:before{
+    display: block;
+    content: '';
+    height: 0;
+    width: 100%;
+    clear: both;
+  }
+  .zui-cbox{
+    width: 33.3333%;
+    padding: 5px;
+    float: left;
+    text-align: center;
+    .box{
+
+    }
+  }
+}
+
+.form_list{
+  padding: 10px;
+  background-color: #ffffff;
+  .form_item{
+
+    .z-title{
+      width: 80px;
+      text-align: right;
+    }
+  }
+  .form_item + .form_item{
+    border-top: solid 1px @bordercolor;
+  }
+}
+
+.zui-addbox{
+  max-width: 100px;
+  border: solid 1px #c6c6c6;
+  .addbox_input{
+    background: transparent;
+    height: 30px;
+    line-height: 30px;
+    width: 30px;
+    text-align: center;
+  }
+  .iconfont{
+    width: 30px;
+    height: 30px;
+    display: block;
+    text-align: center;
+    line-height: 30px;
+  }
+  .icon-add{
+    border-right: solid 1px #c6c6c6;
+  }
+  .icon-jian{
+    border-left: solid 1px #c6c6c6;
+  }
+}
+
+.jifen_list{
+  padding: 10px;
+  .zui-cbox{
+    width: 50%;
+    padding: 10px;
+    .box{
+      border: solid 1px #eaeaea;
+      padding: 20px;
+      -webkit-border-radius: 15px;
+      -moz-border-radius: 15px;
+      border-radius: 15px;
+        .icoimg{
+          width: 40%;
+          img{
+            width: 100%;
+            display: block;
+          }
+        }
+    }
+  }
+}

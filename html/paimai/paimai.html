@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>茶品竞价</title>
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+<div class="zui-app">
+    <div class="zui-header zui-header-dark zui-row-center">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">茶品竞价</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+    <div class="zui-content">
+
+    </div>
+</div>
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../res/weui/jquery-weui.min.js"></script>
+<script src="../../res/weui/swiper.min.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function () {
+        jw.sb.fixStatusBar(".zui-header");
+
+        /* 打开列表 */
+        function openlist() {
+            var y = $(".zui-content").offset().top;
+            jw.openFrame({
+                name: "paimai_list",
+                url: "paimai_list.html",
+                rect: {
+                    x: 0,
+                    y: y,
+                    w: "auto",
+                    h: "auto"
+                },
+                bounces: true,
+                pageParam: {
+                    FBusinessBrandId: api.pageParam.FBusinessBrandId,
+                    FYear:api.pageParam.FYear
+                },
+            });
+        }
+
+        function setlist() {
+            var y = $(".zui-content").offset().top;
+            api.setFrameAttr({
+                name: 'paimai_list',
+                rect: {
+                    x: 0,
+                    y: y,
+                    w: "auto",
+                    h: "auto"
+                },
+            });
+        }
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                FBusinessBrandId: api.pageParam.FBusinessBrandId, // 商品品牌ID
+                FYear:api.pageParam.FYear,
+                navindex2: 1, // 1:最新 2：销量 3：价格 4: 筛选
+                xianshilist: [], // 限时抢购列表
+                page_index: 1,
+                page_length: 20,
+                page_TotalCount: 1,
+                shoplist: [], //商品列表
+                Keywords: "", //搜索词
+                FPriceSort: 0, //价格 0升 1 降
+                FSalesSort: 0, //销量 0升 1 降
+                FNewSort: 0, //最新 0升 1 降
+                jilulist: []
+            },
+            created: function () {
+                openlist();
+            },
+            watch: {
+
+            },
+            methods: {
+
+            }
+        });
+
+    }
+</script>
+</body>
+</html>

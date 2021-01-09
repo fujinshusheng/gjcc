@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        html,body{
+            width: auto;
+            height: auto;
+            overflow: auto;
+        }
+        .touxiang
+      {
+                border-top-left-radius:10px;
+                    border-top-right-radius:10px;
+        }
+        .box{
+            border-radius:10px;
+        }
+        .title1 {
+            overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+
+
+    <!--全部商品-->
+    <div class="zui-cboxlist shop_list" v-cloak style="margin-top:-10px;">
+        <div class="zui-cbox" v-for="(item,pindex) in shoplist" v-cloak >
+            <div class="box" style="box-shadow: 0 0 0; border-radius: 10px; background-color: #fff; padding-bottom: 5px; ">
+                <div class="touxiang img" :style="getbgimg(item.FImageUrl)" @click="goshop(item)"></div>
+                <!--<div class="img" @click="goshop(item)">-->
+                <!--<img :src="item.FImageUrl | url" alt="">-->
+                <!--</div>-->
+                <div class="tmain" style="padding:5px 0px">
+                    <p class="title1 fz12" @click="goshop(item)" v-cloak style="margin: 5px;margin-bottom: 15px;">{{item.FName}}</p>
+                    <p class="fz12" @click="goshop(item)" style="margin-top: -12px;padding:0 5px
+                    ">
+                        <span class="color-red" v-cloak>￥{{item.FPrice}}</span>
+                        <!--<span class="fr color-gray9">昆明</span>-->
+                        <i class="iconfont icon-gouwuche color-red" @click="addshopcar(item)" style="float:right;font-size:14px
+                        "></i>
+                    </p>
+                    <!-- <div class="z-btn z-btn-red z-btn-s" @click="addshopcar(item)" style="font-size: 12px;margin: 0 3px;">加入购物车</div> -->
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function() {
+        /**
+         * 初始化页面监听事件
+         */
+        function fnInitEvent(){
+            /**上拉加载 */
+            api.addEventListener({
+                name:'scrolltobottom',
+                extra:{
+                    threshold:10
+                }
+            }, function(ret, err){
+                //页码+1，继续请求数据
+                myapp.getshoplist(2);
+            });
+            /** 下拉刷新 */
+            api.setRefreshHeaderInfo({
+                bgColor: '#ccc',
+                textColor: '#fff',
+                textDown: '下拉刷新...',
+                textUp: '松开刷新...'
+            }, function(ret, err) {
+                //重置页码、页面数据，请求数据
+                myapp.getshoplist(1);
+            });
+        };
+        fnInitEvent();
+
+
+        //打开页面，返回页面
+        api.addEventListener({
+            name:'viewappear'
+        }, function(ret, err){
+            myapp.getshoplist(1);
+        });
+
+        jw.data.jtget("shoping_list_nav2",function (ret) {
+            switch (parseInt(ret)) {
+                case 1:
+                    // 最新
+                    // 最新
+                    if (myapp.navindex != ret) {
+                        myapp.page_index = 1;
+                    }
+                    console.log( myapp.FNewSort)
+                    if (myapp.FNewSort == 0) {
+                        myapp.FNewSort = 1;
+                    }else{
+                        myapp.FNewSort = 0;
+                    }
+                    break;
+                case 2:
+                    // 销量
+                    if (myapp.navindex != ret) {
+                        myapp.page_index = 1
+                    }
+                    if (myapp.FSalesSort == 0) {
+                        myapp.FSalesSort = 1;
+                    }else{
+                        myapp.FSalesSort = 0;
+                    }
+                    break;
+                case 3:
+                    // 价格
+                    if (myapp.navindex == ret) {
+                        if (myapp.FPriceSort == 0){
+                            myapp.FPriceSort = 1;
+                        } else{
+                            myapp.FPriceSort = 0;
+                        }
+                    }else{
+                        myapp.FPriceSort = 1;
+                        myapp.page_index = 1;
+                    }
+                    break;
+                case 4:
+                    // 筛选
+                    break;
+            }
+            myapp.navindex = ret;
+            myapp.getshoplist(1);
+        });
+
+        jw.data.jtget("shoppppp",function (ret) {
+            myapp.FTypeId = ret;
+            myapp.getshoplist(1);
+        });
+
+        var myapp = new Vue({
+            "el": "#app",
+            data: {
+                navindex:1, // 1:最新 2：销量 3：价格
+                xianshilist:[], // 限时抢购列表
+                page_index: 1,
+                page_length: 20,
+                page_TotalCount: 1,
+                shoplist: [], // 商品列表
+                shopYear:[],//商品年份
+                Keywords: "", // 搜索词
+                FPriceSort: 0, // 价格 0升 1 降
+                FSalesSort: 0, //销量 0升 1 降
+                FNewSort: 0, //最新 0升 1 降
+                FNetWeight: "", // 净含量
+                FPricemin: "", //最小价格
+                FPricemax: "", //最大价格
+                FTypeId: "", // 分类ID
+            },
+            mounted(){
+                this.getshoplist(1);
+            },
+            methods: {
+                // 获取产品
+                getshoplist: function (ftype) {
+                    var _this = this;
+
+                    // 分类ID
+                    var FTypeId = _this.FTypeId;
+                    //年份
+                    var FYear=_this.FYear;
+                    // 品牌id
+                    var FBusinessBrandId = "";
+                    // >=净含量区间
+                    var FNetWeight = _this.FNetWeight;
+                    // <=净含量区间
+                    var FNetWeight1 = "";
+                    // >价格区间
+                    var FPrice = _this.FPricemin;
+                    // <价格区间
+                    var FPrice1 = _this.FPricemax;
+                    var l = _this.page_index;
+                    if (ftype == 1) {
+                        _this.page_index = 1;
+                    }else {
+                        l = parseInt(_this.page_index)+1;
+                        if (l > _this.page_TotalCount) {
+                            return false;
+                        }else{
+                            _this.page_index = l;
+                        }
+                    }
+
+                    jw.submit("api45543",{
+                        FTypeId:  FTypeId/*类型(int)*/,
+                        FPrice:  FPrice/*最低价(VarChar)*/,
+                        FPrice1:  FPrice1/*最高价(VarChar)*/,
+                        start:  _this.page_index/*开始页数(int)*/,
+                        length:  _this.page_length/*每页条数(int)*/,
+                        keywords:  _this.Keywords/*关键词(nvarchar)*/,
+                        FPriceSort:  _this.navindex==3?_this.FPriceSort:''/*价格排序0升1降(int)*/,
+                        FSalesSort:  _this.navindex==2?_this.FSalesSort:''/*销量排序0升1降(int)*/,
+                        FNewSort:  _this.navindex==1?_this.FNewSort:''/*最新排序0升1降(int)*/
+                    },function (ret) {
+                        setTimeout(function () {
+                            api.refreshHeaderLoadDone();
+                        },500);
+
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds.length > 0) {
+                            if (ret.ds1[0].TotalCount == undefined || ret.ds1[0].TotalCount == ""){
+                                _this.page_TotalCount = 1;
+                            } else{
+                                _this.page_TotalCount = ret.ds1[0].TotalCount;
+                            }
+                            if (ftype == 1) {
+                                _this.shoplist = ret.ds;
+                            }else{
+                                _this.shoplist.push.apply(_this.shoplist,ret.ds);
+                            }
+
+                            _this.$nextTick(function(){
+                                // 列表图片大小重置
+                                $(".shop_list").find(".box").css("height","auto");
+                                $(".shop_list").find(".img").height($(".shop_list").find(".img").width());
+                            });
+                        } else {
+                            _this.shoplist = [];
+                            _this.page_TotalCount = 0;
+                            jw.ts.toast('敬请期待');
+                        }
+                    });
+                },
+                // 去抢购 打开 商品详情页
+                goshop: function (item) {
+                    /* 普通商品*/
+                    jw.openWin({
+                        name: "shopdetails",
+                        url: "shopdetails.html",
+                        pageParam: {
+                            FId: item.FId
+                        }
+                    });
+                },
+                /* 加入购物车 */
+                addshopcar: function (item) {
+                    var _this = this;
+                    jw.submit("app_加入购物车New",{
+                        FUserId: jw.data.get("userid"),  //  用户id
+                        FBusinessId: item.FId,  //    商品id
+                        FNumber: 1,  //    数量
+                        FType: 3,  //    来源0商城1茶市
+                        FOnekeyResaleId: "",  //    FType为1时茶市转卖表id
+                    },function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            jw.ts.toast(ret.ds[0].msg);
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                }
+            }
+        });
+
+        jw.data.jtget("keywords",function (ret) {
+            myapp.Keywords = ret;
+            myapp.getshoplist(1);
+        });
+
+    }
+</script>
+</body>
+</html>

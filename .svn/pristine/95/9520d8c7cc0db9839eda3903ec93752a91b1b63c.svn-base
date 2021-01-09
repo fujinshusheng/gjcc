@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+
+</head>
+
+<body>
+
+
+    <div class="zui-app">
+        <div class="zui-header zui-header-dark zui-row-center">
+            <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+            <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">转赠</div>
+             <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+            onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+        </div>
+        <div class="zui-content ordermain">
+
+            <div class="zui-card myordercard">
+                <div class="zui-card-main">
+
+                    <div class="zui-list">
+                        <div class="zui-item zui-row zui-row-center">
+                            <div class="productbox zui-row zui-row-center zui-row-stretch">
+                                <div class="touxiang" :style="getbgimg(Warehousedetail.FImg)"></div>
+                                <div class="zui-col zui-row zui-row-column">
+                                    <div class="title">{{Warehousedetail.FName}}</div>
+                                    <div class="zui-col"></div>
+                                    <div class="zui-row text"><span
+                                            class="zui-col">买入价格：￥{{Warehousedetail.FTotal}}</span>
+                                        <span>买入数量：{{Warehousedetail.FNum}}</span></div>
+                                    <div class="zui-row text">剩余数量：{{Warehousedetail.FSurplusNum}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="firm_list mt10" v-if="ifzengsong">
+
+                <div class="firm_item">
+                    <div class="firm_navbox zui-row zui-row-center">
+                        <div class="title">赠送对象信息</div>
+                        <div class="zui-col text-right">昵称：{{peopleinfo.FName}}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="weui-form-preview">
+
+                <div class="weui-form-preview__bd">
+
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">手机号</label>
+                        <input type="tel" class="weui-form-preview__value fr inputborder text-right" v-model="Mobile">
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">数量</label>
+                        <input id="fnumber" type="number" class="weui-form-preview__value fr inputborder text-right"
+                            onclick="jw.setFocus('fnumber')" @change="changeNum()" v-model="FNum">
+                    </div>
+                </div>
+            </div>
+
+            <div class="firm_list mt10">
+                <div class="firm_item">
+                    <div class="firm_navbox zui-row zui-row-center">
+                        <div class="title">手续费</div>
+                        <div class="zui-col text-right">￥{{shouxufei}}</div>
+                    </div>
+                    <div class="firm_navbox zui-row zui-row-center">
+                        <div class="title">仓储费</div>
+                        <div class="zui-col text-right">￥{{WarehousePoundage || 0}}</div>
+                    </div>
+                </div>
+                <div class="firm_item">
+                    <div class="firm_navbox zui-row zui-row-center">
+                        <div class="title">转赠说明</div>
+                        <div class="zui-col text-right"></div>
+                    </div>
+                    <div class="firm_main" v-html="zhuanzeng">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="zui-footer zui-row zui-row-center zui-row-stretch">
+            <div class="footer_btn zui-col z-btn-cancel" @click="yanzheng()">验证</div>
+            <div class="footer_btn zui-col bg-red color-white" v-if="ifzengsong" @click="fasong()">确认赠送</div>
+        </div>
+
+
+        <!-- 输入密码弹出框 -->
+        <!--<div class="zui-alert shop_alert" style="display: none;">-->
+        <div class="zui-alert shop_alert" v-cloak v-show="payshow">
+            <div class="zui-alert_box">
+                <div class="shop_close iconfont icon-del color-red" @click="hidekey()"></div>
+                <div class="tip">
+                    <img src="../../image/money01.png" alt="">
+                </div>
+                <div class="title">请输入支付密码</div>
+                <div class="cont" style="padding: 15px;">
+                    <b style="font-size: 45px;">￥{{returnprice()}}</b>
+                    <div class="clearfix fz14">
+                        <span
+                            onclick="jw.openWin({name:'setting_paypassword',url:'../myself/setting_paypassword.html'})"
+                            class="fl">设置密码</span>
+                        <span
+                            onclick="jw.openWin({name:'setting_newpaypassword',url:'../myself/setting_newpaypassword.html'})"
+                            class="fr color-red">忘记密码？</span>
+                    </div>
+                    <div id="mimabox"></div>
+                </div>
+            </div>
+            <div class="zui-alert_bg"></div>
+        </div>
+
+        <jiaoyima v-show="jiaoyishow" v-on:rdata="jiaoyiback" v-cloak v-on:hide="jiaoyishow=false"></jiaoyima>
+
+    </div>
+
+    <script src="../../js/jquery-2.1.1.min.js"></script>
+    <script src="../../res/weui/jquery-weui.min.js"></script>
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/vuefilter.js"></script>
+    <script src="../../js/jw.js"></script>
+    <script src="../../js/zui.js"></script>
+    <script src="../../js/md5.js"></script>
+    <script src="../../js/layer/layer.js"></script>
+    <script>
+        apiready = function () {
+            jw.sb.fixStatusBar(".zui-header");
+
+            function init() {
+                setTimeout(function () {
+                    $("#mimabox").mimakeywords({
+                        onend: function (v, p) {
+                            myapp.payshow = false;
+                            p.close();
+                            myapp.zengsong(v);
+                        }
+                    });
+                }, 1000);
+            }
+
+            var myapp = new Vue({
+                "el": ".zui-app",
+                data: {
+                    FWarehouseId: api.pageParam.FWarehouseId, // 茶仓ID
+                    Warehousedetail: "", // 茶仓详情
+                    zhuanzeng: "", //转卖说明
+                    shouxufei: 0, //手续费
+                    Mobile: "", //赠送对象手机
+                    FNum: 1, //赠送数量
+                    peopleinfo: "", //赠送对象信息
+                    ifzengsong: false, //是否能赠送
+                    WarehousePoundage: 0, //仓储费
+                    payshow: false,
+                    jiaoyishow: false,
+                },
+                created: function () {
+                    var _this = this;
+                    _this.getdetails();
+                    _this.getshuoming();
+                    _this.getWarehousePoundage();
+                    init();
+                },
+                methods: {
+                    hidekey: function () {
+                        var _this = this;
+                        jw.ts.confirm({
+                            msg: "您确定要取消支付吗？"
+                        }, function (index) {
+                            if (index == 1) {
+                                this.payshow = false;
+                                $("#numberkeyobj").hide();
+                                setTimeout(function () {
+                                    api.closeWin();
+                                }, 500);
+                            } else {
+
+                            }
+                        });
+                    },
+                    // 获取茶仓详情
+                    getdetails: function () {
+                        var _this = this;
+                        jw.submit("app_茶仓详情", {
+                            "FWarehouseId": _this.FWarehouseId
+                        }, function (ret) {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status ==
+                                "000000") {
+                                _this.Warehousedetail = ret.ds1[0];
+                                _this.getshouxufei();
+                            } else {
+                                jw.ts.toast(ret.ds[0].msg);
+                            }
+                        });
+                    },
+                    // 验证赠送对象是否存在
+                    yanzheng: function () {
+                        var _this = this;
+                        var phone = _this.Mobile;
+                        var myreg =
+                            /^(((13[0-9]{1})|(14[0-9]{1})|(17[0]{1})|(15[0-3]{1})|(15[5-9]{1})|(18[0-9]{1}))+\d{8})$/;
+                        if (phone == "") {
+                            _this.ifzengsong = false;
+                            jw.ts.toast("手机号不能为空");
+                            return;
+                        } else if (phone.length != 11) {
+                            _this.ifzengsong = false;
+                            jw.ts.toast("请输入有效的手机号");
+                            return;
+                        } else if (!myreg.test(phone)) {
+                            _this.ifzengsong = false;
+                            jw.ts.toast("请输入有效的手机号");
+                            return;
+                        }
+                        var FNum = _this.FNum;
+                        if (isNaN(FNum)) {
+                            _this.ifzengsong = false;
+                            jw.ts.toast("请输入正确数量");
+                            return;
+                        } else if (FNum > _this.Warehousedetail.FSurplusNum) {
+                            _this.ifzengsong = false;
+                            jw.ts.toast("请输入正确数量");
+                            return;
+                        }
+                        jw.submit("app_转送验证", {
+                            "FWarehouseId": _this.FWarehouseId,
+                            "FUserId": jw.data.get("userid"), //   用户id
+                            "FNum": _this.FNum,
+                            "Mobile": _this.Mobile,
+                            "shouxufei": _this.shouxufei,
+                        }, function (ret) {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status ==
+                                "000000") {
+                                _this.peopleinfo = ret.ds1[0];
+                                _this.ifzengsong = true;
+                                _this.getshouxufei();
+                            } else {
+                                jw.ts.toast(ret.ds[0].msg);
+                                _this.ifzengsong = false;
+                            }
+                        });
+                    },
+                    // 获取转增说明
+                    getshuoming: function () {
+                        var _this = this;
+                        jw.submit("app_协议及说明", {
+                            agreementId: 4
+                        }, function (ret) {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status ==
+                                "000000") {
+                                _this.zhuanzeng = ret.ds1[0].FContent;
+                            } else {
+                                //jw.ts.toast(ret.ds[0].msg);
+                            }
+                        });
+                    },
+                    // 获取转增手续费
+                    getshouxufei: function () {
+                        var _this = this;
+                        jw.submit("app_转增手续费", {
+                            "FNum": _this.FNum,
+                            "FBusinessId": _this.Warehousedetail.FBusinessId
+                        }, function (ret) {
+                            _this.shouxufei = ret.ds[0].Price;
+                        });
+                    }, //仓储费
+                    getWarehousePoundage: function () {
+                        var _this = this;
+                        jw.submit("app_仓储费计算20201217", {
+                            "FWarehouseId": _this.FWarehouseId
+                        }, function (ret) {
+                            _this.WarehousePoundage = ret.ds[0].WarehousePoundage;
+                        });
+                    },
+                    // 返回价格
+                    returnprice: function () {
+                        var _this = this;
+                        //var shouxufei = parseFloat(_this.shouxufei) || 0;
+                        //var WarehousePoundage = parseFloat(_this.WarehousePoundage) || 0;
+                        return (_this.shouxufei + _this.WarehousePoundage).toFixed(2);
+                    },
+                    jiaoyiback: function (t) {
+                        var _this = this;
+
+                        if (_this.WarehousePoundage > 0 || _this.shouxufei > 0) {
+                            _this.zhifu(t);
+                        } else {
+                            jw.submit_ykt("yzwxmsg", {
+                                userPhone: jw.data.get("phone"), // 手机号
+                                yzm: t
+                            }, function (ret) {
+                                if (ret == "1") {
+                                    myapp.payshow = true;
+                                    $("#numberkeyobj").show();
+                                } else {
+                                    jw.ts.toast("验证码错误");
+                                    _this.jiaoyishow = true;
+                                }
+                            }, {
+                                jz: false,
+                                Url: jw.config.url3,
+                                Ip: jw.config.ip3
+                            });
+                        }
+
+                    },
+                    //发送验证码
+                    fasong: function () {
+                        var _this = this;
+                        var phone = _this.Mobile;
+                        var myreg =
+                            /^(((13[0-9]{1})|(14[0-9]{1})|(17[0]{1})|(15[0-3]{1})|(15[5-9]{1})|(18[0-9]{1}))+\d{8})$/;
+                        if (phone == "") {
+                            _this.ifzengsong = false;
+                            jw.ts.toast("手机号不能为空");
+                            return;
+                        } else if (phone.length != 11) {
+                            _this.ifzengsong = false;
+                            jw.ts.toast("请输入有效的手机号");
+                            return;
+                        } else if (!myreg.test(phone)) {
+                            _this.ifzengsong = false;
+                            jw.ts.toast("请输入有效的手机号");
+                            return;
+                        }
+                        var FNum = _this.FNum;
+                        if (isNaN(FNum) || FNum <= 0) {
+                            _this.ifzengsong = false;
+                            jw.ts.toast("请输入正确数量");
+                            return;
+                        } else if (FNum > _this.Warehousedetail.FSurplusNum) {
+                            _this.ifzengsong = false;
+                            jw.ts.toast("请输入正确数量");
+                            return;
+                        }
+
+                        // jw.submit("sendwxmsg", {//发送验证码
+                        //     userPhone: jw.data.get("phone"),// 手机号
+                        // }, function (ret) {
+                        //     jw.ts.toast("验证码已发送，请注意查收");
+                        //     _this.jiaoyishow = true;
+                        //
+                        // }, {
+                        //     jz: false,
+                        //     Url: jw.config.url3
+                        // });
+
+                        _this.zhifu();
+                    },
+                    zhifu: function (t) {
+                        var _this = this;
+                        // jw.submit("yzwxmsg", {
+                        //     userPhone: jw.data.get("phone"),// 手机号
+                        //     yzm: t
+                        // }, function (ret) {
+                        //     if (ret == "1") {
+                        jw.ts.actionSheet({
+                            title: '请选择',
+                            buttons: ["微信支付", '支付宝支付','一网通支付','钱包支付' ]
+                        }, function (index) {
+                            if (index == 4) {
+                                myapp.payshow = true;
+                                $("#numberkeyobj").show();
+                            } else if (index == 1) {
+                                jw.submit_ykt("WXchacangpay", {
+                                    "body": "转送手续费支付",
+                                    "notifyUrl": "http://www.yunpuer.com/SelfModel/chacangpaysuccess.aspx",
+                                    "FWarehouseId": _this.FWarehouseId,
+                                    "FUserId": jw.data.get("userid"), //   用户id
+                                    "FNum": _this.FNum,
+                                    "Mobile": _this.Mobile,
+                                    "shouxufei": _this.shouxufei,
+                                    "WarehousePoundage": _this.WarehousePoundage,
+                                    "FType": 2,
+                                    "FPickDate": "",
+                                    "FShippingAddressId": 0,
+                                    "FBusinessId": _this.Warehousedetail.FBusinessId
+                                }, function (ret) {
+                                    if (ret.result_code == "SUCCESS") {
+                                        var now = Date.parse(new Date()) / 1000;
+                                        var stringA =
+                                            "appid=wx7f1cca191b9b3caf&noncestr=" + ret
+                                            .nonce_str +
+                                            "&package=Sign=WXPay&partnerid=1512144871&prepayid=" +
+                                            ret.prepay_id + "&timestamp=" + now;
+                                        var stringSignTemp = stringA +
+                                            "&key=qweasdzxc123456789qazwsxedcrfvtg";
+                                        //console.log(stringSignTemp);
+                                        var sign = hex_md5(stringSignTemp)
+                                            .toUpperCase();
+                                        var wxPay = api.require('wxPayPlus');
+                                        wxPay.payOrder({
+                                            apiKey: "wx7f1cca191b9b3caf", //ret.appid,
+                                            orderId: ret.prepay_id,
+                                            mchId: "1512144871", //ret.mch_id,
+                                            nonceStr: ret.nonce_str,
+                                            timeStamp: now,
+                                            package: 'Sign=WXPay',
+                                            sign: sign
+                                        }, function (ret, err) {
+                                            if (ret.status) {
+                                                jw.ts.toast("支付成功");
+                                                //关闭当前页面
+                                            } else {
+                                                jw.ts.toast("失败");
+                                                _this.getdetails();
+                                            }
+                                            setTimeout(function () {
+                                                api.closeWin();
+                                            }, 500);
+                                        });
+                                    } else {
+                                        jw.ts.toast("失败");
+                                    }
+                                }, {
+                                    jz: true,
+                                    Url: jw.config.url3,
+                                    Ip: jw.config.ip3
+                                });
+                            } else if (index == 2) {
+                                jw.submit_ykt("Alichacangpay", {
+                                    "Body": "转送手续费支付",
+                                    "Subject": "转送手续费支付",
+                                    "NotifyUrl": "http://www.yunpuer.com/SelfModel/hander.aspx?cmd=AlichacangpayNotify",
+                                    "FWarehouseId": _this.FWarehouseId,
+                                    "FUserId": jw.data.get("userid"), //   用户id
+                                    "FNum": _this.FNum,
+                                    "Mobile": _this.Mobile,
+                                    "shouxufei": _this.shouxufei,
+                                    "WarehousePoundage": _this.WarehousePoundage,
+                                    "FType": 2,
+                                    "FPickDate": "",
+                                    "FShippingAddressId": 0,
+                                    "FBusinessId": _this.Warehousedetail.FBusinessId
+                                }, function (ret1) {
+                                  var ret = ret.data;
+                                    if (ret != "") {
+                                        var aliPayPlus = api.require('aliPayPlus');
+                                        aliPayPlus.payOrder({
+                                            orderInfo: ret
+                                        }, function (ret, err) {
+                                            if (ret.code == "9000") {
+                                                jw.ts.toast("支付成功");
+                                            } else {
+                                                jw.ts.toast("失败");
+                                                _this.getdetails();
+                                            }
+                                            setTimeout(function () {
+                                                api.closeWin();
+                                            }, 500);
+                                        });
+                                    }
+                                }, {
+                                    jz: true,
+                                    Url: jw.config.url3,
+                                    Ip: jw.config.ip3
+                                });
+                            }else if(index == 3){
+                                //一网通
+
+                                jw.submit('app_提交茶仓操作',{
+                                    "FWarehouseId": _this.FWarehouseId,
+                                    "FUserId": jw.data.get("userid"), //   用户id
+                                    "FNum": _this.FNum,
+                                    "Mobile": _this.Mobile,
+                                    "shouxufei": _this.shouxufei,
+                                    "WarehousePoundage": _this.WarehousePoundage,
+                                    "FType": 2,
+                                    "FPickDate": "",
+                                    "FShippingAddressId": 0,
+                                    "FBusinessId": _this.Warehousedetail.FBusinessId,
+                                },function(ret){
+                                    if('000000'==ret.ds[0].status&&null!=ret.ds[0].msg){
+                                        layer.open({
+                                            type:2,
+                                            title:'一网通支付',
+                                            shadeClose:true,
+                                            shade:0.3,
+                                            area:['100%','90%'],
+                                            end:function(){
+                                                myapp.getdetails();
+                                            },
+                                            content: "http://www.yunpuer.com/SelfModel/Payment.aspx?mark=2&transactionName=transaction_id&payType=4&amount="+_this.shouxufei+"&orderNo="+ret.ds[0].id+"&id="+ret.ds[0].id
+                                        });
+                                    }
+                                });
+                            }
+
+                        })
+                        //     } else {
+                        //         jw.ts.toast("验证码错误");
+                        //         _this.jiaoyishow = true;
+                        //     }
+                        // }, {
+                        //     jz: false,
+                        //     Url: jw.config.url3
+                        // });
+
+                    },
+
+                    //修改赠送数量
+                    changeNum: function () {
+                        var _this = this;
+                        _this.yanzheng();
+                    },
+                    // 赠送
+                    zengsong: function (PayPassword) {
+                        var _this = this;
+                        jw.submit("app_赠送", {
+                            "FWarehouseId": _this.FWarehouseId,
+                            "FUserId": jw.data.get("userid"), //   用户id
+                            "FNum": _this.FNum,
+                            "Mobile": _this.Mobile,
+                            "shouxufei": _this.shouxufei,
+                            "WarehousePoundage": _this.WarehousePoundage,
+                            "PayPassword": PayPassword
+                        }, function (ret) {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status ==
+                                "000000") {
+                                jw.ts.toast(ret.ds[0].msg);
+                                setTimeout(function () {
+                                    api.closeWin();
+                                }, 500);
+                            } else {
+                                jw.ts.toast(ret.ds[0].msg);
+                            }
+                        });
+                    },
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

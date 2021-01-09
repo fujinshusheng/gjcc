@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+  <form class="zui-header zui-header-dark zui-row-center" @submit="post()">
+
+      <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+      <div class="shop_header_seach zui-col zui-row zui-row-center" style="padding-left: 50px;">
+          <div class="seachtxt zui-row zui-col zui-row-center">
+              <i class="iconfont icon-sousuo1"></i>
+              <input id="keywords" type="text" class="zui-col" v-model="keywords">
+          </div>
+          <span class="cancelbtn" v-cloak @click="getnewslist()">搜索</span>
+      </div>
+  </form>
+
+    <!-- <div class="zui-row zui-header-dark  zui-row-center news">
+        <div class="zui-col nav selected">
+            <i class="iconfont icon-zuixin"></i>
+            <p>最新</p>
+        </div>
+        <div class="zui-col nav">
+            <i class="iconfont icon-remen"></i>
+            <p>热门</p>
+        </div>
+    </div> -->
+    <div class="zui-content">
+        <div class="zui-list2">
+
+            <div class="item" v-for="item in newslist" v-cloak @click="todetails(item)">
+                <div class="img">
+                    <img :src="item.FImageUrl|url" alt="">
+                </div>
+                <div class="tmain">
+                    <p class="title">{{item.FName}}</p>
+                    <p class="fz12 color-gray9 row-bottom">
+                        <span><i class="iconfont icon-zan"></i>{{item.FPraiseNum}}</span>
+                        <span><i class="iconfont icon-fenxiang1"></i>{{item.FShareNum}}</span>
+                        <span style="float: right">{{item.FCreateDate | datatime}}</span>
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script src="../../res/weui/jquery-weui.min.js"></script>
+<script src="../../res/weui/swiper.min.js"></script>
+<script>
+    apiready = function() {
+        jw.sb.fixStatusBar(".zui-header");
+
+        jw.data.jtget("newlists",function (ret) {
+            myapp.getnewslist();
+        });
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                FNewsTypeId:api.pageParam.FNewsTypeId,//新闻分类id
+                newslist: [],
+                keywords:jw.data.get("keywords",""),
+            },
+            created: function () {
+                this.getnewslist();
+            },
+            methods: {
+                getnewslist: function () {
+                    var _this = this;
+                    jw.submit("app_茶新闻列表",{
+                        keywords:_this.keywords ,
+                        FNewsTypeId:_this.FNewsTypeId,
+                    },function (ret) {
+                        if (ret.ds != undefined && ret.ds.length > 0){
+                            _this.newslist = ret.ds;
+                        }else{
+                            _this.newslist = [];
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    })
+                },
+                post:function(){
+                  if($("#keywords").val()!=""){
+                    jw.data.set("keywords",$("#keywords").val());
+                  }
+                    this.getnewslist();
+                },
+                cancel:function(){
+                  var _this = this;
+                  $("#keywords").val("");
+                  jw.data.remove("keywords");
+                  _this.keywords="";
+                  _this.getnewslist();
+                },
+                // 查看新闻详情
+                todetails: function (item) {
+                    jw.openWin({
+                        name: "newDetails",
+                        url: "newDetails2.html",
+                        pageParam: {
+                            FNewsId: item.FNewsId
+                        }
+                    });
+                }
+            }
+        })
+
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>个人中心</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <style media="screen">
+        .touxiang {
+              border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <div class="zui-app">
+        <div class="zui-header zui-header-dark zui-row-center">
+            <div class="iconfont icon-back zui-header-icon zui-header-left" @touchstart="back()"></div>
+            <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">我的购物车</div>
+            <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="right: 45px;font-size:30px"
+            onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+            <div class="zui-header-icon zui-header-right zui-header_text" v-show="edit==false" @click="edit=true">编辑
+            </div>
+            <div class="zui-header-icon zui-header-right zui-header_text" v-show="edit==true" @click="editfun()">保存
+            </div>
+        </div>
+        <div class="zui-content">
+
+            <div class="zui-card myordercard" v-for="(item,index) in shopcarlist">
+                <div class="zui-card-main">
+                    <div class="title">{{item.FType==1?"茶友集市":(item.FType==0? "茶品选购":"茶器选购")}}</div>
+                    <div class="zui-list">
+                        <div class="zui-item zui-row zui-row-center">
+                            <label class="zui-radiobox">
+                                <!-- <div class="z-numbercol_add iconfont icon-jian" @click="number_less()"></div> -->
+                                <input style="background-color: #fff;" type="checkbox" v-model="item.chose"
+                                    @change="pricefun()">
+                                <i class="zui-checked"></i>
+                                <!-- <div class="z-numbercol_less iconfont icon-add" @click="number_add()"></div> -->
+                            </label>
+                            <div class="productbox zui-col zui-row zui-row-center zui-row-stretch">
+                                <div class="touxiang" :style="getbgimg(item.FImageUrl)" @click="toDetail(item)"></div>
+                                <div class="zui-col zui-row zui-row-column">
+                                    <div class="title" @click="toDetail(item)" style="font-size:14px;">{{item.FBusinessName}}</div>
+                                    <div class="zui-col"></div>
+                                    <div class="zui-row zui-row-center">
+                                        <div class="zui-col">价格：￥{{item.FPrice}}</div>
+                                        <span v-show="edit == false">X{{item.FNumber}}</span>
+                                        <div v-show="edit == true" class="z-numbercol">
+                                            <div class="z-numbercol_less iconfont icon-jian" @click="less(item)"></div>
+                                            <input style="background-color: #fff;"
+                                                oninput="value=value.replace(/[^\d]/g,'')" type="number"
+                                                class="z-numbercol_text" v-model="item.FNumber" @change="number_change(item)">
+                                            <div class="z-numbercol_add iconfont icon-add" @click="add(item)"></div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="zui-footer zui-row zui-row-center zui-row-stretch firm_footer" v-show="edit == false">
+            <label class="zui-radiobox zui-col zui-row zui-row-center text-nowrap">
+                <input type="checkbox" v-model="allchose" @change="allchange()">
+                <i class="zui-checked"></i>
+                <span>全选</span>
+            </label>
+            <div class="zui-col" v-show="FPPFTotal">
+                <div style="font-size:16px;line-height:23px;color: #a61f24;">￥{{price}}</div>
+                <div style="font-size:12px;color:#888888;line-height:22px;padding-bottom:7px">优惠{{FPPFTotal}}</div>
+            </div>
+            <div v-show="!FPPFTotal" class="zui-col text text-nowrap">￥{{price}}</div>
+            <!-- <div class="text text-nowrap">总计：￥{{price}}优惠：{{FPPrice}}</div> -->
+            <div class="footer_btn zui-col-40 bg-red color-white" @click="xiadan()">下单</div>
+        </div>
+
+        <!-- 编辑时 -->
+        <div class="zui-footer zui-row zui-row-center zui-row-stretch firm_footer" v-show="edit == true">
+            <label class="zui-radiobox zui-col">
+                <input type="checkbox" v-model="allchose" @change="allchange()">
+                <i class="zui-checked"></i>
+                <span>全选</span>
+            </label>
+            <div class="zui-col" v-show="FPPFTotal">
+                <div style="font-size:16px;line-height:23px;color: #a61f24;">￥{{price}}</div>
+                <div style="font-size:12px;color:#888888;line-height:22px;padding-bottom:7px">优惠{{FPPFTotal}}</div>
+            </div>
+            <div v-show="!FPPFTotal" class="zui-col text text-nowrap">￥{{price}}</div>
+            <!-- <div class="text">总计：￥{{price}}优惠：{{FPPrice}}</div> -->
+            <div class="footer_btn zui-col-40 bg-red color-white" @click="delfun()">删除</div>
+        </div>
+
+    </div>
+
+
+    <script src="../../js/jquery-2.1.1.min.js"></script>
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/vuefilter.js"></script>
+    <script src="../../js/jw.js"></script>
+    <script src="../../js/zui.js"></script>
+    <script>
+        apiready = function () {
+            jw.sb.fixStatusBar(".zui-header");
+
+            jw.data.jtget("ordershuaxin", function (ret) {
+                myapp.getshopcar();
+            });
+
+            api.addEventListener({
+                name: 'viewappear'
+            }, function (ret, err) {
+                myapp.getshopcar();
+            });
+
+            var myapp = new Vue({
+                "el": ".zui-app",
+                data: {
+                    edit: false,
+                    shopcarlist: [],
+                    allchose: false, // 全选
+                    price: "0", //选中商品总价
+                    FTotal: 0, //单个商品价格
+                    FPPrice: 0, //选中商品优惠总金额
+                    FPPFTotal: 0 //单个优惠金额
+                },
+                created: function () {
+
+                },
+                methods: {
+                    back: function () {
+                        jw.back();
+                    },
+                    // 获取购物车列表
+                    getshopcar: function () {
+                        var _this = this;
+                        jw.submit("app_我的购物车New", {
+                            FUserId: jw.data.get("userid")
+                        }, function (ret) {
+                            if (ret.ds[0].status == "000000") {
+                                _this.shopcarlist = ret.ds1;
+                            } else {
+                                jw.ts.toast(ret.ds[0].msg);
+                                _this.shopcarlist = [];
+                            }
+                        })
+                    },
+                    // 全选
+                    allchange: function () {
+                        var _this = this;
+                        for (var i = 0; i < _this.shopcarlist.length; i++) {
+                            _this.shopcarlist[i].chose = _this.allchose;
+                        }
+                        _this.pricefun();
+                    },
+                    // 价格计算
+                    pricefun: function () {
+                        var _this = this;
+                        if (_this.shopcarlist.length > 0) {
+                            var s = 0; //选中总价
+                            var ss = 0; //优惠总价
+                            // for (var i = 0; i < _this.shopcarlist.length; i++) {
+                            //     if (_this.shopcarlist[i].chose == true) {
+                            //         if (_this.shopcarlist[i].FType == 0) //购物车类型为商城
+                            //         {
+                            //             _this.returnprice(_this.shopcarlist[i]);
+                            //             console.log(_this.FTotal)
+                            //             s = s + _this.FTotal;
+                            //         } else { //购物车类型为茶市
+                            //             s = s + parseFloat(_this.shopcarlist[i].FPrice) * parseFloat(_this.shopcarlist[i].FNumber);
+                            //         }
+                            //     }
+                            // }
+                            // _this.price = s;
+
+                            var repeatList = function (i) {
+                                if (i == _this.shopcarlist.length) {
+                                    _this.price = s;
+                                    _this.FPPFTotal = ss;
+                                } else {
+                                    if (_this.shopcarlist[i].chose == true) {
+                                        if (_this.shopcarlist[i].FType == 0) //购物车类型为商城
+                                        {
+                                            // _this.returnprice(_this.shopcarlist[i]);
+                                            // s = s + _this.FTotal;
+                                            jw.submit("app_获取商品总价", {
+                                                FBusinessId: _this.shopcarlist[i]
+                                                    .FBusinessId, //
+                                                FBuyNum: _this.shopcarlist[i].FNumber, //
+                                                FOrderType: 0, //
+                                            }, function (ret) {
+                                                if (ret.ds[0].status == "000000") {
+                                                    _this.FTotal = ret.ds1[0].FTotal;
+                                                    _this.FPPrice = ret.ds1[0].FPPrice;
+                                                } else {
+                                                    _this.FTotal = 0;
+                                                    _this.FPPrice = 0;
+                                                }
+                                                s = s + _this.FTotal;
+                                                ss = ss + _this.FPPrice;
+                                                i++;
+                                                repeatList(i);
+                                            })
+                                        } else { //购物车类型为茶市
+                                            s = s + parseFloat(_this.shopcarlist[i].FPrice) *
+                                                parseFloat(_this.shopcarlist[i].FNumber);
+
+                                            i++;
+                                            repeatList(i);
+                                        }
+                                    } else {
+                                        i++;
+                                        repeatList(i);
+                                    }
+
+                                }
+                            }
+                            repeatList(0);
+                        } else {
+                            _this.price = "0";
+                            _this.FPPFTotal = "0";
+                        }
+
+                    },
+                    //返回价格
+                    returnprice: function (item) {
+                        var _this = this;
+                        jw.submit("app_获取商品总价", {
+                            FBusinessId: item.FBusinessId, //
+                            FBuyNum: item.FNumber, //
+                            FOrderType: 0, //
+                        }, function (ret) {
+                            if (ret.ds[0].status == "000000") {
+                                _this.FTotal = ret.ds1[0].FTotal;
+                            } else {
+                                _this.FTotal = 0;
+                            }
+                        })
+
+                    },
+                    number_change:function(item){
+                      var s = parseInt(item.FNumber) || 0;
+                      if (s == "" || s == undefined) {
+                          item.FNumber = 1;
+                      } else {
+                        if (s < 1) {
+                          item.FNumber = 1;
+                        }else if (s >= item.limitNum) {
+                            item.FNumber = item.limitNum;
+                        }
+                      }
+                      this.pricefun();
+                    },
+                    // 增加
+                    add: function (item) {
+                        var _this = this;
+                        var s = parseInt(item.FNumber) || 0;
+                        // 减少
+                        if (s < item.limitNum) {
+                            item.FNumber = s + 1;
+                        } else {
+                            jw.ts.toast("最大购买数是" + item.limitNum);
+                        }
+                        _this.pricefun();
+                    },
+                    less: function (item) {
+                        var _this = this;
+                        var s = parseInt(item.FNumber) || 0;
+                        if (s > 1 && s > item.FMinNum && s <= item.limitNum) {
+                            item.FNumber = s - 1;
+                        }
+                        _this.pricefun();
+                    },
+                    // 编辑
+                    editfun: function () {
+                        var _this = this;
+                        var list = [];
+                        var iftrue = true;
+                        for (var i = 0; i < _this.shopcarlist.length; i++) {
+                            if (_this.shopcarlist[i].FNumber != '' && _this.shopcarlist[i].FNumber >
+                                0) {
+                                list.push(_this.shopcarlist[i].FShoppingCarId + "," + _this.shopcarlist[
+                                    i].FNumber);
+                            } else {
+                                iftrue = false;
+                            }
+                        }
+                        if (!iftrue) {
+                            jw.ts.toast("请输入正确数量");
+                            return false;
+                        }
+                        var FShoppingCar = list.join(";");
+                        jw.ts.confirm({
+                            msg: "是否确认编辑"
+                        }, function (ret) {
+                            if (ret == 1) {
+                                jw.submit("app_购物车编辑New", {
+                                    FShoppingCar: FShoppingCar
+                                }, function (ret) {
+                                    if (ret.ds[0].status == "000000") {
+                                        //jw.ts.toast(ret.ds[0].msg);
+                                        _this.edit = false;
+                                        _this.getshopcar();
+                                    } else {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                    }
+                                });
+                            }
+                        });
+                    },
+                    // 删除
+                    delfun: function () {
+                        var _this = this;
+
+                        var FShoppingCarIds = [];
+                        for (var i = 0; i < _this.shopcarlist.length; i++) {
+                            if (_this.shopcarlist[i].chose == true) {
+                                FShoppingCarIds.push(_this.shopcarlist[i].FShoppingCarId)
+                            }
+                        }
+                        jw.ts.confirm({
+                            msg: "是否确认删除"
+                        }, function (ret) {
+                            if (ret == 1) {
+                                jw.submit("app_购物车删除", {
+                                    FShoppingCarId: FShoppingCarIds.join()
+                                }, function (ret) {
+                                    if (ret.ds[0].status == "000000") {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                        _this.edit = false;
+                                        _this.getshopcar();
+                                    } else {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                    }
+                                });
+                            }
+                        });
+                    },
+                    // 下单
+                    xiadan: function () {
+                        var _this = this;
+                        var FShoppingCarIds = [];
+                        _this.pricefun();
+
+                        for (var i = 0; i < _this.shopcarlist.length; i++) {
+                            if (_this.shopcarlist[i].chose == true) {
+                                FShoppingCarIds.push(_this.shopcarlist[i].FShoppingCarId)
+                            }
+                        }
+                        if (FShoppingCarIds.length > 0) {
+                            jw.openWin({
+                                name: "shoppingCar_pickGoods",
+                                url: "../shangcheng/shoppingCar_pickGoods.html",
+                                pageParam: {
+                                    FShoppingCarIds: FShoppingCarIds.join(),
+                                    ly: "my_Shopping_Cart",
+                                }
+                            })
+                        }
+                    },
+                    //转到商品详情
+                    toDetail: function (item) {
+                        if (item.FType == 0) { //商城
+                            var option = {
+                                FBusinessId: item.FBusinessId,
+                                FPageType: 2, // 1： 限时抢购 2 普通商品
+                                Ftype: 0, // 1 茶商城
+                                FlashSaleId: "",
+                                ly: "my_Shopping_Cart"
+                            };
+                            /* 普通商品*/
+                            jw.openWin({
+                                name: "shopdetails",
+                                url: "../shangcheng/shopdetails.html",
+                                pageParam: option
+                            });
+                        } else if (item.FType == 1) { //茶市
+                            var option = {
+                                FOnekeyResaleId: item.FOnekeyResaleId,
+                                FBusinessId: item.FBusinessId,
+                                ly: "my_Shopping_Cart"
+                            };
+                            /* 普通商品*/
+                            jw.openWin({
+                                name: "chashi_shopdetails",
+                                url: "../shangcheng/chashi_shopdetails.html",
+                                pageParam: option
+                            });
+                        }
+                    },
+                    panduan() {
+
+                    }
+                }
+            });
+
+        }
+    </script>
+</body>
+
+</html>

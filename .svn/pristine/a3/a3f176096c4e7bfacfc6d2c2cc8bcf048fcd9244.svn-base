@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>个人中心</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-header zui-row-center myjifen_header">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">添加发票</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+    <div class="zui-content">
+        <div class="zui-list info_list">
+            <div class="zui-item zui-row zui-row-center" v-cloak>
+                <div class="title">名称</div>
+                <input type="text" class="text zui-col" v-model="option.FName" placeholder="公司名称">
+            </div>
+            <div class="zui-item zui-row zui-row-center" v-cloak>
+                <div class="title">税号</div>
+                <input type="text" class="text zui-col" v-model="option.FNumber" placeholder="15~20位">
+            </div>
+            <div class="zui-item zui-row zui-row-center" v-cloak>
+                <div class="title">单位地址</div>
+                <input type="text" class="text zui-col" v-model="option.FAddress" placeholder="公司地址">
+            </div>
+            <div class="zui-item zui-row zui-row-center" v-cloak>
+                <div class="title">电话号码</div>
+                <input type="text" class="text zui-col" v-model="option.FPhone" placeholder="公司电话">
+            </div>
+            <div class="zui-item zui-row zui-row-center" v-cloak>
+                <div class="title">开户银行</div>
+                <input type="text" class="text zui-col" v-model="option.FBank" placeholder="开户银行">
+            </div>
+            <div class="zui-item zui-row zui-row-center" v-cloak>
+                <div class="title">开户银行</div>
+                <input type="text" class="text zui-col" v-model="option.FName" placeholder="开户银行">
+            </div>
+            <div class="zui-item zui-row zui-row-center" v-cloak>
+                <div class="title">银行账户</div>
+                <input type="text" class="text zui-col" v-model="option.FBankNo" placeholder="银行账户">
+            </div>
+        </div>
+
+    </div>
+    <div class="zui-footer zui-row zui-row-center zui-row-stretch">
+        <div class="footer_btn zui-col bg-red color-white" v-show="edit == true" @click="cancel()">取消</div>
+        <div class="footer_btn zui-col bg-red color-white" v-show="edit == false" @click="save()">保存</div>
+    </div>
+</div>
+
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../res/weui/jquery-weui.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function() {
+        jw.sb.fixStatusBar(".zui-header");
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                option: {}
+            },
+            created: function () {
+                var _this = this;
+            },
+            methods: {
+                cancel: function () {
+                    jw.back();
+                },
+                save: function () {
+                    var _this = this;
+                    if (_this.option.FName == undefined || _this.option.FName == ""){
+                        jw.ts.toast("请填写公司名称")
+                        return false;
+                    }
+                    if (_this.option.FNumber == undefined || _this.option.FNumber == ""){
+                        jw.ts.toast("请填写税号")
+                        return false;
+                    }
+                    if (_this.option.FAddress == undefined || _this.option.FAddress == ""){
+                        jw.ts.toast("请填写公司地址")
+                        return false;
+                    }
+                    if (_this.option.FPhone == undefined || _this.option.FPhone == ""){
+                        jw.ts.toast("请填写公司电话")
+                        return false;
+                    }
+                    if (_this.option.FBank == undefined || _this.option.FBank == ""){
+                        jw.ts.toast("请填写开户行")
+                        return false;
+                    }
+                    if (_this.option.FBankNo == undefined || _this.option.FBankNo == ""){
+                        jw.ts.toast("请填写银行卡号")
+                        return false;
+                    }
+                    _this.option.FUserId = jw.data.get("userid");
+                    jw.submit("app_新增发票记录New",_this.option,function (ret) {
+                        if (ret.ds[0].status == "000000"){
+                            jw.ts.toast("成功");
+                            setTimeout(function () {
+                                jw.back();
+                            },1000);
+                        }
+                    });
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

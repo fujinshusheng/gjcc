@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../res/mobiscroll/mobiscroll.custom-2.5.0.min.css">
+</head>
+
+<body>
+
+
+    <div class="zui-app">
+
+        <div class="zui-header zui-header-dark zui-row-center">
+            <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+            <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">确认订单</div>
+             <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+            onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+        </div>
+
+        <div class="zui-content ordermain">
+
+            <div class="weui-form-preview">
+
+                <div class="order_imgbox zui-row zui-row-center zui-row-stretch" v-cloak>
+                    <div class="touxiang" :style="getbgimg(shopdetails.FImageUrl)"></div>
+                    <div class="zui-col zui-row zui-row-column">
+                        <div class="title">{{shopdetails.FName}}</div>
+                        <div class="zui-col"></div>
+                        <div class="text"><span class="color-red fz20">￥{{shopdetails.FPrice}}</span> <span
+                                class="fr">×1</span></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="weui-form-preview">
+                <div class="weui-form-preview__bd">
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">购买数量</label>
+                        <div class="weui-form-preview__value">
+                            <div class="z-numbercol">
+                                <div class="z-numbercol_add iconfont icon-jian" @click="number_less()"></div>
+                                <input type="number" class="z-numbercol_text" v-model="number" @change="number_change()"
+                                    style="background-color: #fff;" oninput="value=value.replace(/[^\d]/g,'')" />
+                                <div class="z-numbercol_less iconfont icon-add" @click="number_add()"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">提货方式</label>
+                        <div class="weui-form-preview__value">
+                            <div class="zui-radiolist">
+                                <label class="zui-radiobox" v-show="zt">
+                                    <input type="radio" name="tihuo" v-model="FPickType" value="0" />
+                                    <i class="zui-checked"></i>
+                                    <span class="zui-radiotxt">自提</span>
+                                </label>
+                                <label class="zui-radiobox" v-show="cc">
+                                    <input type="radio" name="tihuo" v-model="FPickType" value="2" />
+                                    <i class="zui-checked"></i>
+                                    <span class="zui-radiotxt">转入茶仓</span>
+                                </label>
+                                <label class="zui-radiobox" v-show="kd">
+                                    <input type="radio" name="tihuo" v-model="FPickType" value="1" />
+                                    <i class="zui-checked"></i>
+                                    <span class="zui-radiotxt">快递</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div id="zitibox" class="weui-form-preview" v-cloak v-show="FPickType == 0">
+                <div class="weui-form-preview__bd">
+                    <div class="weui-form-preview__item zui-row zui-row-center">
+                        <label class="weui-form-preview__label">提货时间</label>
+                        <div class="weui-form-preview__value zui-col zui-row zui-row-center">
+                            <input type="text" class="zui-col text-right" id="tihuodata" placeholder="请选择提货时间" />
+                        </div>
+                        <div class="weui-form-preview__ft"><i class="iconfont icon-right"></i></div>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">提货地址</label>
+                        <span class="weui-form-preview__value">{{tihuodata.FPickGoodsAddress}}</span>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">联系人</label>
+                        <span class="weui-form-preview__value">{{tihuodata.FPickGoodsName}}</span>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">联系方式</label>
+                        <span class="weui-form-preview__value">{{tihuodata.FPickGoodsPhone}}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="zhuanrubox" class="ccxieyi" v-cloak v-show="FPickType == 2">
+                <div class="ccxieyi_nav zui-row zui-row-center" @click="cangchushow = !cangchushow">
+                    <label class="zui-radiobox">
+                        <input class="zui-radio" type="checkbox" id="chuchun" />
+                        <i class="zui-checked"></i>
+                        <span class="zui-radiotxt"></span>
+                    </label>
+                    <span>茶仓储存协议</span>
+                    <i class="iconfont icon-down" v-show="!cangchushow"></i>
+                    <i class="iconfont icon-up" v-show="cangchushow"></i>
+                </div>
+                <div class="ccxieyi_main" v-html="cangchuhtml" v-show="cangchushow"></div>
+            </div>
+
+            <div id="daofubox" class="weui-form-preview wuliu-border-top wuliu-border-bottom" v-cloak
+                v-show="FPickType == 1" @click="choseplace()">
+                <div class="weui-form-preview__bd">
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">收件人</label>
+                        <div class="weui-form-preview__value" v-show="FShippingAddressId!=''">
+                            <span>{{FUserName}}</span><span class="fr">{{FMobile}}</span></div>
+                        <div class="weui-form-preview__value" v-show="FShippingAddressId==''">请选择收货地址</div>
+                    </div>
+                    <div class="weui-form-preview__item" style="border-top: none">
+                        <label class="weui-form-preview__label">收件地址</label>
+                        <span class="weui-form-preview__value">{{FShippingAddress}}</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="zui-footer zui-row zui-row-center zui-row-stretch firm_footer">
+            <div class="zui-col-60 text">
+                <div v-show="!FPPrice">￥{{countprice}}</div>
+                <div v-show="FPPrice">
+                    <div style="font-size:16px;line-height:23px;">￥{{countprice}}</div>
+                    <div style="font-size:12px;color:#888888;line-height:22px;" v-show="FPPrice>0">总优惠{{FPPrice}}</div>
+                </div>
+
+            </div>
+            <div class="footer_btn zui-col color-white" :class="canclick==1?'bg-red':'bg-cancel'" @click="orderpost()"
+                id="qrbtn">确定
+            </div>
+        </div>
+
+        <!-- 输入密码弹出框 -->
+        <!--<div class="zui-alert shop_alert">-->
+        <div class="zui-alert shop_alert" v-cloak v-show="payshow">
+            <div class="zui-alert_box">
+                <div class="shop_close iconfont icon-del color-red" @click="hidekey()"></div>
+                <div class="tip">
+                    <img src="../../image/money01.png" alt="">
+                </div>
+                <div class="title">请输入支付密码</div>
+                <div class="cont" style="padding: 15px;">
+                    <b style="font-size: 45px;">￥{{countprice}}</b>
+                    <div class="clearfix fz14">
+                        <span
+                            onclick="jw.openWin({name:'setting_paypassword',url:'../myself/setting_paypassword.html'})"
+                            class="fl">设置密码</span>
+                        <span
+                            onclick="jw.openWin({name:'setting_newpaypassword',url:'../myself/setting_newpaypassword.html'})"
+                            class="fr color-red">忘记密码？</span>
+                    </div>
+                    <div id="mimabox"></div>
+                </div>
+            </div>
+            <div class="zui-alert_bg"></div>
+        </div>
+
+
+        <jiaoyima v-show="jiaoyishow" v-on:rdata="jiaoyiback" v-cloak v-on:hide="jiaoyishow=false"></jiaoyima>
+
+    </div>
+
+
+    <script src="../../js/jquery-2.1.1.min.js"></script>
+    <script src="../../res/weui/jquery-weui.min.js"></script>
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/vuefilter.js"></script>
+    <script src="../../js/jw.js"></script>
+    <script src="../../js/zui.js"></script>
+    <script src="../../res/mobiscroll/mobiscroll.custom-2.5.0.min.js"></script>
+    <script src="../../js/md5.js"></script>
+    <script src="../../js/dsf.js"></script>
+    <script src="../../js/layer/layer.js"></script>
+    <script>
+        apiready = function () {
+            jw.sb.fixStatusBar(".zui-header");
+
+            // 获取选择地址
+            jw.data.jtget("chose_address", function (ret) {
+                if (typeof (ret) == "string") {
+                    ret = JSON.parse(ret);
+                }
+                myapp.FShippingAddressId = ret.FShippingAddressId;
+                myapp.FUserName = ret.FUserName;
+                myapp.FMobile = ret.FMobile;
+                myapp.FShippingAddress = ret.FShippingAddress;
+            });
+
+            function init() {
+                setTimeout(function () {
+
+                    $("#tihuodata").mobiscroll().date();
+                    var currYear = (new Date()).getFullYear() - 50;
+                    //初始化日期控件
+                    var opt = {
+                        preset: 'datetime', //日期，可选：date\datetime\time\tree_list\image_text\select
+                        theme: 'Android Holo Light', //皮肤样式，可选：default\android\android-ics light\android-ics\ios\jqm\sense-ui\wp light\wp
+                        display: 'modal', //显示方式 ，可选：modal\inline\bubble\top\bottom
+                        mode: 'mixed', //日期选择模式，可选：scroller\clickpick\mixed
+                        lang: 'zh',
+                        dateFormat: 'yyyy-mm-dd', // 日期格式,
+                        timeFormat: 'HH:ii:ss', //24小时时间
+                        timeWheels: 'HHii', //24小时时间
+                        setText: '确定', //确认按钮名称
+                        cancelText: '取消', //取消按钮名籍我
+                        dateOrder: 'yyyymmdd', //面板中日期排列格式
+                        dayText: '日',
+                        monthText: '月',
+                        yearText: '年', //面板中年月日文字
+                        showNow: false,
+                        nowText: "今",
+                        startYear: currYear, //开始年份
+                        endYear: currYear + 85 //结束年份
+                        //endYear:2099 //结束年份
+                    };
+
+                    $("#tihuodata").mobiscroll(opt);
+
+                    // $("#qrbtn").jiaoyibox({
+                    //     onend: function (t, params) {
+                    //
+                    //         jw.submit("yzwxmsg", {
+                    //             userPhone: jw.data.get("phone"),// 手机号
+                    //             yzm: t
+                    //         }, function (ret) {
+                    //             if (ret == "1") {
+                    //                 myapp.payshow = true;
+                    //                 $("#numberkeyobj").show();
+                    //                 params.clear();
+                    //             } else {
+                    //                 jw.ts.toast("验证码错误");
+                    //             }
+                    //         }, {
+                    //             jz: false,
+                    //             Url: jw.config.url3
+                    //         });
+                    //     }
+                    // });
+
+                    $("#mimabox").mimakeywords({
+                        onend: function (v, p) {
+                            myapp.payshow = false;
+                            p.close();
+                            myapp.orderpay(v);
+                        }
+                    });
+                }, 1000);
+
+            }
+
+            var myapp = new Vue({
+                "el": ".zui-app",
+                data: {
+                    shopdetails: "", // 商品详情
+                    number: 1, // 数量
+                    kdprice: 0, // 积分抵扣金额
+                    kdchose: false, // 是否用积分抵扣
+                    FPickType: "0", //提货类型 0：自提，1：快递,2:到茶仓
+                    FShippingAddressId: "", // 收获地址ID
+                    FUserName: "", //收货人姓名
+                    FMobile: "", //收货人电话
+                    FShippingAddress: "", //收货地址
+                    cangchuhtml: "", // 仓储协议
+                    tihuodata: "", // 提货信息
+                    Fprice: "", // 商品价格
+                    payshow: false, // 支付密码显示
+                    kuaididata: "", // 快递信息
+                    cangchushow: false, // 仓储协议显示隐藏
+                    FBusinessOrderId: "", // 订单ID
+                    istijiao: false, //是否已点击提交
+                    zt: false,
+                    cc: false,
+                    kd: false,
+                    countprice: "", // 总价格
+                    canclick: 0, //0不能下单2可以下单
+                    FPPrice: 0, //优惠金额
+
+                    FOrderNum: "", // 订单编号
+
+                    jiaoyishow: false,
+                },
+                created: function () {
+                    var _this = this;
+                    init();
+                    this.getcangchu();
+                    this.gettihuo();
+                    this.gettihuo1();
+                    this.shopdetails = JSON.parse(api.pageParam.shopdetails);
+                    var FPickType = this.shopdetails.FPickType || "";
+                    if (FPickType.indexOf("茶仓") != -1) {
+                        this.cc = true;
+                        this.FPickType = "2";
+                    }
+                    if (FPickType.indexOf("快递") != -1) {
+                        this.kd = true;
+                        this.FPickType = "1";
+                    }
+                    if (FPickType.indexOf("自提") != -1) {
+                        this.zt = true;
+                        this.FPickType = "0";
+                    }
+                    this.getprice();
+                    this.returnprice();
+                },
+                methods: {
+                    hidekey: function () {
+                        var _this = this;
+                        jw.ts.confirm({
+                            msg: "您确定要取消支付吗？"
+                        }, function (index) {
+                            
+                            if (index == 1) {
+                                this.payshow = false;
+                                $("#numberkeyobj").hide();
+                                jw.openWin({
+                                    'name': 'my_order_details_cq',
+                                    'url': '../myself/my_order_details_cq.html',
+                                    pageParam: {
+                                        ly: api.pageParam.ly,
+                                        FId: _this.FBusinessOrderId,
+                                    }
+                                });
+                            } else {
+
+                            }
+                        });
+                    },
+                    // 跳转订单页
+                    toorder: function(){
+                        var _this = this;
+                        jw.openWin({
+                            name: "my_order_details_cq",
+                            url: "../myself/my_order_details_cq.html",
+                            pageParam: {
+                                FId:_this.FBusinessOrderId
+                                // FOrderNum: item.FOrderNum
+                            }
+                        });
+
+                    },
+                    jiaoyiback: function (d) {
+                        console.log('茶器购买');
+                        var _this = this;
+                        jw.ts.actionSheet({
+                            title: '请选择',
+                            buttons: ["微信支付", '支付宝支付','一网通支付', '钱包支付']
+                        }, function (index) {
+                            if (index == 4) {
+                                myapp.payshow = true;
+                                $("#numberkeyobj").show();
+                            } else if (index == 1) {
+
+                                jw.submit_ykt("", {
+                                    FOrderNum: _this.FOrderNum,notifyUrl: "http://www.yunpuer.com/SelfModel/WxPayNotify.aspx"
+                                }, function (ret) {
+                                    if (ret.result_code == "SUCCESS") {
+                                        dsf.wxsdk1(ret.nonce_str, ret.prepay_id,function (ret, err) {
+                                            if (ret.status) {
+                                                jw.ts.toast("支付成功");
+                                            } else {
+                                                jw.ts.toast("失败");
+                                            }
+                                            setTimeout(myapp.toorder, 500);
+                                        })
+                                    } else {
+                                        jw.ts.toast("失败");
+                                    }
+                                }, {
+                                    jz: true,returnall: true,Url: "/SelfModel/getWXPayStr.aspx",Ip: jw.config.ip3
+                                });
+
+                                // jw.submit("", {
+                                //     FOrderNum: _this.FOrderNum,
+                                //     // FOrderNum: 'sc2020061716312946382',
+                                //     notifyUrl: "http://www.yunpuer.com/SelfModel/WxPayNotify.aspx"
+                                // }, function (ret) {
+                                //     if (ret.status == "200") {
+                                //         var now = Date.parse(new Date()) / 1000;
+                                //         var stringA = "appid=wx7f1cca191b9b3caf&noncestr=" + ret.data.nonce_str + "&package=Sign=WXPay&partnerid=1512144871&prepayid=" + ret.data.prepay_id + "&timestamp=" + now;
+                                //         var stringSignTemp = stringA + "&key=qweasdzxc123456789qazwsxedcrfvtg";
+                                //         //console.log(stringSignTemp);
+                                //         var sign = hex_md5(stringSignTemp).toUpperCase();
+                                //         var wxPay = api.require('wxPayPlus');
+                                //         wxPay.payOrder({
+                                //             apiKey: "wx7f1cca191b9b3caf", //ret.appid,
+                                //             orderId: ret.data.prepay_id,
+                                //             mchId: "1512144871", //ret.mch_id,
+                                //             nonceStr: ret.data.nonce_str,
+                                //             timeStamp: now,
+                                //             package: 'Sign=WXPay',
+                                //             sign: sign
+                                //         }, function (ret, err) {
+                                //             if (ret.status) {
+                                //                 jw.ts.toast("支付成功");
+                                //             } else {
+                                //                 jw.ts.toast("失败");
+                                //             }
+                                //             setTimeout(function () {
+                                //                 myapp.toorder();
+                                //             }, 500);
+                                //         });
+                                //     } else {
+                                //         jw.ts.toast("失败");
+                                //     }
+                                // }, {
+                                //     jz: true,
+                                //     returnall: true,
+                                //     Url: "/SelfModel/getWXPayStr.aspx",
+                                //     Ip: jw.config.ip3
+                                // });
+                            } else if (index == 2) {
+                                dsf.zfbsubmit ('',{
+                                    FOrderNum: _this.FOrderNum,
+                                    notifyUrl: "http://www.yunpuer.com/SelfModel/AliPayNotify.aspx"
+                                },{
+                                    jz: true,
+                                    Url: "/SelfModel/getAliPayStr.aspx",
+                                    Ip: jw.config.ip3
+                                },function (ret, err) {
+                                    if (ret.code == "9000") {
+                                        jw.ts.toast("支付成功");
+                                    } else {
+                                        jw.ts.toast("已取消支付！");
+                                    }
+                                    setTimeout(function () {
+                                        myapp.toorder();
+                                    }, 500);
+                                })
+
+                                // jw.submit_ykt("",{
+                                //     FOrderNum: _this.FOrderNum,
+                                //     notifyUrl: "http://www.yunpuer.com/SelfModel/AliPayNotify.aspx"
+                                // }, function (ret) {
+                                //     if (ret != "") {
+                                //         var aliPayPlus = api.require('aliPayPlus');
+                                //         aliPayPlus.payOrder({
+                                //             orderInfo: ret
+                                //         }, function (ret, err) {
+                                //             if (ret.code == "9000") {
+                                //                 jw.ts.toast("支付成功");
+                                //             } else {
+                                //                 jw.ts.toast("已取消支付！");
+                                //             }
+                                //             setTimeout(function () {
+                                //                 myapp.toorder();
+                                //             }, 500);
+                                //         });
+                                //     }
+                                // },{
+                                //     jz: true,
+                                //     Url: "/SelfModel/getAliPayStr.aspx",
+                                //     Ip: jw.config.ip3
+                                // });
+
+//------------------------------------------------------
+                                // jw.submit("", {
+                                //     FOrderNum: _this.FOrderNum,
+                                //     notifyUrl: "http://www.yunpuer.com/SelfModel/AliPayNotify.aspx"
+                                // }, function (ret) {
+                                //     console.log(ret)
+                                //     if (ret != "") {
+                                //         var aliPayPlus = api.require('aliPayPlus');
+                                //         aliPayPlus.payOrder({
+                                //             orderInfo: ret
+                                //         }, function (ret, err) {
+                                //             if (ret.code == "9000") {
+                                //                 jw.ts.toast("支付成功");
+                                //             } else {
+                                //                 jw.ts.toast("已取消支付！");
+                                //             }
+                                //             setTimeout(function () {
+                                //                 myapp.toorder();
+                                //             }, 500);
+                                //         });
+                                //     }
+                                // }, {
+                                //     jz: true,
+                                //     Url: "/SelfModel/getAliPayStr.aspx",
+                                //     Ip: jw.config.ip3
+                                // });
+                            }else if(index == 3){
+                                //一网通
+
+                                jw.submit('app_订单存在判断',{
+                                    orderid: _this.FOrderNum
+                                },function(ret){
+                                    if('000000'==ret.ds[0].status){
+                                        layer.open({
+                                            type:2,
+                                            title:'一网通支付',
+                                            shadeClose:true,
+                                            shade:0.3,
+                                            area:['100%','90%'],
+                                            end:function(){
+                                                setTimeout(function () {
+                                                    myapp.toorder();
+                                                }, 500);
+                                            },
+                                            content: "http://www.yunpuer.com/SelfModel/Payment.aspx?mark=300&payType=4&transactionName=transaction_id&amount="+ret.ds[0].msg+"&orderNo="+_this.FOrderNum+"&orderIds="+_this.FOrderNum
+                                        });
+                                    }
+                                });
+                            }
+                        })
+                    },
+                    // jiaoyiback: function (d) {
+                    //     var _this = this;
+                    //     jw.ts.actionSheet({
+                    //         title: '请选择',
+                    //         buttons: ["微信支付", '支付宝支付', '钱包支付']
+                    //     }, function (index) {
+                    //         if (index == 3) {
+                    //             myapp.payshow = true;
+                    //             $("#numberkeyobj").show();
+                    //         }
+                    //         else if (index == 1) {
+                    //             jw.submit("", {
+                    //                 FOrderNum: 'sc2020061716312946382',
+                    //                 // FOrderNum: _this.FOrderNum,
+                    //                 notifyUrl: "http://www.yunpuer.com/SelfModel/WxPayNotify.aspx"
+                    //             }, function (ret) {
+                    //                 if (ret.status == "200") {
+                    //                     var now = Date.parse(new Date()) / 1000;
+                    //                     var stringA =
+                    //                         "appid=wx7f1cca191b9b3caf&noncestr=" + ret
+                    //                         .data.nonce_str +
+                    //                         "&package=Sign=WXPay&partnerid=1512144871&prepayid=" +
+                    //                         ret.data.prepay_id + "&timestamp=" + now;
+                    //                     var stringSignTemp = stringA +
+                    //                         "&key=qweasdzxc123456789qazwsxedcrfvtg";
+                    //                     //console.log(stringSignTemp);
+                    //                     var sign = hex_md5(stringSignTemp)
+                    //                         .toUpperCase();
+                    //                     var wxPay = api.require('wxPay');
+                    //                     wxPay.payOrder({
+                    //                         apiKey: "wx7f1cca191b9b3caf", //ret.appid,
+                    //                         orderId: ret.data.prepay_id,
+                    //                         mchId: "1512144871", //ret.mch_id,
+                    //                         nonceStr: ret.data.nonce_str,
+                    //                         timeStamp: now,
+                    //                         package: 'Sign=WXPay',
+                    //                         sign: sign
+                    //                     }, function (ret, err) {
+                    //                         if (ret.status) {
+                    //                             jw.ts.toast("支付成功");
+                    //                             setTimeout(function () {
+                    //                                 jw.openWin({
+                    //                                     'name': 'my_order_details_cq',
+                    //                                     'url': '../myself/my_order_details_cq.html',
+                    //                                     pageParam: {
+                    //                                         ly: api
+                    //                                             .pageParam
+                    //                                             .ly,
+                    //                                         FId: api
+                    //                                             .pageParam
+                    //                                             .FId,
+                    //                                     }
+                    //                                 });
+                    //                             }, 500);
+                    //                         } else {
+                    //                             jw.ts.toast("失败");
+                    //                         }
+                    //                     });
+                    //                 } else {
+                    //                     jw.ts.toast("失败");
+                    //                 }
+                    //             }, {
+                    //                 jz: true,
+                    //                 returnall: true,
+                    //                 Url: "/SelfModel/getWXPayStr.aspx",
+                    //                 Ip: jw.config.ip3
+                    //
+                    //             });
+                    //         } else if (index == 2) {
+                    //             jw.submit("", {
+                    //                 // FOrderNum: _this.FOrderNum,
+                    //                 FOrderNum: 'sc2020061716312946382',
+                    //                 notifyUrl: "http://www.yunpuer.com/SelfModel/WxPayNotify.aspx"
+                    //             }, function (ret) {
+                    //                 if (ret != "") {
+                    //                     var aliPayPlus = api.require('aliPayPlus');
+                    //                     aliPayPlus.payOrder({
+                    //                         orderInfo: ret
+                    //                     }, function (ret, err) {
+                    //                         if (ret.code == "9000") {
+                    //                             jw.ts.toast("支付成功");
+                    //                             setTimeout(function () {
+                    //                                 jw.openWin({
+                    //                                     'name': 'my_order_details_cq',
+                    //                                     'url': '../myself/my_order_details_cq.html',
+                    //                                     pageParam: {
+                    //                                         ly: api
+                    //                                             .pageParam
+                    //                                             .ly,
+                    //                                         FId: api
+                    //                                             .pageParam
+                    //                                             .FId,
+                    //                                     }
+                    //                                 });
+                    //                             }, 500);
+                    //                         } else {
+                    //                             jw.ts.toast("失败");
+                    //                         }
+                    //                     });
+                    //                 }
+                    //             }, {
+                    //                 jz: true,
+                    //                 Url: jw.config.url3,
+                    //                 Ip: jw.config.ip3
+                    //             });
+                    //         }
+                    //     })
+                    // },
+                    //发送验证码
+                    fasong: function () {
+                        var _this = this;
+                        jw.submit_ykt("sendwxmsg", { //发送验证码
+                            userPhone: jw.data.get("phone"), // 手机号
+                        }, function (ret) {
+                            jw.ts.toast("验证码已发送，请注意查收");
+
+                            _this.jiaoyishow = true;
+
+                        }, {
+                            jz: false,
+                            Url: jw.config.url3,
+                            Ip: jw.config.ip3
+                        });
+                    },
+                    number_change:function(){
+                      if (this.number == "" || this.number == undefined) {
+                          this.number = 1;
+                      } else {
+                        if (this.number < 1) {
+                          this.number = 1;
+                        }else if (this.number >= this.shopdetails.FLimitNum) {
+                            this.number = this.shopdetails.FLimitNum;
+                        }
+                      }
+                      this.getPoundage();
+                    },
+                    // 增加数量
+                    number_add: function () {
+                        var _this = this;
+                        if ((_this.shopdetails.FLimitNum > 0 && _this.shopdetails.FLimitNum > this
+                                .number) || _this.shopdetails.FLimitNum == 0) {
+                            if (this.number == "" || this.number == undefined) {
+                                this.number = 1;
+                            } else {
+                                if (parseFloat(this.number) > parseFloat(_this.shopdetails.FLimitNum)) {
+                                    jw.ts.toast("购买数量不能高于限购数量！");
+                                    return false
+                                }
+                                this.number++;
+                            }
+                            this.getprice();
+                        }
+                    },
+                    // 减少数量
+                    number_less: function () {
+                        var _this = this;
+                        if (this.number > 1) {
+                            this.number--;
+                        }
+                        this.getprice();
+                    },
+                    /* 获取积分抵扣金额 */
+                    getprice: function () {
+                        var _this = this;
+                        jw.submit("app_积分抵扣金额", {
+                            FUserId: jw.data.get("userid"),
+                            FPrice: _this.shopdetails.FPrice, //单价
+                            FNum: _this.number //数量
+                        }, function (ret) {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status ==
+                                "000000") {
+                                _this.kdprice = ret.ds1[0].FPreferentialPrice;
+                            } else {
+                                _this.kdprice = 0;
+                            }
+                            _this.returnprice();
+                        });
+                    },
+                    // 获取app 仓储协议
+                    getcangchu: function () {
+                        var _this = this;
+                        jw.submit("app_协议及说明", {
+                            agreementId: 1
+                        }, function (ret) {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status ==
+                                "000000") {
+                                _this.cangchuhtml = ret.ds1[0].FContent;
+                            } else {}
+                        });
+                    },
+                    // 获取 app_商品提货地址
+                    gettihuo: function () {
+                        var _this = this;
+                        jw.submit("api47063", {
+                            FId: api.pageParam.FId
+                        }, function (ret) {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status ==
+                                "000000") {
+                                _this.tihuodata = ret.ds1[0];
+                            } else {}
+                        });
+                    },
+                    // 获取 app_获取默认地址
+                    gettihuo1: function () {
+                        var _this = this;
+                        jw.submit("app_获取默认地址", {
+                            FUserId: jw.data.get("userid")
+                        }, function (ret) {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status ==
+                                "000000") {
+                                _this.FShippingAddressId = ret.ds1[0].FShippingAddressId;
+                                _this.FUserName = ret.ds1[0].FUserName;
+                                _this.FMobile = ret.ds1[0].FMobile;
+                                _this.FShippingAddress = ret.ds1[0].FShippingAddress;
+                            } else {
+                                //jw.ts.toast("内容不能为空");
+                            }
+                        });
+                    },
+                    // 返回价格
+                    returnprice: function () {
+                        var _this = this;
+                        jw.submit("api47064", {
+                            FId: api.pageParam.FId, //
+                            FBuyNum: _this.number, //
+                            FOrderType: 0, // 订单来源 0商城订单 1限时抢购 2茶市
+                            FOrderSource: ""
+                        }, function (ret) {
+                            if (ret.ds[0].status == "000000") {
+                                _this.countprice = ret.ds1[0].FTotal;
+                                _this.FPPrice = ret.ds1[0].FPPrice;
+                                _this.canclick = 1;
+                            } else {
+                                jw.ts.toast(ret.ds[0].msg);
+                            }
+                        })
+                    },
+                    // 积分抵扣 选择
+                    dkchange: function () {
+                        if (this.kdprice == "" || this.kdprice == 0) {
+                            this.kdchose = false;
+                            //jw.ts.toast("没有足够积分！");
+                        }
+                    },
+                    // 提交订单
+                    orderpost: function () {
+                        var _this = this;
+                        if (_this.canclick == 0) return false;
+                        if (_this.number <= 0) {
+                            jw.ts.toast("请选择数量");
+                            return false;
+                        }
+
+                        var chuchun = $("#chuchun").is(":checked");
+                        if (_this.FPickType == 2 && !chuchun) {
+                            jw.ts.toast("请同意茶仓存储协议");
+                            return false;
+                        }
+
+                        var FPickDate = $("#tihuodata").val();
+                        if (_this.FPickType == 0 && FPickDate == "") {
+                            jw.ts.toast("请选择提货时间");
+                            return false;
+                        }
+
+                        if (_this.FShippingAddressId == "" && _this.FPickType == 1) {
+                            jw.ts.toast("请选择收货地址");
+                            return false;
+                        }
+
+                        var FPreferentialPrice = 0;
+                        if (_this.kdchose == true) {
+                            FPreferentialPrice = _this.kdprice
+                        }
+                        var FOrderType = 0,
+                            FOrderSource = "";
+
+                        if (_this.istijiao) {
+                            //jw.ts.toast("请勿重复提交");
+                            if (api.pageParam.FId != "") {
+                                /*setTimeout(function () {
+                                    var ly = api.pageParam.ly || "firm_order"
+                                    jw.openWin({
+                                        'name': 'my_order_details_cq',
+                                        'url': '../myself/my_order_details_cq.html',
+                                        pageParam: {
+                                            ly: api.pageParam.ly,
+                                            FId: api.pageParam.FId
+                                        }
+                                    });
+                                }, 1000);*/
+                            }
+
+                        }
+                        _this.istijiao = true
+                        jw.submit("api45547", {
+                            FUserId: jw.data.get("userid"), //用户id
+                            FId: api.pageParam.FId /*商品id(int)*/ ,
+                            FBuyNum: _this.number /*购买数量(int)*/ ,
+                            FPickType: _this.FPickType, //提货类型 0：自提，1：快递,2:到茶仓
+                            FShippingAddressId: _this.FShippingAddressId /*收获地址id(int)*/ ,
+                            FPickDate: FPickDate /*预计提货时间(nvarchar)*/ ,
+                            FOrderType: 0 /* 订单来源 0商城订单 1限时抢购 2茶市  (Int)*/ ,
+                            FOrderSource: FOrderSource /*订单来源0：平台，>0:GJ_OnekeyResale一键转卖配置表 id (Int)*/
+                        }, function (ret) {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status ==
+                                "000000") {
+                                //jw.ts.toast(ret.ds[0].msg);
+                                _this.FOrderNum = ret.ds1[0].FOrderNum;
+                                _this.FBusinessOrderId = ret.ds1[0].FId;
+                                if (_this.FOrderNum != "") {
+                                    //发送验证码
+                                    //_this.fasong();
+                                    _this.jiaoyiback();
+                                }
+                            } else {
+                                jw.ts.toast(ret.ds[0].msg);
+                            }
+                        });
+
+                    },
+                    // 选择地址
+                    choseplace: function () {
+                        jw.openWin({
+                            name: "chose_address",
+                            url: "chose_address.html"
+                        });
+                    },
+                    // 订单支付
+                    orderpay: function (password) {
+                        var _this = this;
+
+                        jw.submit("api42707", {
+                            FOrderNum: _this.FOrderNum, //订单号
+                            FUserId: jw.data.get("userid"), //用户ID
+                            PayPassword: password, // 支付密码
+                        }, function (ret) {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status ==
+                                "000000") {
+                                jw.ts.toast('支付成功');
+                                setTimeout(myapp.toorder, 500);
+                                // setTimeout(function () {
+                                //     jw.openWin({
+                                //         'name': 'my_order_details_cq',
+                                //         'url': '../myself/my_order_details_cq.html',
+                                //         pageParam: {
+                                //             ly: api.pageParam.ly,
+                                //             FId: api.pageParam.FId
+                                //         }
+                                //     });
+                                // }, 500);
+                            } else {
+                                jw.ts.toast('支付失败');
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

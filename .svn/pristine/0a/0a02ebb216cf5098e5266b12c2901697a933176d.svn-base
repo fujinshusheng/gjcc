@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>个人中心</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="../../res/mobiscroll/mobiscroll.custom-2.5.0.min.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-header zui-row-center myjifen_header">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">账户信息</div>
+        <div class="zui-header-icon zui-header-right zui-header_text" v-show="edit == false" @click="editbtn()">编辑</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="right: 45px;font-size:30px"
+            onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+    <div class="zui-content">
+
+        <div class="zui-list info_list">
+            <div class="zui-item zui-row zui-row-center">
+                <div class="zui-col title">头像</div>
+                <div class="touxiang" @click="changetouxiang()" :style="getbgimg(changetximg || logininfo.FHanderImg)"></div>
+            </div>
+            <div class="zui-item zui-row zui-row-center" v-cloak>
+                <div class="title">用户名</div>
+                <div class="text zui-col" v-show="edit == false">{{logininfo.FName}}</div>
+                <input v-show="edit == true" type="text" class="input zui-col text-right" v-model="logininfo.FName" placeholder="请输入用户名">
+                <!--<i class="iconfont icon-left1" v-show="edit == false"></i>-->
+            </div>
+            <div class="zui-item zui-row zui-row-center" v-cloak>
+                <div class="title">联系方式</div>
+                <div class="text zui-col">{{logininfo.FMobile}}</div>
+                <!--<i class="iconfont icon-left1" v-show="edit == false"></i>-->
+            </div>
+            <div class="zui-item zui-row zui-row-center" v-cloak>
+                <div class="title">性别</div>
+                <div class="text zui-col" v-show="edit == false">{{logininfo.FGender==1?"男":"女"}}</div>
+                <input id="sex" type="text" v-show="edit == true" class="input zui-col text-right" :data-values="logininfo.FGender" :value='logininfo.FGender==1?"男":"女"' placeholder="请选择性别">
+                <!--<i class="iconfont icon-left1" v-show="edit == false"></i>-->
+            </div>
+            <div class="zui-item zui-row zui-row-center" v-cloak>
+                <div class="title">生日</div>
+                <div class="zui-col text" v-show="edit == false">{{logininfo.FBirthday | data}}</div>
+                <!-- <input id="birthday" type="text" v-show="edit == true" class="text zui-col" placeholder="请选择出生日期"/> -->
+                <input type="text" class="zui-col input text-right" v-show="edit == true" id='birthday' placeholder="请选择出生日期"/>
+                <!--<i class="iconfont icon-left1" v-show="edit == false"></i>-->
+            </div>
+
+            <z-city :edit="edit" :fcountry="logininfo.FCountry" :fprovince="logininfo.FProvince" :fcity="logininfo.FCity" v-on:rdata="city = $event"></z-city>
+
+            <div class="zui-item zui-row zui-row-center" onclick="jw.openWin({'name':'address','url':'address.html'})">
+                <div class="zui-col title">收货地址管理</div>
+                <i class="iconfont icon-left1"></i>
+            </div>
+
+            <div class="zui-item zui-row zui-row-center" onclick="jw.openWin({'name':'forgotpassword','url':'../Forgot_Password.html'})">
+                <div class="zui-col title">修改登录密码</div>
+                <i class="iconfont icon-left1"></i>
+            </div>
+
+        </div>
+
+    </div>
+    <div class="zui-footer zui-row zui-row-center zui-row-stretch">
+        <div class="footer_btn zui-col bg-red color-white" v-show="edit == true" @click="changeinfo()">保存</div>
+        <div class="footer_btn zui-col bg-red color-white" v-show="edit == false" @click="loginout()">退出当前账号</div>
+    </div>
+</div>
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../res/weui/jquery-weui.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script src="../../res/mobiscroll/mobiscroll.custom-2.5.0.min.js"></script>
+<script>
+
+
+    apiready = function() {
+        jw.sb.fixStatusBar(".zui-header");
+
+        function init() {
+            setTimeout(function () {
+                $("#birthday").mobiscroll().date();
+                var currYear = (new Date()).getFullYear() - 50;
+                //初始化日期控件
+                var opt = {
+                    preset: 'date', //日期，可选：date\datetime\time\tree_list\image_text\select
+                    theme: 'Android Holo Light', //皮肤样式，可选：default\android\android-ics light\android-ics\ios\jqm\sense-ui\wp light\wp
+                    display: 'modal', //显示方式 ，可选：modal\inline\bubble\top\bottom
+                    mode: 'mixed', //日期选择模式，可选：scroller\clickpick\mixed
+                    lang: 'zh',
+                    dateFormat: 'yyyy-mm-dd', // 日期格式,
+                    timeFormat: 'HH:ii:ss', //24小时时间
+                    timeWheels: 'HHii',  //24小时时间
+                    setText: '确定', //确认按钮名称
+                    cancelText: '取消',//取消按钮名籍我
+                    dateOrder: 'yyyymmdd', //面板中日期排列格式
+                    dayText: '日', monthText: '月', yearText: '年', //面板中年月日文字
+                    showNow: false,
+                    nowText: "今",
+                    startYear: currYear, //开始年份
+                    endYear: currYear + 85 //结束年份
+                    //endYear:2099 //结束年份
+                };
+
+                $("#birthday").mobiscroll(opt);
+            }, 1000);
+
+        }
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                logininfo: "",
+                changetximg: "", // 头像图片
+                edit: false, // 是否编辑
+                city: "", //
+            },
+            created: function () {
+                var _this = this;
+                init();
+                this.logininfo = JSON.parse(jw.data.get("logininfo"));
+                this.getinfo();
+
+                setTimeout(function () {
+                    // $("#birthday").calendar({
+                    //     "dateFormat": "yyyy-mm-dd",
+                    //     "onChange": function (p,v) {
+                    //         console.log(v[0]);
+                    //         _this.logininfo.FBirthday = v[0];
+                    //     }
+                    // });
+                    $("#sex").select({
+                        title: "选择性别",
+                        items: [
+                            {
+                                title: "男",
+                                value: "1",
+                            },
+                            {
+                                title: "女",
+                                value: "2",
+                            },
+                        ],
+                        onChange: function (ret) {
+                            console.log(ret.values);
+                            _this.logininfo.FGender = ret.values;
+                        }
+                    });
+                },1000);
+
+            },
+            methods: {
+                // 获取我的信息
+                getinfo: function () {
+                    var _this = this;
+                    jw.submit("app_我的信息",{
+                        FUserId: jw.data.get("userid"), //  用户id
+                    },function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            _this.logininfo = ret.ds1[0];
+                            jw.data.set("logininfo",JSON.stringify(ret.ds1[0]));
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                },
+                // 生日
+                birthdayfun: function(){
+                    var _this = this;
+                    var data = new Date(_this.logininfo.FBirthday);
+                    if(_this.logininfo.FBirthday){
+
+                    }
+                },
+                // 选择头像
+                changetouxiang: function () {
+                    var _this = this;
+                    if (_this.edit == true) {
+                      
+                        api.getPicture({
+                            sourceType: 'library',
+                            encodingType: 'jpg',
+                            mediaValue: 'pic',
+                            destinationType: 'url',
+                            quality: 100,
+                        }, function(ret, err) {
+                            if (ret) {
+                                api.ajax({
+                                    url: jw.config.ip0+jw.config.ImgUrl,
+                                    method: 'post',
+                                    timeout: 30,
+                                    dataType: 'json',
+                                    returnAll: false,
+                                    data: {
+                                        values: {},
+                                        files: {file: ret.data}
+                                    }
+                                }, function (d, err) {
+                                    //alert(JSON.stringify(d));
+                                    console.log(JSON.stringify(d));
+                                    if (d.status == "200") {
+                                        _this.changetximg = d.data[0]
+                                    }else{
+                                        // jw.ts.toast(ret.error);
+                                    }
+                                });
+
+                            } else {
+
+                            }
+                        });
+                    }
+
+                },
+                editbtn: function(){
+                    var _this  =this;
+                    _this.edit = true;
+                    var d = zDate.getNowdata("data",_this.logininfo.FBirthday);
+                    $("#birthday").val(d);
+                },
+                // 修改个人信息
+                changeinfo: function () {
+                    var _this = this;
+                    var HanderImg =  _this.changetximg || _this.logininfo.FHanderImg;
+                    var FName = _this.logininfo.FName;
+                    var FGender = _this.logininfo.FGender;
+                     _this.logininfo.FBirthday=$("#birthday").val();
+                    var FBirthday = _this.logininfo.FBirthday;
+                    var FMobile = _this.logininfo.FMobile;
+                    jw.submit("app_修改个人信息",{
+                        FUserId: jw.data.get("userid"), //  用户id
+                        FHanderImg: HanderImg, //头像
+                        FName: FName, //用户名
+                        FGender: FGender, //性别
+                        FBirthday: FBirthday, //生日
+                        FMobile: FMobile, // 手机号
+                        FCountry: _this.city.FCountry, // 国
+                        FProvince: _this.city.FProvince, // 省
+                        FCity: _this.city.FCity, // 市
+                    },function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            jw.ts.toast(ret.ds[0].msg);
+                            _this.edit = false;
+                            jw.data.jtset("infochange",1);
+                            _this.getinfo();
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                },
+                // 退出当前账号
+                loginout: function () {
+                    jw.data.remove("logininfo");
+                    jw.data.remove("userid");
+                    jw.data.jtset("loginout",1);
+                    api.closeToWin({
+                        name: 'root',
+                    });
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

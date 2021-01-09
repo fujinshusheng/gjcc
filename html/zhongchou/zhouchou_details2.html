@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>众筹详情</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        [v-cloak] {
+            display: none !important;
+        }
+    </style>
+
+</head>
+
+<body>
+
+
+    <div class="zui-app" v-cloak>
+        <div class="zui-header zui-header-dark zui-row-center">
+            <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+            <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">众筹详情</div>
+             <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+            onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+        </div>
+        <div class="zui-content" id="parmaiBgc">
+
+            <div class="paimai_details_header">
+                <div class="bannerimg">
+                    <img :src="order.FImg | url" />
+                </div>
+                <div class="title">
+                    {{order.FTitle}}
+                </div>
+                <!-- <div class="title jingdutiao_box">
+                    <div class="jingdutiao" style="margin-top: 5px;"></div>
+                    <div class="jindu" :style="{'width':order.FPercent+'%'}"></div>
+                </div> -->
+                <div class="title jingdutiao_box">
+                    <div class="jingdutiao" style="margin-top: 5px;">
+                        <div class="jindu" :style="{'width':order.FPercent+'%'}"></div>
+                    </div>
+                    <div class="jindubaifenbi">100%</div>
+                </div>
+            </div>
+
+
+            <div class="crowd_funding">
+                <div>
+                    <div>126次</div>
+                    <div>已报名</div>
+                </div>
+                <div class="sx">
+                    <img src="../../image/2/sx.jpg" alt="">
+                </div>
+                <div>
+                    <div>100人次</div>
+                    <div>目标人数</div>
+                </div>
+                <div class="sx">
+                    <img src="../../image/2/sx.jpg" alt="">
+                </div>
+                <div>
+                    <div>3天</div>
+                    <div>剩余天数</div>
+                </div>
+            </div>
+
+
+            <!-- 发货时间 -->
+            <div class="fahuo">
+                <div class="imgbgc">
+                    <img src="../../image/2/yinxing2.jpg" alt="">
+                </div>
+                <div class="fahuo_text">
+                    发货时间: 2020年6月2日
+                </div>
+                <div class="imgbgc">
+                    <img src="../../image/2/yinxing2.jpg" alt="">
+                </div>
+            </div>
+
+
+
+            <div class="zui-row paimai_nav">
+                <div class="zui-col nav" :class="{'selected':navindex==1}" @click="navclick1(1)">商品</div>
+                <div class="zui-col nav" :class="{'selected':navindex==2}" @click="navclick1(2)">参数</div>
+                <div class="zui-col nav" :class="{'selected':navindex==3}" @click="navclick1(3)">说明</div>
+            </div>
+
+            <div v-show="navindex == 1">1</div>
+            <div v-show="navindex == 2">2</div>
+            <div v-show="navindex == 3">3</div>
+
+        </div>
+
+        <!-- 商品详情 底部 -->
+        <div class="zui-footer zui-row zui-row-center">
+            <div class="paimai_btn">
+                <i class="iconfont icon-kefu"></i>
+                <span class="fz16 color-blue" @click="lxkf()">联系客服>></span>
+            </div>
+            <!-- {{order.btnStatu}} -->
+            <div class="footer_btn zui-col bg-red color-white" v-if="order.FStatus==1" @click="justbuy()">
+                {{order.btnTitle}}</div>
+            <div class="footer_btn zui-col bg-cancel color-white" v-if="order.FStatus!==1" v-show="openbtn=true">
+                {{order.btnTitle}}</div>
+        </div>
+        <!-- 商品详情 底部 end -->
+
+
+    </div>
+
+    <script src="../../js/jquery-2.1.1.min.js"></script>
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/vuefilter.js"></script>
+    <script src="../../js/jw.js"></script>
+    <script src="../../js/zui.js"></script>
+    <script>
+        apiready = function () {
+            jw.sb.fixStatusBar(".zui-header");
+
+            //返回页面时监听回调函数
+            api.addEventListener({
+                name: 'viewappear'
+            }, function (ret, err) {
+                myapp.getshoplist();
+            });
+
+            var myapp = new Vue({
+                "el": ".zui-app",
+                data: {
+                    kefushow: false,
+                    bmrsval: false, //显示隐藏的报名
+                    order: [], //ds1
+                    stardata: [], //ds3
+                    ybmrimag: [], //已报名图
+                    cjryl: [], //已报名人员
+                    openbtn: false, //显示隐藏的按钮状态
+                    navindex: 1
+                },
+                created: function () {
+
+                },
+                methods: {
+                    getshoplist: function () {
+                        var _this = this;
+                        //api41936 活动详情页面
+                        jw.submit("api41936", {
+                            FActiviteID: api.pageParam.FActiviteID, //活动id || api.pageParam.FActiviteID
+                            FUserId: jw.data.get('userid') //唯一id
+                        }, function (ret) {
+                            if (ret.ds[0].status == "000000") {
+                                _this.order = ret.ds1[0];
+                                _this.ybmrimag = ret.ds2;
+                                _this.stardata = ret.ds3;
+                            } else if (ret.ds[0].status == "999999") {
+                                jw.ts.toast(data.ds[0].msg);
+                            }
+                        });
+                    },
+                    //已报名人员
+                    ybmryfun: function () {
+                        var option = {
+                            FActiviteID: api.pageParam.FActiviteID
+                        };
+                        jw.openWin({
+                            name: "zhouchou_cyhdry",
+                            url: "zhouchou_cyhdry.html",
+                            pageParam: option
+                        })
+                    },
+                    //出个价
+                    justbuy: function () {
+                        var _this = this;
+                        if (_this.order.btnStatu) {
+                            jw.openWin({
+                                name: "zhouchou_num",
+                                url: "zhouchou_num.html",
+                                pageParam: {
+                                    FNumdata: _this.order.FNum,
+                                    FPickAddres: _this.FPickAddres,
+                                    FPickType: _this.order.FPickType,
+                                    FActiviteID: api.pageParam.FActiviteID, //活动id
+                                }
+                            })
+                        }
+                    },
+                    //联系客服
+                    lxkf: function () {
+                        window.location.href = 'tel:' + 15867203999;
+                    },
+                    navclick1(index) {
+                        this.navindex = index;
+                    }
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

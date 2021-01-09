@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>Title</title>
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../res/mobiscroll/mobiscroll.custom-2.5.0.min.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-header zui-header-dark zui-row-center">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">提货方式</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+    <div class="zui-content ordermain">
+        <div class="weui-form-preview">
+            <div class="weui-form-preview__bd">
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">提货方式</label>
+                    <div class="weui-form-preview__value">
+                        <div class="zui-radiolist">
+                            <label class="zui-radiobox" v-show="zt">
+                                <input type="radio" name="tihuo" v-model="FPickType" value="0">
+                                <i class="zui-checked"></i>
+                                <span class="zui-radiotxt">自提</span>
+                            </label>
+                            <label class="zui-radiobox" v-show="cc">
+                                <input type="radio" name="tihuo" v-model="FPickType" value="2">
+                                <i class="zui-checked"></i>
+                                <span class="zui-radiotxt">转入茶仓</span>
+                            </label>
+                            <label class="zui-radiobox" v-show="kd">
+                                <input type="radio" name="tihuo" v-model="FPickType" value="1">
+                                <i class="zui-checked"></i>
+                                <span class="zui-radiotxt">快递</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div id="zhuanrubox" class="ccxieyi" v-cloak v-show="FPickType == 2">
+            <div class="ccxieyi_nav zui-row zui-row-center" @click="cangchushow = !cangchushow">
+                <label class="zui-radiobox">
+                    <input class="zui-radio" type="checkbox" name="chuchun" id="chuchun">
+                    <i class="zui-checked"></i>
+                    <span class="zui-radiotxt"></span>
+                </label>
+                <span>茶仓储存协议</span>
+                <i class="iconfont icon-down" v-show="!cangchushow"></i>
+                <i class="iconfont icon-up" v-show="cangchushow"></i>
+            </div>
+            <div class="ccxieyi_main" v-html="cangchuhtml" v-show="cangchushow"></div>
+        </div>
+
+        <div id="daofubox" class="weui-form-preview wuliu-border-top wuliu-border-bottom" v-cloak v-show="FPickType == 1" @click="choseplace()">
+            <div class="weui-form-preview__bd">
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">收件人</label>
+                    <div class="weui-form-preview__value" v-show="FShippingAddressId!=''">
+                        <span>{{FUserName}}</span><span class="fr">{{FMobile}}</span></div>
+                    <div class="weui-form-preview__value" v-show="FShippingAddressId==''">请选择收货地址</div>
+                </div>
+                <div class="weui-form-preview__item" style="border-top: none">
+                    <label class="weui-form-preview__label">收件地址</label>
+                    <span class="weui-form-preview__value">{{FShippingAddress}}</span>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    <div class="zui-footer zui-row zui-row-center zui-row-stretch firm_footer">
+        <div class="footer_btn zui-col bg-red color-white" @click="orderpost()" id="qrbtn">确定</div>
+    </div>
+</div>
+
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../res/weui/jquery-weui.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script src="../../res/mobiscroll/mobiscroll.custom-2.5.0.min.js"></script>
+<script>
+    apiready = function () {
+        jw.sb.fixStatusBar(".zui-header");
+        // 获取选择地址
+        jw.data.jtget("chose_address", function (ret) {
+            if (typeof (ret) == "string") {
+                ret = JSON.parse(ret);
+            }
+            myapp.FShippingAddressId = ret.FShippingAddressId;
+            myapp.FUserName = ret.FUserName;
+            myapp.FMobile = ret.FMobile;
+            myapp.FShippingAddress = ret.FShippingAddress;
+        });
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                FShoppingCarIds: api.pageParam.FShoppingCarIds, //购物车id
+                FBusiness: [], // 购物车产品
+                kdprice: 0,// 积分抵扣金额
+                kdchose: false, // 是否用积分抵扣
+                FPickType: "", //提货类型 0：自提，1：快递,2:到茶仓
+                FShippingAddressId: "", // 收获地址ID
+                FUserName: "",//收货人姓名
+                FMobile: "",//收货人电话
+                FShippingAddress: "",//收货地址
+                cangchuhtml: "", // 仓储协议
+                cangchushow: false, // 仓储协议显示隐藏
+                zt: false,
+                cc: false,
+                kd: false
+            },
+            created: function () {
+                var _this = this;
+                this.getpickType();
+                this.getcangchu();
+                this.gettihuo1();
+            },
+            methods: {
+                getpickType: function () {
+                    var _this = this;
+                    jw.submit("app_购物车提货方式", {FShoppingCar: _this.FShoppingCarIds}, function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            var pickType = ret.ds[0].msg;
+                            if (pickType.indexOf("茶仓") != -1) {
+                                _this.cc = true;
+                            }
+                            if (pickType.indexOf("快递") != -1) {
+                                _this.kd = true;
+                            }
+                            if (pickType.indexOf("自提") != -1) {
+                                _this.zt = true;
+                            }
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                },
+                // 获取app 仓储协议
+                getcangchu: function () {
+                    var _this = this;
+                    jw.submit("app_协议及说明", {agreementId: 1}, function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            _this.cangchuhtml = ret.ds1[0].FContent;
+                        } else {
+                        }
+                    });
+                },
+                // // 获取 app_获取默认地址
+                gettihuo1: function () {
+                    var _this = this;
+                    jw.submit("app_获取默认地址", {
+                        FUserId: jw.data.get("userid")
+                    }, function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            _this.FShippingAddressId = ret.ds1[0].FShippingAddressId;
+                            _this.FUserName = ret.ds1[0].FUserName;
+                            _this.FMobile = ret.ds1[0].FMobile;
+                            _this.FShippingAddress = ret.ds1[0].FShippingAddress;
+                        } else {
+                            //jw.ts.toast("内容不能为空");
+                        }
+                    });
+                },
+                // // 提交订单
+                orderpost: function () {
+                    var _this = this;
+                    if (_this.FPickType == "") {
+                        jw.ts.toast("请选择提货方式");
+                        return false;
+                    }
+                    if (_this.FPickType == 1) {
+                        if (_this.FShippingAddressId == "" || _this.FUserName == "" || _this.FMobile == "" || _this.FShippingAddress == "") {
+                            jw.ts.toast("请填写完整信息");
+                            return false;
+                        }
+                    } else if (_this.FPickType == 2) {
+                        var aaa = $("#chuchun").is(":checked");
+                        if (!aaa) {
+                            jw.ts.toast("请同意茶仓存储协议");
+                            return false;
+                        }
+                    }
+                    jw.openWin({
+                        name: "firm_order2",
+                        url: "firm_order2.html",
+                        pageParam: {
+                            FShoppingCarIds: _this.FShoppingCarIds,
+                            FPickType: _this.FPickType,
+                            FShippingAddressId: _this.FShippingAddressId,
+                            FUserName: _this.FUserName,
+                            FMobile: _this.FMobile,
+                            FShippingAddress: _this.FShippingAddress,
+                            ly: api.pageParam.ly,
+                        }
+                    });
+                },
+                // // 选择地址
+                choseplace: function () {
+                    jw.openWin({
+                        name: "chose_address",
+                        url: "chose_address.html"
+                    });
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

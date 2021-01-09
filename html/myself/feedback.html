@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>个人中心</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-header zui-row-center myjifen_header">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">意见反馈</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+    <div class="zui-content">
+
+        <div class="fankuibox">
+            <p class="tip">您的每一次建议都是我们前进的动力。</p>
+
+            <textarea id="FContent" placeholder="请发表您的意见：" rows="8"></textarea>
+
+            <div class="zui-checklist">
+                <label class="zui-checkbox">
+                    <input id="isnim" type="checkbox">
+                    <i class="zui-checked"></i>
+                    <span class="zui-checktxt">是否匿名</span>
+                </label>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="zui-footer zui-row zui-row-stretch">
+        <div id="post" class="footer_btn zui-col bg-red color-white">提交</div>
+    </div>
+
+</div>
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+
+    apiready = function () {
+        jw.sb.fixStatusBar(".zui-header");
+
+
+        $("#post").on("touchend", function () {
+            var FContent = $("#FContent").val();
+            if (FContent == "") {
+                jw.ts.toast("内容不能为空");
+                return false;
+            }
+            var nim = $("#isnim").attr("checked");
+            console.log(nim)
+            if (nim == true){
+                nim = 0;
+            } else{
+                nim = 1;
+            }
+
+            jw.submit("app_意见反馈", {
+                FUserID: jw.data.get("userid"),
+                FContent: $("#FContent").val(),
+                FIsNiM:  nim  //是否匿名0是1否
+            }, function (ret) {
+                if (ret.ds != undefined && ret.ds != "") {
+                    jw.ts.toast(ret.ds[0].msg);
+                    $("#FContent").val("");
+                }
+            })
+        })
+    }
+</script>
+</body>
+</html>

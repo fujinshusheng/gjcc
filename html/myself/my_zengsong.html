@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <script src="../../js/jquery-2.1.1.min.js"></script>
+    <script src="../../res/weui/jquery-weui.min.js"></script>
+    <script src="../../js/jw.js"></script>
+    <script src="../../js/zui.js"></script>
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-header zui-header-dark zui-row-center">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">我要赠送</div>
+
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+    <div class="zui-content ordermain">
+
+        <div class="weui-form-preview">
+
+            <div class="order_imgbox zui-row zui-row-center zui-row-stretch">
+                <div class="touxiang" style="background-image: url(../../image/order01.jpg)"></div>
+                <div class="zui-col zui-row zui-row-column">
+                    <div class="title">精选古树熟茶老茶头100g吉普号</div>
+                    <div class="zui-col"></div>
+                    <div class="text"><span class="color-red fz20">￥480</span></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="weui-form-preview">
+            <div class="weui-form-preview__bd">
+                <div class="weui-form-preview__item zui-row zui-row-center">
+                    <label class="weui-form-preview__label">好友联系方式</label>
+                    <div class="weui-form-preview__value zui-col zui-row zui-row-center">
+                        <input type="text" class="zui-col text-right inputborder"/>
+                    </div>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">赠送数量</label>
+                    <div class="weui-form-preview__value">
+                        <div class="z-numbercol">
+                            <div class="z-numbercol_add iconfont icon-jian"></div>
+                            <input type="number" class="z-numbercol_text">
+                            <div class="z-numbercol_less iconfont icon-add"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="weui-form-preview__item" style="display: block;">
+                    <span class="weui-form-preview__label">积分抵扣</span>
+                    <div class="weui-form-preview__value">手续费</div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="ccxieyi">
+            <div class="ccxieyi_nav zui-row zui-row-center">
+                <div class="zui-col">赠送说明</div>
+                <i class="iconfont icon-down"></i>
+                <i class="iconfont icon-up"></i>
+            </div>
+            <div class="ccxieyi_main">
+                协议免责，是指当事双方协商一致，达成免除一方或者双方责任的结果的行为。是当事人意思自治的表现。 在我国，协议免责并不适用于所有的责任范围，一般仅限于民事和行政责任。刑事责任不能协议免除，因为刑事犯罪不仅侵害被害人的合法权益，而且还破坏了国家的统治秩序，必须由检察院代表国家进行追溯，人民法院判决确定刑事犯罪人的责任承担。但在英美法系国家，存在着适用于刑事犯罪的辩诉交易制度，公诉方可以和认罪态度较好的被告人达成减轻其刑责的协议。从广义上讲，也属于协议免责的范畴。我国的刑事制度也进行了这个方向的改革，被告人如果积极的给予被害人经济赔偿，可以适当的减轻其刑罚。
+                是当事人意思自治的表现。 在我国，协议免责并不适用于所有的责任范围，一般仅限于民事和行政责任。刑事责任不能协议免除，因为刑事犯罪不仅侵害被害人的合法权益，而且还
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="zui-footer zui-row zui-row-center zui-row-stretch">
+        <div class="footer_btn zui-col z-btn-cancel">取消</div>
+        <div class="footer_btn zui-col z-btn-red">说明</div>
+    </div>
+
+</div>
+
+
+<script>
+    apiready = function() {
+        jw.sb.fixStatusBar(".zui-header");
+    }
+    $(function () {
+
+        $("input[name=tihuo]").on("change",function () {
+            var t = $(this).val();
+            console.log(t);
+            switch (t) {
+                case "1":
+                    $("#zitibox").show();
+                    $("#daofubox").hide();
+                    $("#zhuanrubox").hide();
+                    break;
+                case "2":
+                    $("#zitibox").hide();
+                    $("#daofubox").hide();
+                    $("#zhuanrubox").show();
+                    break;
+                case "3":
+                    $("#zitibox").hide();
+                    $("#daofubox").show();
+                    $("#zhuanrubox").hide();
+                    break;
+            }
+        });
+
+        $("#datetime-picker").datetimePicker();
+    });
+</script>
+</body>
+</html>

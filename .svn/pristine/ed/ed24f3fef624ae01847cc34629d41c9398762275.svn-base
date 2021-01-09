@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-content">
+        <div class="shop_fl_list">
+            <div class="item">
+                <div class="shop_fl_item_title zui-row zui-row-center">
+                    <div class="zui-col">分类</div>
+                    <i class="iconfont icon-down" @click="show1=!show1"></i>
+                </div>
+                <div class="shop_fl_item_main" v-show="show1">
+
+                    <div class="zui-cboxlist shop_fl_cboxlist">
+
+                        <div class="zui-cbox" v-for="item in BusinessType" @click="Ftypechose(item)" v-cloak>
+                            <div class="box" :class="{'active':item.FBusinessTypeId==FtypeID}">{{item.FName}}</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="item">
+                <div class="shop_fl_item_title zui-row zui-row-center">
+                    <div class="zui-col">净含量</div>
+                    <i class="iconfont icon-down" @click="show2=!show2"></i>
+                </div>
+                <div class="shop_fl_item_main" v-show="show2">
+
+                    <div class="zui-cboxlist shop_fl_cboxlist">
+
+                        <div class="zui-cbox" v-for="item in jhllist" @click="jinghanliang(item.FNetWeight)">
+                            <div class="box" :class="{'active':item.FNetWeight==jhl}">{{item.FNetWeight}}g</div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="shop_fl_item_title zui-row zui-row-center">
+                    <div class="zui-col">年份</div>
+                    <i class="iconfont icon-down" @click="show3=!show3"></i>
+                </div>
+                <div class="shop_fl_item_main" v-show="show3">
+                    <div class="zui-cboxlist shop_fl_cboxlist">
+                        <div class="zui-cbox" v-for="item in FYears" @click="Fyearchose(item)" v-cloak>
+                            <div class="box" :class="{'active':item.FYear==Year}">{{item.FYear}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="shop_fl_item_title zui-row zui-row-center">
+                    <div class="zui-col">价格区间</div>
+                </div>
+                <div class="shop_fl_item_main">
+                    <div class="zui-row zui-row-center shop_fl_jiagebox">
+                        <input type="number" class="zui-col text" placeholder="最低价" v-model="minprice">
+                        <p>—</p>
+                        <input type="number" class="zui-col text" placeholder="最高价" v-model="maxprice">
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="shop_fl_footer zui-row zui-row-center">
+        <div class="zui-col btn1" @click="reset()">重置</div>
+        <div class="zui-col btn2" @click="post()">确定</div>
+    </div>
+
+</div>
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function() {
+
+        jw.sb.fixStatusBar("",function (ret) {
+            $(".zui-content").css({
+                "padding-top": ret+"px"
+            });
+        });
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                BusinessType:[],//商品分类
+                jhllist: [], // 净含量列表
+                FYears:[],//年份汇总
+                Year:"",
+                FtypeID: "", // 分类ID
+                jhl: "", //净含量
+                minprice: "", // 最低价
+                maxprice: "", // 最高价
+                show1: true,
+                show2: true,
+                show3: true,
+            },
+            created: function () {
+                var _this = this;
+                //_this.getBusinessType();
+                _this.getBusinessYear();
+                // var w = api.winWidth - 200;
+                // $(".zui-app").width(w);
+            },
+            methods: {
+                // 获取商品分类
+                // getBusinessType:function(){
+                //     var _this = this;
+                //     jw.submit("app_商品分类",{},function (ret) {
+                //         if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                //             _this.BusinessType = ret.ds1;
+                //         } else {
+                //             _this.BusinessType = [];
+                //             jw.ts.toast(ret.ds[0].msg);
+                //         }
+                //     });
+                // },
+                // 获取商品年份
+                  getBusinessYear:function(){
+                      var _this = this;
+                      jw.submit("app_商品年份汇总",{},function (ret) {
+                          if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                              _this.FYears = ret.ds1;
+                              _this.BusinessType = ret.ds2;
+                              _this.jhllist= ret.ds3;
+                          } else {
+                              _this.FYears = [];
+                              jw.ts.toast(ret.ds[0].msg);
+                          }
+                      });
+                  },
+                /* 分类选择 */
+                Ftypechose: function (item) {
+                    if (this.FtypeID == item.FBusinessTypeId){
+                        this.FtypeID = "";
+                    }else{
+                        this.FtypeID = item.FBusinessTypeId;
+                    }
+                },
+                /* 年份选择 */
+                Fyearchose: function (item) {
+                    if (this.Year == item.FYear){
+                        this.Year = "";
+                    }else{
+                        this.Year = item.FYear;
+                    }
+                },
+                /* 净含量选择 */
+                jinghanliang: function (item) {
+                    if (this.jhl == item) {
+                        this.jhl = "";
+                    }else{
+                        this.jhl = item;
+                    }
+                },
+                /* 重置 */
+                reset: function () {
+                    this.FtypeID = "";
+                    this.jhl = "";
+                    this.minprice = "";
+                    this.maxprice = "";
+                    this.Year="";
+                },
+                /* 确定 */
+                post: function () {
+                    var option = {
+                        FtypeID : this.FtypeID,
+                        FNetWeight: this.jhl,
+                        FYear:this.Year,
+                        minprice: this.minprice,
+                        maxprice: this.maxprice
+                    }
+                    jw.data.jtset("shopping_shaixuan",JSON.stringify(option));
+                    //alert(JSON.stringify(option))
+                    api.closeDrawerPane();
+                }
+            }
+        });
+
+    }
+</script>
+</body>
+</html>

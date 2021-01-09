@@ -1,0 +1,30 @@
+.zui-color-red {
+  color: #f44 !important;
+}
+.zui-color-blue {
+  color: #38f !important;
+}
+.zui-color-green {
+  color: #06bf04 !important;
+}
+.zui-color-orange {
+  color: #ff7e17 !important;
+}
+.zui-color-yellow {
+  color: #e2d645 !important;
+}
+.zui-bg-red {
+  background-color: #f44 !important;
+}
+.zui-bg-blue {
+  background-color: #38f !important;
+}
+.zui-bg-green {
+  background-color: #06bf04 !important;
+}
+.zui-bg-orange {
+  background-color: #ff7e17 !important;
+}
+.zui-bg-yellow {
+  background-color: #e2d645 !important;
+}

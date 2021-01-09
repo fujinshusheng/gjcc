@@ -1,0 +1,33 @@
+.zui-steps {
+  overflow: hidden;
+  background-color: #fff;
+  padding: 0 0 0 36px;
+}
+.zui-steps .zui-step {
+  position: relative;
+  padding: 1px;
+}
+.zui-steps .zui-step:after {
+  content: '';
+  display: block;
+  position: absolute;
+  left: -18px;
+  bottom: 0;
+  width: 1px;
+  background: #999999;
+  height: 100%;
+  top: 5px;
+}
+.zui-steps .zui-step:before {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 5px;
+  left: -22px;
+  background: #999999;
+  width: 10px;
+  height: 10px;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+}

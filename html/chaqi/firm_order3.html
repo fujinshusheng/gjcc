@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-header zui-header-dark zui-row-center">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">确认订单</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+    <div class="zui-content ordermain">
+
+        <div class="weui-form-preview">
+
+            <div class="weui-form-preview__hd" v-if="Ftype == 1" v-cloak>
+                <label class="weui-form-preview__label">茶企名字/茶友转卖</label>
+                <em class="weui-form-preview__value"></em>
+            </div>
+
+            <div class="order_imgbox zui-row zui-row-center zui-row-stretch">
+                <div class="touxiang" style="background-image: url(../../image/order01.jpg)"></div>
+                <div class="zui-col zui-row zui-row-column">
+                    <div class="title">{{shopdetails.FName}}</div>
+                    <div class="zui-col"></div>
+                    <div class="text"><span class="color-red fz20">￥{{shopdetails.FPrice}}</span> <span class="fr">×1</span></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="weui-form-preview">
+            <div class="weui-form-preview__bd">
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">购买数量</label>
+                    <div class="weui-form-preview__value">
+                        <div class="z-numbercol">
+                            <div class="z-numbercol_add iconfont icon-jian" @click="number_less()"></div>
+                            <input type="number" class="z-numbercol_text" v-model="number">
+                            <div class="z-numbercol_less iconfont icon-add" @click="number_add()"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">购买时间</label>
+                    <span class="weui-form-preview__value">{{nowtime}}</span>
+                </div>
+                <label class="weui-form-preview__item" style="display: block;">
+                    <span class="weui-form-preview__label">积分抵扣</span>
+                    <div class="weui-form-preview__value">
+                        <div class="zui-radiobox fr" style="width: auto;">
+                            <input type="checkbox">
+                            <i class="zui-checked"></i>
+                            ￥100
+                        </div>
+                    </div>
+                </label>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">提货方式</label>
+                    <div class="weui-form-preview__value">
+                        <div class="zui-radiolist">
+                            <label class="zui-radiobox">
+                                <input type="radio" name="tihuo" checked value="1">
+                                <i class="zui-checked"></i>
+                                <span class="zui-radiotxt">自提</span>
+                            </label>
+                            <label class="zui-radiobox">
+                                <input type="radio" name="tihuo" value="2">
+                                <i class="zui-checked"></i>
+                                <span class="zui-radiotxt">转入茶仓</span>
+                            </label>
+                            <label class="zui-radiobox">
+                                <input type="radio" name="tihuo" value="3">
+                                <i class="zui-checked"></i>
+                                <span class="zui-radiotxt">顺丰到付</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">提货时间</label>
+                    <span class="weui-form-preview__value"></span>
+                    <i class="iconfont icon-data"></i>
+                </div>
+                <div class="weui-form-preview__item zui-row zui-row-center">
+                    <label class="weui-form-preview__label">提货时间</label>
+                    <div class="weui-form-preview__value zui-col zui-row zui-row-center">
+                        <input type="text" class="zui-col text-right" id='tihuodata' placeholder="请选择提货时间"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 订单详情 时显示 start -->
+        <div class="weui-form-preview">
+            <div class="weui-form-preview__bd">
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">订单编号</label>
+                    <span class="weui-form-preview__value">31002299445201980662</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">创建时间</label>
+                    <span class="weui-form-preview__value">2018年5月22日 [周二] 12:00:00</span>
+                </div>
+            </div>
+        </div>
+        <!-- 订单详情 时显示 end -->
+
+        <div id="zitibox" class="weui-form-preview">
+            <div class="weui-form-preview__bd">
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">提货地址</label>
+                    <span class="weui-form-preview__value">浙江省宁波市高新区创苑路750号软件园D幢4楼</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">联系人</label>
+                    <span class="weui-form-preview__value">谢小姐</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">联系方式</label>
+                    <span class="weui-form-preview__value">15566112350</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="daofubox" class="weui-form-preview wuliu-border-top wuliu-border-bottom" style="display: none;">
+            <div class="weui-form-preview__bd">
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">收件人</label>
+                    <div class="weui-form-preview__value"><span>谢小姐</span> <span class="fr">15566112350</span></div>
+                </div>
+                <div class="weui-form-preview__item" style="border-top: none">
+                    <label class="weui-form-preview__label">收件地址</label>
+                    <span class="weui-form-preview__value">浙江省宁波市高新区创苑路750号软件园D幢4楼</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="zhuanrubox" class="ccxieyi" style="display: none;">
+            <div class="ccxieyi_nav zui-row zui-row-center">
+                <span>茶仓储存协议</span>
+                <i class="iconfont icon-down"></i>
+                <i class="iconfont icon-up"></i>
+            </div>
+            <div class="ccxieyi_main">
+                协议免责，是指当事双方协商一致，达成免除一方或者双方责任的结果的行为。是当事人意思自治的表现。 在我国，协议免责并不适用于所有的责任范围，一般仅限于民事和行政责任。刑事责任不能协议免除，因为刑事犯罪不仅侵害被害人的合法权益，而且还破坏了国家的统治秩序，必须由检察院代表国家进行追溯，人民法院判决确定刑事犯罪人的责任承担。但在英美法系国家，存在着适用于刑事犯罪的辩诉交易制度，公诉方可以和认罪态度较好的被告人达成减轻其刑责的协议。从广义上讲，也属于协议免责的范畴。我国的刑事制度也进行了这个方向的改革，被告人如果积极的给予被害人经济赔偿，可以适当的减轻其刑罚。
+                是当事人意思自治的表现。 在我国，协议免责并不适用于所有的责任范围，一般仅限于民事和行政责任。刑事责任不能协议免除，因为刑事犯罪不仅侵害被害人的合法权益，而且还
+            </div>
+        </div>
+
+    </div>
+
+    <div class="zui-footer zui-row zui-row-center zui-row-stretch firm_footer">
+        <div class="zui-col-60 text">￥498.00</div>
+        <div class="footer_btn zui-col bg-red color-white" id="okbtn">确定</div>
+    </div>
+
+    <!--<div class="zui-footer zui-row zui-row-center zui-row-stretch firm_footer">-->
+    <!--<div class="footer_btn zui-col bg-red color-white">确认收货</div>-->
+    <!--</div>-->
+
+    <!--<div class="zui-footer zui-row zui-row-center zui-row-stretch firm_footer">-->
+    <!--<div class="footer_btn zui-col color-white" style="background-color: #f8ca51">评价</div>-->
+    <!--</div>-->
+
+    <!--<div class="zui-footer zui-row zui-row-center zui-row-stretch firm_footer">-->
+    <!--<div class="footer_btn zui-col bg-orange color-white">查看物流</div>-->
+    <!--<div class="footer_btn zui-col bg-red color-white">确认收货</div>-->
+    <!--</div>-->
+
+    <!--<div class="zui-footer zui-row zui-row-center zui-row-stretch firm_footer">-->
+    <!--<div class="footer_btn zui-col bg-orange color-white">查看物流</div>-->
+    <!--<div class="footer_btn zui-col color-white" style="background-color: #f8ca51">立即评价</div>-->
+    <!--</div>-->
+
+
+    <!-- 交易码 -->
+    <div id="jiaoyipop" class="z-popup" style="display: none;">
+        <div class="z-popup_modal popup-bottom zui-row zui-row-column">
+            <div class="zui-row zui-row-center">
+                <div class="zui-col footer_btn bg-red color-white">请输入交易码</div>
+            </div>
+            <div class="zui-col" style="min-height: 50px">
+                <div class="mimabox clearfix">
+                    <div class="nimainput"></div>
+                    <div class="nimainput"></div>
+                    <div class="nimainput"></div>
+                    <div class="nimainput"></div>
+                    <div class="nimainput"></div>
+                    <div class="nimainput"></div>
+                    <input id="jiaoyi" type="text" name="jiaoyi" value="">
+                </div>
+            </div>
+        </div>
+        <div class="z-popup_bg"></div>
+    </div>
+
+</div>
+
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../res/weui/jquery-weui.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function() {
+        jw.sb.fixStatusBar(".zui-header");
+
+        function init(){
+            setTimeout(function () {
+                $("input[name=tihuo]").on("change",function () {
+                    var t = $(this).val();
+                    console.log(t);
+                    switch (t) {
+                        case "1":
+                            $("#zitibox").show();
+                            $("#daofubox").hide();
+                            $("#zhuanrubox").hide();
+                            break;
+                        case "2":
+                            $("#zitibox").hide();
+                            $("#daofubox").hide();
+                            $("#zhuanrubox").show();
+                            break;
+                        case "3":
+                            $("#zitibox").hide();
+                            $("#daofubox").show();
+                            $("#zhuanrubox").hide();
+                            break;
+                    }
+                });
+
+                $(".nimainput").on("touchend",function () {
+                    $("#jiaoyi").focus();
+                });
+
+                $("#jiaoyi").on("keyup",function () {
+                    var text = $(this).val();
+                    var list = text.split("")
+                    if (text.length > 6) {
+                        var laststr = list[list.length-1];
+                        list.pop();
+                        list[5] = laststr;
+
+                        text = "";
+                        for (var i in list) {
+                            text += list[i];
+                        }
+                        $(this).val(text);
+                    }
+
+                    $(".nimainput").each(function (index, item) {
+                        if (list[index] == undefined){
+                            $(this).text("");
+                        } else{
+                            $(this).text(list[index]);
+                        }
+                    });
+                });
+
+                $(document).on("touchend","#okbtn",function () {
+                    $("#jiaoyipop").show();
+                });
+
+                $(document).on("touchend",".z-popup_bg",function () {
+                    $("#jiaoyipop").hide();
+                })
+
+
+                $("#tihuodata").datetimePicker();
+            },1000);
+        }
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                FBusinessId: api.pageParam.FBusinessId, // 产品ID
+                FPageType: api.pageParam.FPageType, // 页面来源 1，显示抢购 2、普通
+                Ftype: api.pageParam.Ftype, // 0： 茶商城 1：茶市
+                nowtime: "",// 现在时间
+                shopdetails: api.pageParam.shopdetails, // 商品详情
+                number: "", // 数量
+            },
+            created: function () {
+                var _this = this;
+                init();
+                setInterval(function () {
+                    _this.nowtime = zDate.getNowdata("datatime");
+                },1000);
+            },
+            methods: {
+                // 增加数量
+                number_add: function(){
+                    if (this.number == "" || this.number == undefined){
+                        this.number = 1;
+                    } else{
+                        this.number++;
+                    }
+                },
+                // 减少数量
+                number_less: function(){
+                    if (this.number == "" || this.number == undefined){
+                        this.number = 0;
+                    } else{
+                        if (this.number >= 1){
+                            this.number--;
+                        }
+                    }
+                },
+                orderpost: function () {
+                    var _this = this;
+
+                    var FOrderType = 0;
+                    /* 茶市*/
+                    if (_this.Ftype == "1") {
+                        FOrderType = 2;
+                    }else{
+                        /* 限时抢购*/
+                        if (_this.FPageType == 1){
+                            FOrderType = 1;
+                        }
+                        /* 普通商品*/
+                        else if (_this.FPageType == 2) {
+                            FOrderType = 0;
+                        }
+                    }
+
+                    var FPickDate = $("#tihuodata").val();
+
+                    jw.submit("app_提交订单",{
+                        FBusinessId:  _this.FBusinessId,  //商品id
+                        FUserId:  jw.data.get("userid"),  //用户id
+                        FOrderSource: "",  //订单来源0：平台，>0:GJ_OnekeyResale一键转卖配置表 id 或者[GJ_FlashSale:"",  //]表 id
+                        FBuyNum: "",  //购买数量
+                        FOrderType:  FOrderType,  //提货类型 订单来源 0商城订单 1限时抢购 2茶市
+                        FPrice: "",  //单价
+                        FPreferentialPrice: "",  //积分抵扣金额
+                        FPickType: "",  //提货类型 0：自提，1：快递,2:到茶仓
+                        FShippingAddressId: "",  //收货地址id
+                        FPickDate: "",  //预计提货时间
+                    },function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            jw.ts.toast(ret.ds[0].msg);
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

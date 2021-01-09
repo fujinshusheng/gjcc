@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>个人中心</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        .my_jifenlist .zui-item.active{
+            background-color: #00faf8;
+        }
+    </style>
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-header zui-row-center myjifen_header">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">收货地址</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="right: 45px;font-size:30px"
+            onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+        <div class="zui-header-icon zui-header-right iconfont icon-add" @click="addplace()"></div>
+    </div>
+    <div class="zui-content">
+
+
+        <div class="zui-list my_jifenlist">
+            <div class="zui-item zui-row" :class="{'active':index == tindex}" @click="chose(item,index)" v-for="(item,index) in list" v-cloak v-if="item.FIsEnable == 0">
+                <div class="zui-col fz16">
+                    <p>{{item.FUserName}} <span class="fz14 color-gray6">{{item.FMobile}}</span></p>
+                    <span class="color-red" v-show="item.FIsDefault == true">【默认】</span>
+                    {{item.FProvince + item.FCity + item.FArea + item.FAddress}}
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="zui-footer zui-row zui-row-stretch">
+        <div class="footer_btn zui-col bg-red color-white" @click="qrbtn()">确认</div>
+    </div>
+
+</div>
+
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function() {
+        jw.sb.fixStatusBar(".zui-header");
+
+        jw.data.jtget("addresschange",function (ret) {
+            myapp.getlist();
+        });
+
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                logininfo: "",
+                list: [], // 地址列表
+                tindex: "",
+                choseplace: ""
+            },
+            created: function () {
+                this.logininfo = JSON.parse(jw.data.get("logininfo"));
+
+                this.getlist();
+            },
+            methods: {
+                addplace: function(){
+                    jw.openWin({
+                        name: "add_address",
+                        url: "../myself/add_address.html"
+                    })
+                },
+                getlist: function () {
+                    var _this = this;
+                    _this.list = [];
+                    jw.submit("app_收货地址列表",{
+                        FUserID: jw.data.get("userid")
+                    },function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            if (ret.ds1.length > 0) {
+                                _this.list = ret.ds1;
+                                _this.choseplace = ret.ds1[0];
+                            }else{
+                                _this.list = [];
+                            }
+                        } else {
+                            _this.list = [];
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    })
+                },
+                chose: function (item, index) {
+                    var _this = this;
+                    _this.tindex = index;
+                    _this.choseplace = item;
+                },
+                // 确认
+                qrbtn: function () {
+                    var _this = this;
+                    jw.data.jtset("chose_address",JSON.stringify(_this.choseplace));
+                    jw.back();
+                }
+            }
+        })
+    }
+</script>
+</body>
+</html>

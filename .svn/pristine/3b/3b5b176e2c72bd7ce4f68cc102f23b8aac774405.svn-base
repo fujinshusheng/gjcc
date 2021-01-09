@@ -1,0 +1,198 @@
+[
+  {
+    "test": "2019",
+    "main": [
+      {
+        "RowNumber": 1,
+        "FBusinessId": 20,
+        "FTypeId": 1,
+        "FName": "2019春 龙帕",
+        "FPrice": 999,
+        "FStock": 0,
+        "FImageUrl": "/upload/app/20181130101237_s.jpg",
+        "FBusinessBrandId": 7,
+        "FNetWeight": 357,
+        "FYear": "2019",
+        "FUnit": "g",
+        "FSort": 0,
+        "FCreateDate": "2018-11-30T10:15:00",
+        "FSaleNum": 81
+      },
+      {
+        "RowNumber": 7,
+        "FBusinessId": 30,
+        "FTypeId": 1,
+        "FName": "2019春 老班章（357g）",
+        "FPrice": 6800,
+        "FStock": 205,
+        "FImageUrl": "/upload/app/20190212140619_s.jpg",
+        "FBusinessBrandId": 6,
+        "FNetWeight": 357,
+        "FYear": "2019",
+        "FUnit": "g",
+        "FSort": 3,
+        "FCreateDate": "2019-02-12T14:10:00",
+        "FSaleNum": 0
+      },
+      {
+        "RowNumber": 9,
+        "FBusinessId": 29,
+        "FTypeId": 1,
+        "FName": "2019春 老班章（200g）",
+        "FPrice": 4800,
+        "FStock": 118,
+        "FImageUrl": "/upload/app/20190212134951_s.jpg",
+        "FBusinessBrandId": 6,
+        "FNetWeight": 200,
+        "FYear": "2019",
+        "FUnit": "g",
+        "FSort": 4,
+        "FCreateDate": "2019-02-12T13:59:00",
+        "FSaleNum": 0
+      },
+      {
+        "RowNumber": 10,
+        "FBusinessId": 31,
+        "FTypeId": 1,
+        "FName": "2019春 曼撒",
+        "FPrice": 999,
+        "FStock": 0,
+        "FImageUrl": "/upload/app/20190328140015_s.jpg",
+        "FBusinessBrandId": 3,
+        "FNetWeight": 357,
+        "FYear": "2019",
+        "FUnit": "g",
+        "FSort": 5,
+        "FCreateDate": "2019-03-13T15:14:00",
+        "FSaleNum": 66
+      }
+    ]
+  },
+  {
+    "test": "2017",
+    "main": [
+      {
+        "RowNumber": 2,
+        "FBusinessId": 1031,
+        "FTypeId": 1,
+        "FName": "2017春 南糯山（mini）",
+        "FPrice": 0.01,
+        "FStock": 0,
+        "FImageUrl": "/upload/app/20190430143608_s.jpg",
+        "FBusinessBrandId": 8,
+        "FNetWeight": 49,
+        "FYear": "2017",
+        "FUnit": "g",
+        "FSort": 0,
+        "FCreateDate": "2019-04-30T14:39:00",
+        "FSaleNum": 9
+      },
+      {
+        "RowNumber": 8,
+        "FBusinessId": 7,
+        "FTypeId": 2,
+        "FName": "2017 老僧衣",
+        "FPrice": 1680,
+        "FStock": 987,
+        "FImageUrl": "/upload/app/20190328105845_s.jpg",
+        "FBusinessBrandId": 5,
+        "FNetWeight": 357,
+        "FYear": "2017",
+        "FUnit": "云南",
+        "FSort": 3,
+        "FCreateDate": "2018-08-02T13:22:00",
+        "FSaleNum": 74
+      }
+    ]
+  },
+  {
+    "test": "2020",
+    "main": [
+      {
+        "RowNumber": 3,
+        "FBusinessId": 1032,
+        "FTypeId": 1,
+        "FName": "2020春 龙帕",
+        "FPrice": 999,
+        "FStock": 71,
+        "FImageUrl": "/upload/app/20191121153925_s.jpg",
+        "FBusinessBrandId": 7,
+        "FNetWeight": 357,
+        "FYear": "2020",
+        "FUnit": "克",
+        "FSort": 0,
+        "FCreateDate": "2019-11-21T15:45:00",
+        "FSaleNum": 19
+      }
+    ]
+  },
+  {
+    "test": "2018",
+    "main": [
+      {
+        "RowNumber": 4,
+        "FBusinessId": 8,
+        "FTypeId": 1,
+        "FName": "2018春 曼撒",
+        "FPrice": 1280,
+        "FStock": 64,
+        "FImageUrl": "/upload/app/20180927142625_s.jpg",
+        "FBusinessBrandId": 3,
+        "FNetWeight": 357,
+        "FYear": "2018",
+        "FUnit": "片",
+        "FSort": 1,
+        "FCreateDate": "2018-08-03T08:45:00",
+        "FSaleNum": 71
+      },
+      {
+        "RowNumber": 5,
+        "FBusinessId": 14,
+        "FTypeId": 1,
+        "FName": "2018春 南糯山",
+        "FPrice": 1280,
+        "FStock": 0,
+        "FImageUrl": "/upload/app/20180927142952_s.jpg",
+        "FBusinessBrandId": 8,
+        "FNetWeight": 357,
+        "FYear": "2018",
+        "FUnit": "g",
+        "FSort": 1,
+        "FCreateDate": "2018-09-03T14:38:00",
+        "FSaleNum": 7
+      },
+      {
+        "RowNumber": 6,
+        "FBusinessId": 13,
+        "FTypeId": 1,
+        "FName": "2018春 老班章",
+        "FPrice": 5800,
+        "FStock": 0,
+        "FImageUrl": "/upload/app/20180927142830_s.jpg",
+        "FBusinessBrandId": 6,
+        "FNetWeight": 200,
+        "FYear": "2018",
+        "FUnit": "g",
+        "FSort": 2,
+        "FCreateDate": "2018-09-01T16:35:00",
+        "FSaleNum": 1
+      },
+      {
+        "RowNumber": 11,
+        "FBusinessId": 15,
+        "FTypeId": 1,
+        "FName": "2018春 龙帕",
+        "FPrice": 1280,
+        "FStock": 1,
+        "FImageUrl": "/upload/app/20180927143144_s.jpg",
+        "FBusinessBrandId": 7,
+        "FNetWeight": 357,
+        "FYear": "2018",
+        "FUnit": "g",
+        "FSort": 99,
+        "FCreateDate": "2018-09-04T14:53:00",
+        "FSaleNum": 23
+      }
+    ]
+  }
+]

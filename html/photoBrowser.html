@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../css/zui.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-header zui-header-dark zui-row-center">
+        <div class="zui-header-title">长按保存图片</div>
+    </div>
+</div>
+
+
+<script src="../js/jquery-2.1.1.min.js"></script>
+<script src="../js/vue.js"></script>
+<script src="../js/vuefilter.js"></script>
+<script src="../js/jw.js"></script>
+<script src="../js/zui.js"></script>
+<script>
+    apiready = function() {
+        jw.sb.fixStatusBar(".zui-header");
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                imgurl: ""
+            },
+            created: function () {
+                this.imgurl = api.pageParam.imgurl
+            },
+            methods: {
+                save: function () {
+                    console.log(this.imgurl)
+                    return false;
+                    api.download({
+                        url: this.imgurl,
+                        savePath: 'fs://test.rar',
+                        report: true,
+                        cache: true,
+                        allowResume: true
+                    }, function(ret, err) {
+                        if (ret.state == 1) {
+                            //下载成功
+                        } else {
+
+                        }
+                    });
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

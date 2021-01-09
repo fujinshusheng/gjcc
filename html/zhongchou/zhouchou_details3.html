@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>众筹详情</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        [v-cloak] {
+            display: none !important;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="zui-app" v-cloak>
+        <div class="zui-header zui-header-dark zui-row-center">
+            <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+            <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">众筹详情</div>
+            <div class="iconfont zui-header-icon icon-fenxiang1 zui-header-right" @click="share()"></div>
+            <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="right: 45px;font-size:30px"
+                onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+        </div>
+        <div class="zui-content zhongchouxiangqing">
+            <div class="imgBox">
+                <img :src="order.FImg | url" />
+            </div>
+            <!-- <div class="title zui-row zui-row-center">
+                <div class="zui-col" w42 style="margin-left: 5%;">{{order.FTitle}}</div>
+                <div class="fenxiang" @click="share()" style="z-index: 99; margin-right: 5%;"><i
+                        class="iconfont icon-share-fill"></i>分享
+                </div>
+            </div> -->
+            <!--<div class="w42">
+                {{order.FTitle}}
+            </div>-->
+            <div class="jindutiao_box zui-row zui-row-center">
+                <div class="jindutiao_box_son zui-col">
+<!--                    <div class="jindutiao" :style="{'width':order.FPercent+'%'}"></div>-->
+                    <div class="jindutiao" :style="{'width':order.FPercent+'%'}"></div>
+                </div>
+                <div style="color: #eda8a6;" class="jindutiao_text">{{order.FPercent}}%</div>
+            </div>
+            <div class="baoming">
+                <div>
+                    <div>{{order.FMember}}</div>
+                    <div>已报名</div>
+                </div>
+                <div class="sx">
+                    <img src="../../image/2/sx.jpg" alt="">
+                </div>
+                <div>
+                    <div>{{order.FMinNum}}</div>
+                    <div>目标人数</div>
+                </div>
+                <div class="sx">
+                    <img src="../../image/2/sx.jpg" alt="">
+                </div>
+                <div>
+                    <div>{{order.FDays}}</div>
+                    <div>剩余天数</div>
+                </div>
+            </div>
+            <!-- 发货时间 -->
+            <div class="fahuo">
+                <div class="imgbgc">
+                    <img src="../../image/2/yinxing2.jpg" alt="">
+                </div>
+                <div class="fahuo_text">
+                    {{order.time2}}
+                </div>
+                <div class="imgbgc">
+                    <img src="../../image/2/yinxing2.jpg" alt="">
+                </div>
+                <div class="fahuo_text">
+                    {{order.time3}}
+                </div>
+                <div class="imgbgc">
+                    <img src="../../image/2/yinxing2.jpg" alt="">
+                </div>
+                <div class="fahuo_text">
+                    尾款需付金额:  {{ order.FPrice}}     <div class="fahuo_text " style="float: right; padding-right: 30%; margin: 0 0 0;"> 定金:  {{order.FPayPrice}} </div>
+
+
+                </div>
+
+
+                <div class="imgbgc">
+                    <img src="../../image/2/yinxing2.jpg" alt="">
+                </div>
+                <div class="fahuo_text">
+                    提货方式： {{order.FPickType}}
+                </div>
+                <div class="imgbgc">
+                    <img src="../../image/2/yinxing2.jpg" alt="">
+                </div>
+            </div>
+
+            <!-- tab -->
+            <div class="zui-row paimai_nav">
+                <div class="zui-col nav" :class="{'selected':navindex==1}" @click="navclick1(1)">商品</div>
+                <div class="zui-col nav" :class="{'selected':navindex==2}" @click="navclick1(2)">参数</div>
+                <div class="zui-col nav" :class="{'selected':navindex==3}" @click="navclick1(3)">说明</div>
+            </div>
+
+            <div class="dialog-content" v-show="navindex == 1">
+                <div v-html="htmlsrc(order.FContent)" ></div>
+            </div>
+            <div v-show="navindex == 2">
+                <img id="parameters" style="width: 100%;" @click="canshuimg(imgsrcfilter(order.parameters))"
+                     v-show="order.parameters!=null&&order.parameters!=undefined"
+                     :src="imgsrcfilter(order.parameters)" alt="">
+            </div>
+            <div v-show="navindex == 3">
+                <img id="parameters2" style="width: 100%; height:300px;" @click="canshuimg(imgsrcfilter(order.shuoming))"
+                     v-show="order.shuoming!=null&&order.shuoming!=undefined"
+                     :src="imgsrcfilter(order.shuoming)" alt="">
+            </div>
+        </div>
+
+        <div class="zui-footer zui-row zui-row-center">
+            <!-- <div class="paimai_btn">
+                <i class="iconfont icon-kefu"></i>
+                <span class="fz16 color-blue" @click="lxkf()">联系客服>></span>
+            </div> -->
+            <div class="zui- " style="width:20%; font-size:14px;text-align:center;line-height:20px;"   @click="kefushow = true"><i class="iconfont icon-kefu color-red" style="display: block;text-align:center;margin-top:5px;"></i>咨询</div>
+            <div class="footer_btn zui-col color-white" :class="{'bg-red':order.btnStatu=='true','bg-cancel':order.btnStatu != 'true'}" @click="justbuy()">{{order.btnTitle}}</div>
+        </div>
+    <div class="zui-alert shop_alert" v-cloak v-if="kefushow">
+        <div class="zui-alert_box">
+            <div class="shop_close iconfont icon-del color-red" @click="kefushow = false"></div>
+            <div class="tip">
+                <div class="iconfont icon-kefu"></div>
+            </div>
+            <div class="title">咨询电话 | 微信客服</div>
+            <div class="cont">
+            <input id="foo1"  value="15867203999" readonly="readonly" style="width:35%; font-size:18px;">
+            <button class="btn"  data-clipboard-target="#foo1" style="color:#fff;background-color:#676767;">复制</button>
+
+
+            <a href="Tel:15867203999" style="display:link-block; padding:1.5px 5px 3px; font-size:14.5px;color:#fff;background-color:#c23a4d;">呼叫</a></div>
+        </div>
+        <div class="zui-alert_bg"></div>
+    </div>
+    <!-- 客服弹出框 end -->
+    </div>
+</body>
+
+</html>
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script src="../../js/clipboard.min.js"></script>
+<script>
+    apiready = function () {
+        jw.sb.fixStatusBar(".zui-header");
+
+        //返回页面时监听回调函数
+        api.addEventListener({
+            name: 'viewappear'
+        }, function (ret, err) {
+            myapp.getorderdetails();
+        });
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                bzjtext: "",
+                bzjshow: false, // 交保证金 弹出框显示隐藏
+                bzjczshow: false, // 保证金充值 弹出框显示隐藏
+                baozhengjin: false,
+                kefushow: false,
+                bmrsval: false, //显示隐藏的报名
+                order: [], //ds1
+                stardata: [], //ds3
+                ybmrimag: [], //已报名图
+                cjryl: [], //已报名人员
+                openbtn: false, //显示隐藏的按钮状态
+                navindex: 1,
+                FActiviteID: api.pageParam.FActiviteID, //商品id,
+            },
+            created: function () {
+            },
+            methods: {
+                getorderdetails: function () {
+                    var _this = this;
+                    //api41936 活动详情页面
+                    jw.submit("api41936", {
+                        FActiviteID: _this.FActiviteID, //活动id || api.pageParam.FActiviteID
+                        FUserId: jw.data.get('userid'), //唯一id
+                    }, function (ret) {
+                        if (ret.ds1 != undefined && ret.ds1 != '') {
+                            if (ret.ds[0].status == "000000") {
+                                _this.order = ret.ds1[0];
+                                _this.ybmrimag = ret.ds2;
+                                _this.stardata = ret.ds3;
+                            } else if (ret.ds[0].status == "999999") {
+                                jw.ts.toast(data.ds[0].msg);
+                            }
+                        }
+                    });
+                },
+                getorderInfo: function () {
+                    var _this = this;
+                    //api41936 活动详情页面
+                    jw.submit("api43076", {
+                        FUserId: jw.data.get('userid'), //唯一id
+                    }, function (ret) {
+                        if (ret.ds1 != undefined && ret.ds1 != '') {
+                            if (ret.ds[0].status == "000000") {
+
+                            }
+                        }
+                    });
+                },
+                canshuimg: function (imgsrc) {
+                    photoBrowser.open({
+                        images: [imgsrc],
+                        placeholderImg: 'widget://res/loading.gif',
+                        bgColor: '#000'
+                    }, function (ret, err) {
+                        if (ret.eventType == "click") {
+                            photoBrowser.close();
+                        }
+                    });
+
+                },
+                //已报名人员
+                ybmryfun: function () {
+                    var _this = this;
+                    var option = {
+                        FActiviteID: _this.FActiviteID
+                    };
+                    jw.openWin({
+                        name: "zhouchou_cyhdry",
+                        url: "zhouchou_cyhdry.html",
+                        pageParam: option
+                    })
+                },
+                //我要支持
+                justbuy: function (ifFDeposit) {
+                    var _this = this;
+                    if (_this.order.btnStatu == true || _this.order.btnStatu == "true") {
+                        if('跳转到订单'==this.order.btnTitle||'支付尾款'==this.order.btnTitle){
+                            jw.openWin({
+                                name: "zhongchou_order_details",
+                                url: "../myself/zhongchou_order_details.html",
+                                pageParam: {
+                                    FId: _this.order.FOrderId
+                                }
+                            })
+                        }else{
+                            jw.openWin({
+                                name: "zhouchou_num",
+                                url: "zhouchou_num.html",
+                                pageParam: {
+                                    FNumdata: _this.order.FNum,
+                                    FPickType: _this.order.FPickType,
+                                    FPickAddres: _this.order.FPickAddres,
+                                    FActiviteID: _this.FActiviteID, //活动id
+                                }
+                            })
+                        }
+                    }else {
+                        jw.ts.toast('当前活动: ' + this.order.btnTitle);
+                    }
+                },
+                /* 分享 */
+                share: function () {
+                    var _this = this;
+                    //var url = window.location.href;
+
+
+                    // FId: api.pageParam.FId, //活动id
+                    //     FUserId: jw.data.get("userid") //登录id
+
+                    var url = "http://www.yunpuer.com/app_zhouchou_details/" +  _this.FActiviteID + "-" + jw.data.get("userid") + ".html";
+                    //console.error(url);
+                    // var url = "http://www.yunpuer.com/app_paimai_details/" + _this.Ftype + "-" + _this
+                    //     .FPageType + "-" + _this.FBusinessId + "-" + _this.FlashSaleId + ".html";
+                    var text = "商品名称："+_this.order.FTitle+_this.order.time2+"--"+ " 定金："+_this.order.FPayPrice +" 尾款："+_this.order.FPrice+"目标人次："+_this.order.FMinNum+"已经报名："+_this.order.FMember+"剩余天数："+_this.order.FDays
+                    jw.openFrame({
+                        name: 'share',
+                        url: '../share.html',
+                        pageParam: {
+                            text:text,
+                            FType: '0',
+                            Fid: _this.FActiviteID,
+                            path: url,
+                            thumb:_this.order.FImg
+                        }
+                    })
+                },// 去充值
+                gochongzhi: function () {
+                    this.bzjczshow = false;
+                    jw.openWin({
+                        name: "my_wallet",
+                        url: "../myself/my_wallet.html"
+                    })
+                },
+                //联系客服
+                lxkf: function () {
+                    window.location.href = 'tel:' + 15867203999;
+                },
+                navclick1(index) {
+                    this.navindex = index;
+                }
+            }
+        })
+    }
+    $(function () {
+        console.log("-----------------------------")
+       var clipboard = new Clipboard('.btn');
+       //优雅降级:safari 版本号>=10,提示复制成功;否则提示需在文字选中后，手动选择“拷贝”进行复制
+       clipboard.on('success', function(e) {
+        //    alert('复制成功!')
+        jw.ts.toast('复制成功!');
+           //console.log($(this))
+           e.clearSelection();
+       });
+       clipboard.on('error', function(e) {
+           //alert('请选择“拷贝”进行复制!')
+       });
+   })
+</script>
+<style>
+p > img{
+    width: 100%;
+}
+</style>

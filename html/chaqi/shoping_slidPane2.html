@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN" style="background-color:transparent">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+
+<body style="background-color:transparent">
+    <div class="zui-app">
+        <div class="zui-header" style="background-color:transparent">
+            <div class="zui-header_text zui-col zui-header-title">&nbsp;</div>
+        </div>
+        <div class="zui-content" style="background-color: #f2f2f2;">
+            <div class="flOption" :class="{'avtive':item.FTypeId == FTypeId}" @click="optionNew(item)" v-for="item in list">
+                <div class="optionTitle">{{item.FName}}</div>
+                <div class="optionSecelde">＞</div>
+            </div>
+        </div>
+        <div class="shop_fl_footer zui-row zui-row-center">
+            <div class="zui-col btn1" @click="reset()">重置</div>
+            <!--<div class="zui-col btn2" @click="post()">确定</div>-->
+        </div>
+    </div>
+
+    <script src="../../js/jquery-2.1.1.min.js"></script>
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/vuefilter.js"></script>
+    <script src="../../js/jw.js"></script>
+    <script src="../../js/zui.js"></script>
+    <script>
+        apiready = function () {
+
+            jw.sb.fixStatusBar(".zui-header");
+
+            var myapp = new Vue({
+                "el": ".zui-app",
+                data: {
+                    list: [], //分类列表
+                    FTypeId: "",
+                },
+                created: function () {
+                    var _this = this;
+                    _this.getBusinessYear();
+                },
+                methods: {
+                    // 获取分类列表
+                    getBusinessYear: function () {
+                        var _this = this;
+                        jw.submit("api47043", {}, function (ret) {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                                _this.list = ret.ds1;
+                            } else {
+                                _this.list = [];
+                                jw.ts.toast(ret.ds[0].msg);
+                            }
+                        });
+                    },
+                    /* 重置 */
+                    reset: function () {
+                        jw.data.jtset("shoppppp", "");
+                        api.closeDrawerPane();
+                    },
+                    optionNew(item) {
+                        this.FTypeId = item.FTypeId;
+                        jw.data.jtset("shoppppp", item.FTypeId);
+                        api.closeDrawerPane();
+                    },
+                    post(){
+                        jw.data.jtset("shoppppp", this.FTypeId);
+                        api.closeDrawerPane();
+                    }
+                }
+            });
+
+        }
+    </script>
+</body>
+
+</html>

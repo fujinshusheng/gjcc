@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>个人中心</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+<div class="zui-app">
+    <div class="zui-header zui-row-center myjifen_header">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">我的发票</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+    <div class="zui-content">
+
+        <div class="zui-list">
+            <div class="zui-item" v-for="item in fapisolist">
+                <p class="fz18">{{item.FName}}</p>
+                <p class="fz18">税号：{{item.FNumber}}</p>
+            </div>
+        </div>
+        <!--<div class="addfapiao" @click="addfapiao()">-->
+            <!--<i class="iconfont icon-add"></i>-->
+            <!--添加发票信息-->
+        <!--</div>-->
+
+    </div>
+</div>
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function() {
+        jw.sb.fixStatusBar(".zui-header");
+
+        jw.data.jtget("addresschange",function (ret) {
+            myapp.getlist();
+        });
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                fapisolist: []
+            },
+            created: function () {
+                this.getfapiaolist();
+            },
+            methods: {
+                addfapiao: function () {
+                    jw.openWin({
+                        name: "add_fapiao",
+                        url: "add_fapiao.html"
+                    });
+                },
+                kaipiao: function () {
+                    jw.openWin({
+                        name: "my_kaipiao",
+                        url: "my_kaipiao.html"
+                    })
+                },
+                getfapiaolist: function () {
+                    var _this = this;
+                    jw.submit("app_发票记录",{
+                        FUserId: jw.data.get("userid")
+                    },function (ret) {
+                        if (ret.ds[0].status == "000000"){
+                            _this.fapisolist = ret.ds1;
+                        }
+                    })
+                }
+            }
+        })
+    }
+</script>
+</body>
+</html>

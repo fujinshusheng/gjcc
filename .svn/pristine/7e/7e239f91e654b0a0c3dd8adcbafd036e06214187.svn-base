@@ -1,0 +1,55 @@
+/* 自定义选择框 */
+.z-select {
+  position: relative;
+  color: #333333;
+  font-size: 16px;
+  .z-input{
+    height: 35px;
+    line-height: 35px;
+    color: #333333;
+    font-size: 16px;
+  }
+  .z-select-text2,
+  .z-select-text{
+    padding: 0 10px;
+    min-height: 35px;
+    height: 35px;
+    line-height: 35px;
+    width: 100%;
+  }
+  .z-select-model {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 35px;
+    border: solid 1px #eeeeee;
+    background: #ffffff;
+    max-height: 175px;
+    overflow: auto;
+    z-index: 10;
+    display: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    .z-select-item {
+      padding: 0 10px;
+      line-height: 35px;
+      min-height: 35px;
+      &:hover {
+        background: #f8f8f8;
+      }
+    }
+  }
+  .z-select-item + .z-select-item {
+    border-top: solid 1px #eeeeee;
+  }
+  .z-select-bg{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    background-color: rgba(0,0,0,0.5);
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "ts": "2.9325毫秒",
+  "status": 200,
+  "error": "",
+  "msg": {
+    "ds": [
+      {
+        "status": "000000",
+        "msg": "成功"
+      }
+    ],
+    "ds1": [
+      {
+        "id": "0",
+        "divclass": "z-btn z-btn-ms z-btn-inline z-btn-cancel",
+        "divhtml": "取消订单",
+        "beforeAsk": 1,
+        "asktitle": "确定要取消订单？",
+        "interface": "api52136"
+      },
+      {
+        "id": "1",
+        "divclass": "z-btn z-btn-ms z-btn-inline",
+        "divhtml": "退款",
+        "beforeAsk": 1,
+        "asktitle": "确定要申请退款？",
+        "interface": "api42038"
+      },
+      {
+        "id": "2",
+        "divclass": "z-btn z-btn-ms z-btn-inline",
+        "divhtml": "去支付",
+        "beforeAsk": 0,
+        "asktitle": "",
+        "interface": ""
+      },
+      {
+        "id": "3",
+        "divclass": "z-btn z-btn-ms z-btn-inline z-btn-cancel",
+        "divhtml": "取消退款",
+        "beforeAsk": 1,
+        "asktitle": "确定要取消退款？",
+        "interface": "api42039"
+      },
+      {
+        "id": "4",
+        "divclass": "z-btn z-btn-ms z-btn-inline",
+        "divhtml": "去评价",
+        "beforeAsk": 0,
+        "asktitle": "",
+        "interface": ""
+      },
+      {
+        "id": "5",
+        "divclass": "z-btn z-btn-ms z-btn-inline",
+        "divhtml": "查看物流",
+        "beforeAsk": 0,
+        "asktitle": "",
+        "interface": ""
+      },
+      {
+        "id": "6",
+        "divclass": "z-btn z-btn-ms z-btn-inline",
+        "divhtml": "确认收货",
+        "beforeAsk": 1,
+        "asktitle": "确认收货？",
+        "interface": "api41934"
+      },
+      {
+        "id": "7",
+        "divclass": "z-btn z-btn-ms z-btn-inline",
+        "divhtml": "确认提货",
+        "beforeAsk": 1,
+        "asktitle": "确认提货？",
+        "interface": "api41934"
+      },
+      {
+        "id": "8",
+        "divclass": "z-btn z-btn-ms z-btn-inline",
+        "divhtml": "删除订单",
+        "beforeAsk": 1,
+        "asktitle": "确定删除订单？",
+        "interface": ""
+      }
+    ],
+    "ds2": [
+      {
+        "FId": 35,
+        "FTitle": "积分商城测试9",
+        "FImg": "/upload/app/20200603180706_s.jpg",
+        "FOrderNum": "sc2020060318090518335",
+        "FIntegralBusinessId": 10,
+        "FNum": 1,
+        "FCost": 1,
+        "FCostTotal": 1,
+        "FPrice": 0.01,
+        "FPriceTotal": 0.01,
+        "FPayType": null,
+        "FPickType": 0,
+        "FPickDate": "2020-06-03 18:09",
+        "FPickAddress": "测试地址",
+        "FShippingAddress": null,
+        "FOrderStatus": 0,
+        "statusname": "待支付",
+        "FCreateTime": "2020-06-03 18:09:05",
+        "FPayDate": null,
+        "FLastPayDate": "2020-06-03 18:39:05",
+        "FCancelDate": null,
+        "FLastRefundDate": "2020-06-10 18:09:05",
+        "FRefundDate": null,
+        "FIsAssess": 0,
+        "FRefundReson": null,
+        "FailReason": null,
+        "FTotalTxt": "1积分+0.01元",
+        "btnstatu": "0,2"
+      }
+    ]
+  },
+  "v": "v1.6.5"
+}

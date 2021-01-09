@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-header zui-header-dark zui-row-center">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">精品推荐</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+    <div class="zui-content">
+        <div>
+            <img style=" width: 100%;" src="../../image/swiper1.png" />
+        </div>
+        <div class="tj-content">
+            <div class="title">标题</div>
+            <div class="row-bottom tj-border">
+                <span><i class="iconfont icon-zan"></i>120</span>
+                <span><i class="iconfont icon-look"></i>120</span>
+                <span style="float: right">2018-10-10 10:31</span>
+            </div>
+            <div style="text-indent: 28px;">
+                哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈
+            </div>
+            <div class="shop_img" v-for="item in newslistfifter(newslist,1)">
+                <img :src="imgsrcfilter(item.FImageUrl)" alt="" class="imgblock">
+                <div class="shop_tip">
+                    <span>￥368</span>
+                    <span>查看详情</span>
+                </div>
+            </div>
+        </div>
+        <div class="tj-h"></div>
+        <div class="tj-history">
+            <div>往期回顾</div>
+        </div>
+        <div class="hot-comment clearfix">
+            <div class="hot-row" v-for="item in newslistfifter(newslist,1)">
+                <div class="himg touxiang" :style="getbgimg(item.FImageUrl)">
+                    <!--<img :src="item.FImageUrl|url" />-->
+                </div>
+                <div class="row-txt text-center">{{item.FName}}</div>
+            </div>
+        </div>
+    </div>
+    <!--<div class="zui-row">-->
+        <!--<div class="bottom-buy">我要购买</div>-->
+    <!--</div>-->
+</div>
+
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script src="../../res/weui/jquery-weui.min.js"></script>
+<script src="../../res/weui/swiper.min.js"></script>
+<script>
+    apiready = function() {
+        jw.sb.fixStatusBar(".zui-header");
+
+        var mySwiper = new Swiper('.swiper-container', {
+            autoplay: 50000,//可选选项，自动滑动
+            pagination: '.swiper-pagination',
+        });
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                newslist: [],
+            },
+            created: function () {
+                this.getnews();
+            },
+            methods: {
+                getnews: function () {
+                    var _this = this;
+                    jw.submit("app_茶新闻列表",{
+                        keywords: ""
+                    },function (ret) {
+                        if (ret.ds != undefined && ret.ds.length > 0){
+                            _this.newslist = ret.ds;
+
+                            _this.$nextTick(function(){
+                                $(".hot-row").each(function () {
+                                    $(this).find(".himg").height($(this).find(".himg").width());
+                                });
+                            })
+
+                        }else{
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                },
+                newslistfifter: function(list,t){
+                    var _this = this;
+                    return list.filter(function (item) {
+                        return item.FNewsTypeId == t
+                    })
+                },
+            }
+        })
+    }
+</script>
+</body>
+</html>

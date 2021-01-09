@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../css/zui.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        html,body{
+            background: transparent;
+        }
+    </style>
+</head>
+<body>
+
+
+<div class="zui-app">
+
+    <div class="zui-content" style="background: rgba(0,0,0,0)" @click="close()">
+
+    </div>
+    <div class="z-sharebox zui-row">
+        <div class="z-share" @click="QQshare('QFriend',3)">
+            <i class="iconfont icon-fenxiangqqhaoyou" style="color:#41beff;"></i>
+            <p class="title">QQ</p>
+        </div>
+        <div class="z-share" @click="QQshare('QZone',4)">
+            <i class="iconfont icon-qqkongjian" style="color:#41beff;"></i>
+            <p class="title">QQ空间</p>
+        </div>
+        <div class="z-share" @click="wxshare('session',0)">
+            <i class="iconfont icon-fenxiangweixin" style="color:#71d318;"></i>
+            <p class="title">微信</p>
+        </div>
+        <div class="z-share" @click="wxshare('timeline',1)">
+            <i class="iconfont icon-fenxiangweixinpengyouquan" style="color:#71d318;"></i>
+            <p class="title">朋友圈</p>
+        </div>
+        <div class="z-share" @click="othershare()">
+            <i class="iconfont icon-qita" style="color:#d4d4d4;"></i>
+            <p class="title">其他</p>
+        </div>
+    </div>
+    <div class="z-btn z-btn-noradius" @click="close()">取消</div>
+
+</div>
+
+
+<script src="../js/jquery-2.1.1.min.js"></script>
+<script src="../js/vue.js"></script>
+<script src="../js/vuefilter.js"></script>
+<script src="../js/jw.js"></script>
+<script src="../js/zui.js"></script>
+<script>
+    apiready = function() {
+
+        var sharedModule = api.require('shareAction');
+        var wx = api.require('wxPlus');
+        var qq = api.require('QQPlus');
+        var imageFilter = api.require('imageFilter');
+        var UIAlbumBrowser = api.require('UIAlbumBrowser');
+        var img = ''
+        if(api.pageParam.thumb!=undefined){
+            img = api.pageParam.thumb
+        }
+        var imgurl = ''
+        var savePath = ''
+        //$.ajaxSettings.async = false;//开启同步
+        img = img.substring(img.lastIndexOf('/')+1,img.length)
+        api.download({
+            url: 'http://www.yunpuer.com'+api.pageParam.thumb,
+            savePath: 'fs://img/gjcc/'+img,
+            report: true,
+            cache: true,
+            allowResume: true
+        }, function(ret, err) {
+            if (ret.state == 1) {
+                savePath = ret.savePath
+                imgurl = savePath.substring(0,savePath.lastIndexOf('/'))
+                imageFilter.compress({
+                    img: 'fs://img/gjcc/'+img,
+                    quality : 1,
+                    scale : 1,
+                    size : {
+                            w : 100,
+                            h : 100
+                        },
+                    save : {
+                            imgPath : 'fs://imgs/gjcc',
+                            imgName : 'gjcc_'+img
+                        }
+                        },function(ret, err ){
+                            // alert("错误"+JSON.stringify( err ));
+                            // alert("压缩后"+JSON.stringify( ret ));
+                });
+            } else {
+
+            }
+        });
+
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+
+            },
+            created: function () {
+                //this.othershare();
+            },
+            methods: {
+                close: function () {
+                    api.closeFrame({
+                        name: 'share'
+                    });
+                },
+                QQshare: function(qqtype,FShareType){
+                    var _this = this;
+                    qq.shareNews({
+                        url: api.pageParam.path,
+                        title: api.pageParam.text,
+                        description: api.pageParam.text,
+                        imgUrl: 'http://www.yunpuer.com'+api.pageParam.thumb,
+                        type: qqtype
+                    },function(ret,err){
+                        if (ret.status){
+                            _this.sharefun(FShareType)
+                        } else {
+                            _this.close();
+                        }
+                    });
+                },
+                wxshare: function(wxtype,FShareType){
+                    //alert('fs://imgs/gjcc/'+imgpath)
+                    var _this = this;
+                    wx.shareWebpage({
+                        apiKey: '',
+                        scene: wxtype,
+                        title: api.pageParam.text,
+                        description: api.pageParam.text,
+                        thumb:'fs://imgs/gjcc/'+'gjcc_'+img,
+                        contentUrl: api.pageParam.path
+                    }, function(ret, err) {
+                        if (ret.status) {
+                            _this.sharefun(FShareType)
+                        } else {
+                            _this.close();
+                        }
+                    });
+                },
+                othershare: function(){
+                    var _this = this;
+                    sharedModule.share({
+                        text: api.pageParam.text,
+                        type: 'url',
+                        path: api.pageParam.path,
+                    });
+                    _this.sharefun()
+                },
+                sharefun: function (FShareType) {
+                    var _this = this;
+                    if (api.pageParam.FType == 2) {
+                        return false;
+                    }
+                    jw.submit("app_分享", {
+                        FType: api.pageParam.FType, //    类型0：商品，1：新闻
+                        FShareType: FShareType, //  分享、转发渠道 0微信好友 1朋友圈 2微博 3扣扣好友 4扣扣空间
+                        FUserId: jw.data.get("userid"), //   用户id
+                        Fid: api.pageParam.Fid, //    商品或新闻id
+                    }, function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            // jw.ts.toast(ret.ds[0].msg);
+                        } else {
+                            // jw.ts.toast(ret.ds[0].msg);
+                        }
+                        _this.close();
+                    }, {
+                        jz: false
+                    });
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

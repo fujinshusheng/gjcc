@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+
+    <style>
+        html,
+        body {
+            width: auto;
+            height: auto;
+            overflow: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="app">
+        <div class="paimai_list2 clearfix" v-cloak>
+            <div style="width: 100%; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between;">
+                <div class="bbbox1" v-for="(item,index) in list" v-cloak @click="goshop(item,1)">
+                    <div class="imgBox">
+                        <img :src="item.FIcon |url" alt="" class="img2">
+                        <img :src="item.FImg | url" alt="" class="img1" style=" border-top-left-radius:10px;
+                            border-top-right-radius:10px; ">
+                    </div>
+                    <div class="bbbox_text" style="padding:10px 5px;">
+                        <div class="text-over fz12" class="sxmargin">{{item.FTitle}}</div>
+                        <div class="text-over fz12" style="color: red;margin:3px 0;" v-html="(item.FCost)"></div>
+                        <div class="text-over fz12" style="color: #cccccc; font-size: 12px;" v-html="item.FStatusName"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+    <script src="../../js/jquery-2.1.1.min.js"></script>
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/vuefilter.js"></script>
+    <script src="../../js/jw.js"></script>
+    <script src="../../js/zui.js"></script>
+    <script>
+        apiready = function () {
+
+            jw.sb.fixStatusBar(".zui-header");
+
+            /**
+             * 初始化页面监听事件
+             */
+            function fnInitEvent() {
+                /**上拉加载 */
+                api.addEventListener({
+                    name: 'scrolltobottom',
+                    extra: {
+                        threshold: 10
+                    }
+                }, function (ret, err) {
+                    //页码+1，继续请求数据
+                    myapp.getshoplist(2);
+                });
+                /** 下拉刷新 */
+                api.setRefreshHeaderInfo({
+                    bgColor: '#ccc',
+                    textColor: '#fff',
+                    textDown: '下拉刷新...',
+                    textUp: '松开刷新...'
+                }, function (ret, err) {
+                    //重置页码、页面数据，请求数据
+                    myapp.getshoplist(1);
+                });
+            };
+            fnInitEvent();
+
+
+            //返回页面时监听回调函数
+            api.addEventListener({
+                name: 'viewappear'
+            }, function (ret, err) {
+                myapp.getshoplist(1);
+            });
+
+
+            var myapp = new Vue({
+                "el": "#app",
+                data: {
+                    page_index: 1,
+                    page_length: 8,
+                    page_TotalCount: 1,
+
+                    FActiviteID: api.pageParam.FActiviteID, //商品id
+                    FBusinessBrandId: api.pageParam.FBusinessBrandId, // 商品品牌ID
+                    FYear: api.pageParam.FYear,
+                    list: []
+                },
+                created: function () {
+                },
+                methods: {
+                    // 获取产品
+                    getshoplist: function (ftype) {
+                        var _this = this;
+                        var l = _this.page_index;
+                        if (ftype == 1) {
+                            _this.page_index = 1;
+                        } else {
+                            l = parseInt(_this.page_index) + 1;
+                            // console.log(l);
+                            // console.log(_this.page_TotalCount)
+                            if (l > _this.page_TotalCount) {
+                                return false;
+                            } else {
+                                _this.page_index = l;
+                            }
+                        }
+
+                        var _this = this;
+                        jw.submit("api41793", {
+                            page: _this.page_index
+                        }, function (ret) {
+                            setTimeout(function () {
+                                api.refreshHeaderLoadDone();
+                            }, 500);
+                            if (ret.ds != undefined && ret.ds[0].status == "000000") {
+
+                                if (ret.ds1 != undefined && ret.ds1.length > 0) {
+                                    if (ftype == 1){
+                                        _this.list = ret.ds1;
+                                    } else {
+                                        _this.list.push.apply(_this.list, ret.ds1);
+                                    }
+                                }
+
+                                if (ret.ds2 != undefined && ret.ds2.length > 0){
+                                    _this.page_TotalCount = Math.ceil(ret.ds2[0].TotalCount / _this.page_length);
+                                }
+
+                                _this.$nextTick(function () {
+                                    $(".paimai_list2").find(".paimaiimg").height($(".paimai_list2").find(".paimaiimg").width());
+                                });
+                            } else {
+                                jw.ts.toast(ret.ds[0].msg);
+                            }
+                        }, {
+                            jz: false
+                        });
+                    },
+                    // 传入下个页面数据
+                    goshop: function (item) {
+
+                        /* 普通商品*/
+                        jw.openWin({
+                            name: "zhouchou_details",
+                            url: "zhouchou_details3.html",
+                            pageParam: {
+                                FActiviteID: item.FActiviteID,
+                            }
+                        });
+                    },
+                    share: function (item, index) {
+                        var _this = this;
+                        var url = "http://www.yunpuer.com/app_chashidetails/" + item
+                            .FBusinessId + "-" +
+                            item.FOnekeyResaleId + "-" + jw.data.get("userid") + ".html";
+                        var text = ''
+                        if(item.oldPrice>item.FPrice){
+                            text = item.FBusinessName+ " 原价："+item.oldPrice +" 现价："+item.FPrice
+                        }else{
+                            text = item.FBusinessName+ " 现价："+item.FPrice
+                        }
+                        jw.openFrame({
+                            name: 'share',
+                            url: '../share.html',
+                            pageParam: {
+                                text: text,//item.FBusinessName + " 原价：" + item.oldPrice +" 现价：" +item.FPrice,
+                                FType: '0',
+                                Fid: item.FBusinessId,
+                                path: url,
+                                thumb:item.FImageUrl
+                            }
+                        })
+                    },
+                    btncolse: function () {
+                        window.location.href = "../../index2.html";
+                    },
+                }
+            });
+
+        }
+
+        function imgError(imgurl) {
+            var ImgObj = new Image();
+            ImgObj.src = $(".paimaiimg").src; //图片路径
+            if (ImgObj.fileSize > 0 || (ImgObj.width > 0 && ImgObj.height > 0)) {
+                return true;
+            } else {
+                $(".paimaiimg").attr("src", "../../image/errorImg.png");
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>Title</title>
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../res/mobiscroll/mobiscroll.custom-2.5.0.min.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-header zui-header-dark zui-row-center">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">申请退款</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+    <div class="zui-content ordermain">
+        <div class="zui-card myordercard">
+            <div class="zui-card-main">
+
+                <div class="zui-list">
+                    <div class="zui-item zui-row zui-row-center">
+                        <div class="productbox zui-row zui-row-center zui-row-stretch">
+                            <div class="touxiang" :style="getbgimg(Warehousedetail.FImg)"></div>
+                            <div class="zui-col zui-row zui-row-column">
+                                <div class="title">{{Warehousedetail.FName}}</div>
+                                <div class="zui-col"></div>
+                                <div class="zui-row text"><span class="zui-col">买入价格：￥{{Warehousedetail.FTotal}}</span>
+                                    <span>买入数量：{{Warehousedetail.FNum}}</span></div>
+                                <div class="zui-row text">剩余数量：{{Warehousedetail.FSurplusNum}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="weui-form-preview">
+
+            <div class="weui-form-preview__bd">
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">退款数量</label>
+                    <input type="text" id="fnumber" class="weui-form-preview__value fr inputborder text-right"
+                           onclick="jw.setFocus('fnumber')" v-model="FRefundNum">
+                </div>
+            </div>
+        </div>
+        <div class="weui-form-preview">
+
+            <!-- <div class="weui-form-preview__item" style="padding-left: 45%">
+                <div class="zui-radiolist">
+                    <label class="zui-radiobox">
+                        <input type="radio" name="tihuo" v-model="FRefundReson" value="不想要了">
+                        <i class="zui-checked"></i>
+                        <span class="zui-radiotxt">不想要了</span>
+                    </label>
+                </div>
+                <div class="zui-radiolist">
+                    <label class="zui-radiobox">
+                        <input type="radio" name="tihuo" v-model="FRefundReson" value="买错了，重新买">
+                        <i class="zui-checked"></i>
+                        <span class="zui-radiotxt">买错了，重新买</span>
+                    </label>
+                </div>
+                <div class="zui-radiolist">
+                    <label class="zui-radiobox">
+                        <input type="radio" name="tihuo" v-model="FRefundReson" value="没有理由">
+                        <i class="zui-checked"></i>
+                        <span class="zui-radiotxt">没有理由</span>
+                    </label>
+                </div>
+            </div> -->
+            <div class="weui-form-preview__item" style="text-algin: center;border-top:0px">
+                <!-- <input type="text" name="tihuo" placeholder="其他" v-model="FRefundReson" style="width: 98%;background: transparent;border: 1px solid #e5e5e5;    margin: 5px;"> -->
+                <textarea v-model="FRefundReson" name="txt" rows="15" warp="virtual" placeholder="请输入退款原因" style="width: 98%;background: transparent;border: 1px solid #e5e5e5;margin: 5px;"></textarea>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="zui-footer zui-row zui-row-center zui-row-stretch firm_footer">
+        <div class="footer_btn zui-col bg-red color-white" @click="tijiao()">确定</div>
+    </div>
+</div>
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../res/weui/jquery-weui.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script src="../../res/mobiscroll/mobiscroll.custom-2.5.0.min.js"></script>
+<script>
+
+    apiready = function () {
+        jw.sb.fixStatusBar(".zui-header");
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                FWarehouseId: api.pageParam.FWarehouseId, // 茶仓ID
+                Warehousedetail: "", // 茶仓详情
+                FRefundNum: 1, // 退款数量
+                FRefundReson: "", // 退款原因
+
+            },
+            created: function () {
+                var _this = this;
+                _this.getdetails();
+            },
+            methods: {
+                // 获取茶仓详情
+                getdetails: function () {
+                    var _this = this;
+                    jw.submit("app_茶仓详情", {
+                        "FWarehouseId": _this.FWarehouseId
+                    }, function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            _this.Warehousedetail = ret.ds1[0];
+                            _this.FRefundNum = _this.Warehousedetail.FSurplusNum;
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                },
+                // 提交退款申请
+                tijiao: function () {
+                    var _this = this;
+                    if (_this.FRefundNum < 1 || _this.FRefundNum > _this.Warehousedetail.FSurplusNum) {
+                        jw.ts.toast("请输入正确的数量");
+                        return false;
+                    }
+                    if (_this.FRefundReson == "") {
+                        jw.ts.toast("请输入退款原因");
+                        return false;
+                    }
+                    jw.ts.confirm({msg: "确认申请退款？"}, function (index) {
+                        if (index == 1) {
+                            jw.submit("app_我要退款", {
+                                "FUserId": jw.data.get("userid"), //   用户id
+                                "FRefundNum": _this.FRefundNum,
+                                "FWarehouseId": _this.FWarehouseId,
+                                "FRefundReson": _this.FRefundReson
+                            }, function (ret) {
+                                if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                                    jw.ts.confirm({msg: "提交申请成功，等待后台审核"}, function (index) {
+                                        if (index == 1) {
+                                            jw.openWin({
+                                                'name': 'chacangdetails',
+                                                'url': 'chacangdetails.html',
+                                                'reload': true,
+                                                pageParam: {
+                                                    FWarehouseId: _this.FWarehouseId
+                                                }
+                                            })
+                                        }
+                                    });
+                                } else {
+                                    jw.ts.toast(ret.ds[0].msg);
+                                }
+                            });
+                        }
+                    });
+
+                },
+            }
+        });
+    }
+</script>
+</body>
+</html>

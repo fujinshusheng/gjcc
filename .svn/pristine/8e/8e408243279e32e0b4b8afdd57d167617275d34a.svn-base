@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-header zui-header-dark zui-row-center">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">普洱茶事</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+    <div class="zui-content">
+
+        <div class="newslist2">
+            <template v-for="(item,index) in list">
+                <!-- <div class="time">{{item.FCreateDate}}</div> -->
+                <div class="item" @click="todetails(item)">
+                    <div class="img"><img :src="item.FImageUrl | url" alt=""></div>
+                    <div class="cont" >
+                        <div class="title">{{item.FName}}</div>
+                        <p style="font-size: 12px;">{{item.FSummary}}</p>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+    </div>
+</div>
+
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script src="../../res/weui/jquery-weui.min.js"></script>
+<script src="../../res/weui/swiper.min.js"></script>
+<script>
+    apiready = function() {
+        jw.sb.fixStatusBar(".zui-header");
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                list: [], // 新闻列表
+            },
+            created: function () {
+                this.getlist();
+            },
+            methods: {
+                getlist: function () {
+                    var _this = this;
+                    jw.submit("app_茶新闻列表",{
+                        keywords: ""
+                    },function (ret) {
+                        if (ret.ds != undefined && ret.ds.length > 0){
+                            _this.list = ret.ds;
+                            _this.$nextTick(function(){
+                                $(".hot-row").each(function () {
+                                    $(this).find(".himg").height($(this).find(".himg").width())
+                                });
+                            })
+                        }else{
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    })
+                },
+                bannerclick: function (item) {
+                    if (item.FType == 1) {//新闻
+                      jw.openWin({
+                          name: "newDetails",
+                          url: "newDetails2.html",
+                          pageParam: {
+                              FNewsId: item.FNewsOrBusinessId
+                          }
+                      })
+                    }else if (item.FType == 2) {//商品
+                      var option = {
+                          FBusinessId: item.FNewsOrBusinessId,
+                          FPageType: 2, // 1： 限时抢购 2 普通商品
+                          Ftype: 0, // 0 茶商城 1茶市
+                          FlashSaleId: "",
+                      };
+                      /* 普通商品*/
+                      jw.openWin({
+                          name: "shopdetails",
+                          url: "../shangcheng/shopdetails.html",
+                          pageParam: option
+                      });
+                    }
+                },
+                // 查看新闻详情
+                todetails: function (item) {
+                    jw.openWin({
+                        name: "newDetails",
+                        url: "newDetails2.html",
+                        pageParam: {
+                            FNewsId: item.FNewsId
+                        }
+                    })
+                }
+            }
+        })
+    }
+</script>
+</body>
+</html>

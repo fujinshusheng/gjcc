@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/font_2052082_xj7n1erwfg/iconfont.css">
+</head>
+<link rel="stylesheet" href="">
+<body>
+    <div class="zui-app">
+        <div class="zui-header zui-header-dark zui-row-center">
+            <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+            <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">匠心器</div>
+            <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="right: 90px;font-size:30px"
+            onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+            <div class="iconfont icon-gouwuche zui-header-icon zui-header-right" style="right: 45px;" onclick="jw.openWin({name:'my_Shopping_Cart',url:'../myself/my_Shopping_Cart.html'})"></div>
+            <div class="iconfont zui-header-icon icon-sousuo zui-header-right" onclick="jw.openWin({'name':'shop_seach','url':'shop_search.html'})"></div>
+        </div>
+        <div class="shop_nav3 shop-nav-flex clearfix" style="height: 30px; line-height: 30px;" >
+            <div class="nav" :class="{'selected':navindex==1}" @click="navclick(1)" style="background-color: transparent; border: none; font-size: 15px;">最新</div>
+            <div class="nav" :class="{'selected':navindex==2}" @click="navclick(2)" style="background-color: transparent; border: none; font-size: 15px;">销量</div>
+            <div class="nav" :class="{'selected':navindex==3}" @click="navclick(3)" style="background-color: transparent; border: none; font-size: 15px;">价格 <i style=" margin:0 0 0 -10%;font-size: 12px;" class="iconfont icon-paixu"></i></div>
+            <div class="nav" @click="shaixuan()" style="background-color: transparent; border: none; font-size: 15px;">筛选</div>
+        </div>
+        <div style="padding: 0 15px;display:none" v-cloak>搜索关键词：{{Keywords}} <i class="iconfont icon-del" @click="nokeywords()"></i></div>
+        <div class="zui-content">
+        </div>
+    </div>
+
+    <script src="../../js/jquery-2.1.1.min.js"></script>
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/vuefilter.js"></script>
+    <script src="../../js/jw.js"></script>
+    <script src="../../js/zui.js"></script>
+    <script>
+        apiready = function () {
+            jw.sb.fixStatusBar(".zui-header");
+
+            /* 打开列表 */
+            function openlist() {
+                var y = $(".zui-content").offset().top;
+                jw.openFrame({
+                    name: "shoping_list",
+                    url: "shoping_list.html",
+                    rect: {
+                        x: 0,
+                        y: y,
+                        w: "auto",
+                        h: "auto"
+                    }
+                })
+            }
+
+            function setlist() {
+                setTimeout(function () {
+                    var y = $(".zui-content").offset().top;
+                    api.setFrameAttr({
+                        name: 'shoping_list',
+                        rect: {
+                            x: 0,
+                            y: y,
+                            w: "auto",
+                            h: "auto"
+                        }
+                    });
+                }, 100);
+            }
+
+            var myapp = new Vue({
+                "el": ".zui-app",
+                data: {
+                    Keywords: "",
+                    navindex: 1, // 1:最新 2：销量 3：价格 4: 筛选
+                },
+                created: function () {
+                    openlist();
+                    setlist();
+                },
+                watch: {
+                    Keywords: function (newval, oldval) {
+                        setlist();
+                    }
+                },
+                methods: {
+                    // 排序选择
+                    navclick: function (t) {
+                        this.navindex = t;
+                        jw.data.jtset("shoping_list_nav2", t);
+                        setlist();
+                    },
+                    shaixuan: function(){
+                        api.openDrawerPane({
+                            type: 'right'
+                        });
+                    },
+                    nokeywords: function () {
+                        this.Keywords = "";
+                        jw.data.jtset("keywords", "");
+                    },
+                }
+            });
+
+            jw.data.jtget("keywords", function (ret) {
+                myapp.Keywords = ret;
+                setlist();
+            });
+
+        }
+    </script>
+</body>
+
+</html>

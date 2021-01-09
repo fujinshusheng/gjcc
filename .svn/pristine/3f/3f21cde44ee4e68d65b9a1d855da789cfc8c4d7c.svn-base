@@ -1,0 +1,671 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>Hello APP </title>
+    <link rel="stylesheet" href="res/weui/weui.min.css">
+    <link rel="stylesheet" href="res/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="css/zui.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="zui-app">
+    <div class="zui-header zui-header-dark zui-row-center">
+        <div class="iconfont icon-gouwuche zui-header-icon zui-header-left"
+             onclick="jw.openWin({name:'my_Shopping_Cart',url:'html/myself/my_Shopping_Cart.html'})"></div>
+        <div class="zui-header-seach zui-col zui-row zui-row-center" style="padding-right: 20px;">
+            <input id="seach" onkeydown="seachfun()" type="text" class="zui-header-seach" placeholder="2018春茶">
+            <i class="iconfont icon-sousuo" @click="sousuo()"></i>
+        </div>
+        <div class="iconfont zui-header-icon icon-ren1 zui-header-right"
+             onclick="jw.openWin({'name':'myself','url':'html/myself/myself.html'})"></div>
+    </div>
+    <div class="zui-content zui-row zui-row-column">
+
+        <div id="banner" class="swiper-container banner">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide" v-for="item in bannerlist" @click="bannerclick(item)">
+                    <img :src="item.FImg | url" alt="">
+                    <!--<div class="tbox zui-row zui-row-center">-->
+                    <!--<div class="title">新品</div>-->
+                    <!--<div class="text zui-col">普洱茶饼扁瓷罐 【东游记.手做瓷】</div>-->
+                    <!--</div>-->
+                </div>
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+
+        <!--<button class="z-btn z-btn-orange" onclick="jw.openFrame({name: 'share',url:'html/share.html',pageParam:{text:'测试',FType:'0',Fid:'1',path:'http://www.yunpuer.com/app_details/0-2-14-.html'}})">分享</button>-->
+
+        <div class="zui-col zui-row zui-row-column" style="min-height: 400px">
+
+            <div class="index1box zui-col zui-row zui-row-center zui-row-stretch">
+                <div class="zui-col zui-row zui-row-column" @click="openshop()">
+                    <div class="textbox zui-col">
+                        <div class="box clearfix">
+                            <p class="text">预售零售商品发布</p>
+                            <p class="title">茶品选购</p>
+                        </div>
+                    </div>
+                    <img src="image/index1.jpg" alt="">
+                </div>
+                <div class="zui-col zui-row zui-row-column" @click="chashi()">
+                    <img src="image/index2.jpg" alt="">
+                    <div class="textbox zui-col">
+                        <div class="box clearfix">
+                            <p class="text">茶仓藏品委托交易</p>
+                            <p class="title">茶友集市</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="zui-col zui-row zui-row-column" onclick="jw.openWin({'name':'news','url':'html/xinwen/news.html'})">
+                    <div class="textbox zui-col">
+                        <div class="box clearfix">
+                            <p class="text">茶文茶趣</p>
+                            <p class="title">普洱茶事</p>
+                        </div>
+                    </div>
+                    <img src="image/index3.jpg" alt="">
+                </div>
+            </div>
+
+            <div class="index2box zui-col zui-row zui-row-center zui-row-stretch">
+                <div class="zui-col zui-row zui-row-column" @click="chacangbtn()">
+                    <div class="textbox zui-col">
+                        <div class="box clearfix">
+                            <p class="text">已购茶品管理</p>
+                            <p class="title">我的茶仓</p>
+                        </div>
+                    </div>
+                    <img src="image/index4.jpg" alt="">
+                </div>
+                <div class="zui-col zui-row zui-row-column" @click="myselfbtn()">
+                    <div class="textbox zui-col">
+                        <div class="box clearfix">
+                            <p class="text">后台信息汇总</p>
+                            <p class="title">个人中心</p>
+                        </div>
+                    </div>
+                    <img src="image/index5.jpg" alt="">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 赠送弹出框 -->
+    <div class="zui-alert shop_alert" v-cloak v-show="zsshow">
+        <div class="zui-alert_box">
+            <!-- <div class="shop_close iconfont icon-del color-red" ></div> -->
+            <div class="tip">
+                <img src="image/price.png" alt="">
+            </div>
+            <div class="title">赠送</div>
+            <div class="cont">
+                {{zsdata.FContent}}
+            </div>
+            <!-- <div class="z-btn z-btn-red z-btn-noradius" @click="zslook()">点击查看</div> -->
+            <div class="zui-footer zui-row zui-row-center bg-red color-white">
+                <div class="z-btn-gray footer_btn zui-col" @click="jujue()">拒绝</div>
+                <div class="z-btn-red footer_btn zui-col" @click="jieshou()">接受</div>
+            </div>
+        </div>
+        <div class="zui-alert_bg"></div>
+    </div>
+    <!-- 赠送弹出框 end -->
+
+    <!--<div id="upload"></div>-->
+
+    <!--<div id="mimabox"></div>-->
+<!-- 
+    <img v-show="isshow" v-cloak="" @click="isshow=false"
+         style="position: fixed;top: 0;left: 0;z-index: 10; width: 100%;height: 100%" src="image/D1.jpg" alt=""> -->
+</div>
+
+</body>
+</html>
+
+<script src="js/jquery-2.1.1.min.js"></script>
+<script src="js/vue.js"></script>
+<script src="js/vuefilter.js"></script>
+<script src="res/weui/jquery-weui.min.js"></script>
+<script src="res/weui/swiper.min.js"></script>
+<script src="js/zui.js"></script>
+<script src="js/jw.js"></script>
+<script>
+
+    var seachfun = function () {
+    }
+
+    apiready = function () {
+
+
+      //获取内存和照相机权限
+      jw.confirmPer("camera",function (ret) {
+          jw.confirmPer("storage");
+      });
+
+
+        jw.sb.fixStatusBar(".zui-header");
+
+        var photoBrowser = api.require('photoBrowser');
+
+        setTimeout(function () {
+
+            function getftype(t) {
+                var l = t.split(".");
+                var f = l[l.length - 1];
+                return f;
+            }
+
+            $(".contentimgshow").on("click", "img", function (e) {
+                e.stopPropagation();
+                var imgsrc = $(this).attr("src");
+                var pr = $(this).closest(".contentimgshow");
+                var imglist = [];
+                var l = pr.find("img").length;
+                var index = 0, isrc = "";
+                for (var i = 0; i < l; i++) {
+                    isrc = pr.find("img").eq(i).attr("src");
+                    imglist.push(isrc);
+                    if (isrc == imgsrc) {
+                        index = i;
+                    }
+                }
+
+                photoBrowser.open({
+                    images: imglist,
+                    placeholderImg: 'widget://res/loading.gif',
+                    bgColor: '#000',
+                    activeIndex: index
+                }, function (ret, err) {
+                    if (ret.eventType == "click") {
+                        photoBrowser.close();
+                        api.closeFrame({
+                            name: 'photoBrowser'
+                        });
+                    }
+                    if (ret.eventType == "longPress") {
+                        var img = imglist[ret.index];
+                        jw.ts.actionSheet({
+                            title: '',
+                            buttons: ["保存"],
+                        }, function (ret) {
+                            if (ret == 1) {
+                                var t1 = new Date().getTime();
+                                var fname = t1 + "." + getftype(img);
+                                jw.ts.jiazaiShow();
+                                api.download({
+                                    url: img,
+                                    report: true,
+                                    cache: false,
+                                }, function (ret, err) {
+                                    console.log(JSON.stringify(ret));
+                                    if (ret.state == 1) {
+                                        //下载成功
+                                        api.saveMediaToAlbum({
+                                            path: ret.savePath
+                                        }, function (ret, err) {
+                                            if (ret && ret.status) {
+                                                jw.ts.jiazaiHide();
+                                                jw.ts.toast("保存成功");
+                                            } else {
+                                                jw.ts.jiazaiHide();
+                                                jw.ts.toast("保存失败");
+                                            }
+                                        });
+                                    }
+                                    if (ret.state == 2) {
+                                        jw.ts.jiazaiHide();
+                                        jw.ts.toast("保存失败");
+                                    }
+                                });
+                            }
+                        })
+                    }
+
+                });
+            });
+
+        }, 1000);
+
+        $(function () {
+            // $("#mimabox").mimakeywords({
+            //     onend: function (v, p) {
+            //         // myapp.payshow = false;
+            //         // p.close();
+            //         // myapp.orderpay(v);
+            //         $.jiaoyiboxshow({
+            //             onend: function (t, params) {
+            //
+            //                 // jw.submit("yzwxmsg", {
+            //                 //     userPhone: jw.data.get("phone"),// 手机号
+            //                 //     yzm: t
+            //                 // }, function (ret) {
+            //                 //     if (ret == "1") {
+            //                 //         myapp.payshow = true;
+            //                 //         $("#numberkeyobj").show();
+            //                 //         params.clear();
+            //                 //     } else {
+            //                 //         jw.ts.toast("验证码错误");
+            //                 //     }
+            //                 // }, {
+            //                 //     jz: false,
+            //                 //     Url: jw.config.url3
+            //                 // });
+            //             }
+            //         });
+            //     }
+            // });
+        })
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                bannerlist: [], // 轮播图
+                isshow: false,
+                zsshow: false,
+                zsdata: "",
+            },
+            created: function () {
+                this.getbanner();
+            },
+            methods: {
+                // 获取消息
+                getmess: function () {
+                    var _this = this;
+                    jw.submit("app_消息弹出", {
+                        FUserId: jw.data.get("userid")
+                    }, function (ret) {
+                        if (ret.ds != undefined && ret.ds[0].status == "000000") {
+                            if (ret.ds1.length > 0) {
+                                _this.zsdata = ret.ds1[0];
+                                _this.zsshow = true;
+                            }
+                        } else {
+                            // jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                },
+                // 赠送 查看更多
+                zslook: function () {
+                    this.zsshow = false;
+                    jw.openWin({
+                        name: "html/chacang/my_chacang_list_first",
+                        url: "html/chacang/my_chacang_list_first.html",
+                        pageParam: {
+                            FWarehouseId: this.zsdata.FID
+                        }
+                    });
+                },
+                getbanner: function () {
+                    var _this = this;
+                    jw.submit("app_轮播图", {
+                        FPageYype: "1"
+                    }, function (ret) {
+                        if (ret.ds != undefined && ret.ds[0].status == "000000") {
+                            _this.bannerlist = ret.ds1;
+                            _this.$nextTick(function () {
+                                $("#banner").swiper({
+                                    pagination: '.swiper-pagination',
+                                    autoplay: 2000,//可选选项，自动滑动
+                                });
+                            });
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                },
+                bannerclick: function (item) {
+                    if (item.FType == 1) {
+                        jw.openWin({
+                            name: "newDetails2",
+                            url: "html/xinwen/newDetails2.html",
+                            pageParam: {
+                                FNewsId: item.FNewsOrBusinessId
+                            }
+                        })
+                    } else if (item.FType == 2) {
+                        jw.openWin({
+                            name: "shopdetails",
+                            url: "html/shangcheng/shopdetails.html",
+                            pageParam: {
+                                FBusinessId: item.FNewsOrBusinessId,
+                                Ftype: 0,
+                                FPageType: 2,
+                            }
+                        });
+                    } else if (item.FType == 3) {//限时抢购
+                        jw.openWin({
+                            name: "shopdetails",
+                            url: "html/shangcheng/shopdetails.html",
+                            pageParam: {
+                                FBusinessId: item.BusinessId,
+                                FlashSaleId: item.FNewsOrBusinessId,
+                                Ftype: 0,
+                                FPageType: 1,
+                            }
+                        });
+                    }
+                },
+                openshop: function () {
+                    api.openDrawerLayout({
+                        name: 'shangcheng',
+                        url: 'html/shangcheng/shoping.html',
+                        animation: {
+                            type: 'none'
+                        },
+                        rightPane: {
+                            edge: 120,
+                            name: 'shangcheng_sled',
+                            url: 'html/shangcheng/shoping_slidPane.html'
+                        },
+                        delay: 300
+                    });
+                },
+                chashi: function () {
+                    if (jw.data.get("userid") == "") {
+                        jw.ts.toast("请先登录！");
+                        jw.openFrame({
+                            name: 'login',
+                            url: 'html/login.html',
+                        });
+                    } else {
+                        jw.openWin({
+                            name: 'shangcheng',
+                            url: 'html/shangcheng/chashi_list_first.html',
+                        });
+                        // api.openDrawerLayout({
+                        //     name: 'shangcheng',
+                        //     url: 'html/shangcheng/chashi_list_first.html',
+                        //     animation: {
+                        //         type: 'none'
+                        //     },
+                        //     rightPane: {
+                        //         edge: 120,
+                        //         name: 'shangcheng_sled',
+                        //         url: 'html/shangcheng/shoping_slidPane.html'
+                        //     },
+                        //     delay: 300
+                        // });
+                    }
+                },
+                // 搜索
+                sousuo: function () {
+                    api.openDrawerLayout({
+                        name: 'shangcheng',
+                        url: 'html/shangcheng/shoping.html',
+                        animation: {
+                            type: 'none'
+                        },
+                        rightPane: {
+                            edge: 120,
+                            name: 'shangcheng_sled',
+                            url: 'html/shangcheng/shoping_slidPane.html'
+                        },
+                        delay: 300,
+                        pageParam: {
+                            seach: seach
+                        }
+                    });
+                    var seach = $("#seach").val();
+                    setTimeout(function () {
+                        jw.data.jtset("keywords", seach);
+                    }, 1000);
+                },
+                //个人中心
+                myselfbtn: function () {
+                    if (jw.data.get("userid") == "") {
+                        jw.ts.toast("请先登录！");
+                        jw.openFrame({
+                            name: 'login',
+                            url: 'html/login.html',
+                        });
+                    } else {
+                        jw.openWin({'name': 'myself', 'url': 'html/myself/myself.html'})
+                    }
+                },
+                //个人中心
+                chacangbtn: function () {
+                    if (jw.data.get("userid") == "") {
+                        jw.ts.toast("请先登录！");
+                        jw.openFrame({
+                            name: 'login',
+                            url: 'html/login.html',
+                        });
+                    } else {
+                        jw.openWin({'name': 'my_chacang_list_first', 'url': 'html/chacang/my_chacang_list_first.html'})
+                    }
+                },
+                //接受赠送
+                jieshou: function () {
+                    var _this = this;
+                    jw.ts.confirm({msg: "是否确认接受赠送？"}, function (index) {
+                        if (index == 1) {
+                            jw.submit("app_确认接收", {
+                                "FWarehouseId":_this.zsdata.FID,
+                                "FMassagesId":_this.zsdata.FMassagesId
+                            }, function (ret) {
+                                if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                                    jw.ts.toast(ret.ds[0].msg);
+                                    _this.zsshow=false;
+                                } else {
+                                    jw.ts.toast(ret.ds[0].msg);
+                                }
+                            });
+                        }
+                    });
+                },
+                //拒绝赠送
+                jujue: function () {
+                    var _this = this;
+                    jw.ts.confirm({msg: "是否确认拒绝赠送？"}, function (index) {
+                        if (index == 1) {
+                            jw.submit("app_退回赠送", {
+                                "FWarehouseId": _this.zsdata.FID,
+                                "FMassagesId":_this.zsdata.FMassagesId
+                            }, function (ret) {
+                                if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                                    jw.ts.toast(ret.ds[0].msg);
+                                    _this.zsshow=false;
+                                } else {
+                                    jw.ts.toast(ret.ds[0].msg);
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+
+        // jw.openFrame({
+        //     name: 'sendEvent',
+        //     url: 'html/sendEvent.html',
+        // });
+
+
+        // jw.openFrame({
+        //     name: "guanggao",
+        //     url: "html/guanggao.html",
+        //     bgColor: "#FFFFFF"
+        // });
+
+        var first = jw.data.get("appfirst");
+        alert(first);
+        if (first == "true" || first == true) {
+            if (jw.data.get("userid") == "") {
+                jw.openFrame({
+                    name: 'login',
+                    url: 'html/login.html',
+                    bgColor: "#FFFFFF"
+                });
+            } else {
+                myapp.getmess();
+            }
+        } else {
+            jw.openFrame({
+                name: "guanggao",
+                url: "html/guanggao.html",
+                bgColor: "#FFFFFF"
+            });
+        }
+
+        // 关闭广告页后
+        jw.data.jtget("guanggaohide", function () {
+            console.log(jw.data.get("userid"));
+            myapp.isshow = true;
+            if (jw.data.get("userid") == "") {
+                jw.openFrame({
+                    name: 'login',
+                    url: 'html/login.html',
+                    bgColor: "#FFFFFF"
+                });
+            } else {
+                myapp.getmess();
+            }
+        });
+
+        //登陆后
+        jw.data.jtget("islogin", function (ret) {
+            myapp.getmess();
+        });
+
+
+        //
+        // jw.submit("",{
+        //     Body: "测试", //主体
+        //     ShowUrl: "", //商品展示页
+        //     NotifyUrl: "http://www.yunpuer.com/SelfModel/hander.aspx?cmd=AlipayNotify", //支付回调地址
+        //     OrderNum: "001", //订单编号
+        //     Subject: "测试标题", // 标题
+        //     TotalFee: "0.01", //金额
+        // },function (ret) {
+        //     console.log(JSON.stringify(ret));
+        // },{
+        //     Url: "/SelfModel/hander.aspx?cmd=Alipay"
+        // })
+
+        var orderinfo = "partner=\"2088231113058095\"&seller_id=\"463548202@qq.com\"&out_trade_no=\"1\"&subject=\"测试标题\"&body=\"测试\"&total_fee=\"0.01\"¬ify_url=\"http://www.yunpuer.com\"&service=\"mobile.securitypay.pay\"&payment_type=\"1\"&_input_charset=\"utf-8\"&it_b_pay=\"30m\"&sign=\"LfJRBvwUXL3D5U7%2bdjHdytGtmrOHy8mmB3t8AVZ0kjCy5yssRN3flec%2fRFq869J1%2fQU%2f3SJnmrRUYjy92fEVwyik35NOUlyQsHNIZCkpvz58IbKFouEbYT3r60LHSObwUDSxPHge80qbjFbqgUt%2flwxw8zhVb8ZumcHLXxOZbHE%3d\"&sign_type=\"RSA\""
+
+        var aliPayPlus = api.require('aliPayPlus');
+
+        jw.data.jtget("loginout", function () {
+            jw.openFrame({
+                name: 'login',
+                url: 'html/login.html',
+            });
+        });
+
+        var UIAlbumBrowser = api.require('UIAlbumBrowser');
+        $(function () {
+
+            $(".zui-app").css({
+                "min-height": api.winHeight
+            });
+
+            // $("#seach").on("keyup",function () {
+            //
+            // });
+
+            // setTimeout(function () {
+            //     $("#upload").imglist({
+            //         isother: true,
+            //         init: function(){
+            //             console.log("初始化完成")
+            //         },
+            //         addclick: function (params) {
+            //             console.log("2")
+            //             UIAlbumBrowser.open({
+            //                 max: 9,
+            //                 type: "image",
+            //                 styles: {
+            //                     bg: '#fff',
+            //                     mark: {
+            //                         icon: '',
+            //                         position: 'bottom_left',
+            //                         size: 20
+            //                     },
+            //                     nav: {
+            //                         bg: 'rgba(0,0,0,0.6)',
+            //                         titleColor: '#fff',
+            //                         titleSize: 18,
+            //                         cancelColor: '#fff',
+            //                         cancelSize: 16,
+            //                         finishColor: '#fff',
+            //                         finishSize: 16
+            //                     }
+            //                 }
+            //             }, function(ret) {
+            //                 if (ret) {
+            //                     /* IOS 地址需要另外处理 */
+            //                     var imglist = {};
+            //                     for(var i=0;i<ret.list.length;i++){
+            //                         imglist['file'+i] = ret.list[i].path;
+            //                     }
+            //                     api.ajax({
+            //                         url: jw.config.ip+jw.config.ImgUrl,
+            //                         method: 'post',
+            //                         timeout: 30,
+            //                         dataType: 'json',
+            //                         returnAll: false,
+            //                         data: {
+            //                             values: {},
+            //                             files: imglist
+            //                         }
+            //                     }, function (ret, err) {
+            //                         if (ret.status == "200") {
+            //                             params.list.push.apply(params.list,ret.data);
+            //                             params.zinit();
+            //                         }
+            //                     });
+            //                 }
+            //             });
+            //         }
+            //     });
+            // },1000);
+
+            seachfun = function () {
+                console.log(1);
+                if (event.keyCode == "13") {
+                    myapp.sousuo();
+                }
+            }
+        })
+
+
+        /*
+
+                var ajpush = api.require('ajpush');
+
+                if (jw.sb.systemType() == "android"){
+                    ajpush.init(function(ret) {
+                        if (ret && ret.status){
+                            //success
+                        }
+                    });
+                }
+
+                function ajpushinit(){
+                    ajpush.bindAliasAndTags({
+                        alias: jw.data.get("userid")
+                    },function(ret) {
+                        var statusCode = ret.statusCode;
+                        console.log("绑定成功");
+                    });
+                }
+                ajpushinit();
+
+                jw.data.jtget("login",function (ret) {
+                    ajpushinit();
+                });
+        */
+
+
+    }
+
+</script>

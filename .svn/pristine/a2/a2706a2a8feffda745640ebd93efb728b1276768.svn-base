@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>我的银行卡</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+<div class="zui-app">
+    <div class="zui-header zui-row-center myjifen_header">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">我的银行卡</div>
+        <div class="zui-header-icon zui-header_text zui-header-right" @click="addbank()">
+            <i class="iconfont icon-add"></i>
+            <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="right: 45px;font-size:30px"
+            onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+        </div>
+    </div>
+
+    <div class="zui-content">
+
+        <div class="zui-card bank_card" v-for="item in banklist">
+            <div class="zui-card-main">
+                <div class="title">{{item.FBankName}}</div>
+                <div class="number">{{banknumberfilter(item.FBankNum)}}</div>
+                <!--<div class="img touxiang" :style="getbgimg(item.FImg)">-->
+                    <!--<img :src="item.FImg|url" alt="">-->
+                <!--</div>-->
+                <div class="z-btn z-btn-s z-btn-inline z-btn-red" @click="delbank(item)">删除</div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function() {
+        jw.sb.fixStatusBar(".zui-header");
+
+        // 刷新银行卡列表
+        jw.data.jtget("bankcard",function (ret) {
+            myapp.getbankcard();
+        });
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                banklist: [],
+                username:""
+            },
+            created: function () {
+                this.getbankcard();
+            },
+            methods: {
+                banknumberfilter: function(n){
+                    var l = n.length;
+                    if (l > 6){
+                        var t = n.replace(/\d+(\d{4})$/, '*******$1');
+                        return t;
+                    }
+                },
+                // 获取银行卡app_我的茶仓
+                getbankcard: function () {
+                    var _this = this;
+                    _this.banklist = [];
+                    jw.submit("app_银行卡信息",{
+                        FUserId: jw.data.get("userid")
+                    },function (ret) {
+                        if (ret.ds[0].status == "000000"){
+                            _this.banklist = ret.ds1;
+                            _this.username=_this.banklist[0].FUserName
+                        }else{
+                            _this.banklist = [];
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    })
+                },
+                // 删除银行卡
+                delbank: function (item) {
+                    var _this = this;
+                    jw.submit("app_银行卡删除",{
+                        FBankId: item.FBankId
+                    },function (ret) {
+                        if (ret.ds[0].status == "000000"){
+                            jw.ts.toast(ret.ds[0].msg);
+                            _this.getbankcard();
+                        }else{
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    })
+                },
+                /* 添加银行卡*/
+                addbank: function () {
+                    var _this = this;
+                    jw.openWin({
+                        name: "add_Bank_card.html",
+                        url: "add_Bank_card.html",
+                        pageParam: {
+                            username: _this.username
+                        }
+                    })
+                }
+            }
+        });
+
+    }
+</script>
+</body>
+</html>

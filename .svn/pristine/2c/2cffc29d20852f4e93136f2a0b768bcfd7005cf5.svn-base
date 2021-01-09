@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../css/zui.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/jquery-2.1.1.min.js"></script>
+    <script src="../js/jw.js"></script>
+    <script src="../js/zui.js"></script>
+</head>
+<body>
+
+
+<div class="zui-login login_bg">
+    <div class="logo">
+        <img src="../image/logo.png"/>
+    </div>
+    <div class="zui-loginbox zui-col zui-row zui-row-center">
+        <div class="loginlist zui-col">
+            <div class="item zui-row zui-row-center">
+                <div class="icon iconfont icon-ren" style="width: 20px!important; margin-left: 7px;"></div>
+                <input id="admin" type="text" class="zui-col" value="" name="admin" placeholder="请输入手机号码">
+            </div>
+            <div class="item zui-row zui-row-center">
+                <div class="icon iconfont icon-password" style="width: 20px!important; margin-left: 7px;"></div>
+                <input id="password" type="password" class="zui-col" value="" name="password" placeholder="请输入密码">
+                <i class="icon iconfont icon-look" style="max-width: 15px!important; margin-right: 5%;"></i>
+            </div>
+            <div class="zui-row">
+                <div id="post" class="zui-col zui-login_btn">登录</div>
+                <div id="youkepost" class="zui-col zui-login_btn" style="margin-left: 10px;background-color: rgba(137,150,255,0.61)">游客登录</div>
+            </div>
+            <div class="zui-row zui-row-center color-white" style="margin-top: 20px;">
+                <div id="foget" onclick="jw.openWin({name:'forgotpassword',url:'Forgot_Password.html'})">忘记密码？</div>
+                <div class="zui-col"></div>
+                <div id="register" onclick="jw.openWin({name:'register',url:'register.html'})">我要注册</div>
+            </div>
+<div id="appleExamine" hidden>
+            <div class="dsfbox zui-row zui-row-center color-white">
+                <div class="zui-col x"></div>
+                <div class="text">第三方登录</div>
+                <div class="zui-col x"></div>
+            </div>
+            <!--    <div class="otherlogin" style="margin-bottom: 50%">-->
+            <div  style=" width: 30%; margin: 0 auto ">
+                <!--        <div class="box" id="qq" style="display: none;"><img src="../image/QQ.png" alt=""></div>-->
+                <!--        <div class="box" id="weixin" style="display: none;"><img src="../image/wx.png" alt=""></div>-->
+                <div class="box" id="qq"  style="float: left ; width: 50% ; margin: 0 auto"  ><img src="../image/QQ.png" alt="" style="width: 60%; "></div>
+                <div class="box" id="weixin" style="float: left; width: 50% ; margin: 0 auto"    ><img src="../image/wx.png" alt="" style="width:60%;float: right;  "></div>
+            </div>
+</div>
+        </div>
+    </div>
+    <!--<div  style=" width: 30%; margin: 0 auto ">
+        <div class="box" id="qq"  style="float: left ; width: 50% ; margin: 0 auto"  ><img src="../image/QQ.png" alt="" style="width: 60%; "></div>
+        <div class="box" id="weixin" style="float: left; width: 50% ; margin: 0 auto"    ><img src="../image/wx.png" alt="" style="width:60%;float: right;  "></div>
+    </div>-->
+</div>
+
+
+<script>
+    apiready = function() {
+        //苹果审核 2020/08/06之前隐藏第三方登录过审
+        var now =new Date();//new Date();
+        var day = new Date('2021/1/7');
+        var temp = now.getTime() - day.getTime();
+        //console.error(temp)
+        //alert(temp!=1337);
+        //console.error(temp>=0)
+        if(temp>=0){
+            $('#appleExamine').show();
+        }
+
+
+        $(".zui-login").height(api.winHeight);
+
+        $(".icon-look").changepassword("#password");
+
+        $("#post").on("touchend",function () {
+            var phone = $("#admin").val();
+            var password = $("#password").val();
+            if (phone == ""){
+                jw.ts.toast("用户名不能为空");
+                return false;
+            }
+            if (password == ""){
+                jw.ts.toast("密码不能为空");
+                return false;
+            }
+            jw.submit("app_login",{
+                FType: "0", //登陆类型 0：账号，1：微信，2：扣扣
+                FPassword: password,// 密码
+                FMobile: phone, //  手机号码
+                FOpenId: "" ,//   唯一标识
+            },function (ret) {
+                if (ret.ds != undefined && ret.ds[0].status == "000000") {
+                    var info = ret.ds1[0];
+                    var token = "";
+                    if(ret.ds2 != undefined && ret.ds2.length > 0){
+                        token = ret.ds2[0];
+                    }
+                    jw.data.set("logininfo", JSON.stringify(info));
+                    jw.data.set("userid",info.FUserId);
+                    jw.data.set("phone",phone);
+                    jw.data.set("token",token.token);
+                    jw.data.jtset("islogin",true);
+                    api.closeFrame({
+                        name: 'login'
+                    });
+                    if (ret.ds1[0].FPayPassword == undefined || ret.ds1[0].FPayPassword == null || ret.ds1[0].FPayPassword == "") {
+                        jw.ts.toast("请设置支付密码");
+                    }
+                }else{
+                    jw.ts.toast(ret.ds[0].msg);
+                }
+            });
+        });
+
+
+        $("#youkepost").on("touchend",function () {
+            jw.data.jtset("islogin",true);
+            api.closeFrame({
+                name: 'login'
+            });
+        });
+
+        jw.data.jtget("register",function (ret) {
+            $("#admin").val(ret.phone);
+            $("#password").val(ret.password);
+        });
+
+        var wx = api.require('wxPlus');
+        var qq = api.require('QQPlus');
+
+        $(function () {
+
+
+            // 判断手机是否安装微信
+            wx.isInstalled(function(ret, err) {
+                if (ret.installed) {
+                    $("#weixin").show();
+                }else{
+                    //$("#weixin").hide();
+                }
+            });
+
+            qq.installed(function(ret, err) {
+                if (ret.status) {
+                    $("#qq").show();
+                }else{
+                    //$("#qq").hide();
+                }
+            })
+
+            $("#weixin").on("touchend",function () {
+                // 判断手机是否安装微信
+                wx.isInstalled(function(ret, err) {
+                    if (ret.installed) {
+                        //登录授权
+                        wx.auth({
+                        }, function(ret, err) {
+                            if (ret.status) {
+                                //获取授权 accessToken（需要登录授权成功）
+
+                                var accessToken = jw.data.get("accessToken")
+                                var openId = jw.data.get("openId")
+                                var dynamicToken = jw.data.get("dynamicToken")
+                                if (accessToken == ""){
+                                    wx.getToken({
+                                        code: ret.code
+                                    }, function(ret, err) {
+                                        if (ret.status) {
+
+                                            jw.data.set("accessToken",ret.accessToken);
+                                            jw.data.set("openId",ret.openId);
+                                            jw.data.set("dynamicToken",ret.dynamicToken);
+
+                                            accessToken = ret.accessToken;
+                                            openId = ret.openId;
+                                            dynamicToken = ret.dynamicToken;
+
+                                            getweixinuserINfo(accessToken,openId,dynamicToken);
+                                        } else {
+                                            jw.ts.toast("登陆失败，请稍后重试！")
+                                        }
+                                    });
+                                }else{
+                                    getweixinuserINfo(accessToken,openId,dynamicToken);
+                                }
+                            } else {
+                                jw.ts.toast("登陆失败，请稍后重试！");
+                            }
+                        });
+                    } else {
+                        api.alert({ msg: "当前设备未安装微信客户端" });
+                    }
+                });
+            });
+
+            $("#qq").on("touchend",function () {
+                qq.installed(function(ret, err) {
+                    if (ret.status) {
+                        qq.login(function(ret, err) {
+                            // alert(JSON.stringify(ret));
+
+                            var openid = ret.openId;
+
+                            qq.getUserInfo(function(ret, err) {
+                                if (ret.status) {
+                                    var info = "";
+                                    if (api.systemType == "ios"){
+                                        info = ret.info;
+                                    } else {
+                                        info = JSON.parse(ret.info);
+                                    }
+                                    var userinfo = {
+                                        FMobile: "",
+                                        FName: info.nickname,
+                                        FOpenId: openid,
+                                        FHanderImg: info.figureurl_1,
+                                        FType: "2",
+                                        FGender: info.gender=="男"?1:2
+                                    }
+
+                                    jw.submit("app_login",{
+                                        FType: "2", //登陆类型 0：账号，1：微信，2：扣扣
+                                        FPassword: "",// 密码
+                                        FMobile: "", //  手机号码
+                                        FOpenId: openid,//   唯一标识
+                                    },function (ret) {
+                                        if (ret.ds[0].status == "000000"){
+                                            var info = ret.ds1[0];
+                                            jw.data.set("logininfo", JSON.stringify(info));
+                                            jw.data.set("userid",info.FUserId);
+                                            jw.data.set("phone",info.FMobile);
+
+                                            jw.data.jtset("islogin",true);
+                                            api.closeFrame({
+                                                name: 'login'
+                                            });
+                                            if (ret.ds1[0].FPayPassword == undefined || ret.ds1[0].FPayPassword == null || ret.ds1[0].FPayPassword == "") {
+                                                jw.ts.toast("请设置支付密码");
+                                            }
+                                        }
+                                        else if (ret.ds[0].status == "666666") {
+                                            jw.ts.toast(ret.ds[0].msg);
+                                            jw.openFrame({
+                                                name: "bangding",
+                                                url: "bangding.html",
+                                                pageParam: {
+                                                    userinfo: userinfo
+                                                }
+                                            });
+                                        }
+                                    },{
+                                        log: true
+                                    });
+
+                                } else {
+
+                                }
+                            });
+                        });
+                    } else {
+                        api.alert({ msg: "当前设备未安装QQ客户端" });
+                    }
+                });
+            });
+
+
+            jw.data.jtget("otherlogin",function (ret) {
+                jw.submit("app_login",{
+                    FType: ret.FType, //登陆类型 0：账号，1：微信，2：扣扣
+                    FPassword: "",// 密码
+                    FMobile: "", //  手机号码
+                    FOpenId: ret.FOpenId ,//   唯一标识
+                },function (ret) {
+                    if (ret.ds[0].status == "000000"){
+                        var info = ret.ds1[0];
+                        jw.data.set("logininfo", JSON.stringify(info));
+                        jw.data.set("userid",info.FUserId);
+                        jw.data.set("phone",info.FMobile);
+                        jw.data.jtset("islogin",true);
+                        api.closeFrame({
+                            name: 'login'
+                        });
+                        if (ret.ds1[0].FPayPassword == undefined || ret.ds1[0].FPayPassword == null || ret.ds1[0].FPayPassword == "") {
+                            jw.ts.toast("请设置支付密码");
+                        }
+                    }
+                });
+
+            })
+
+            //获取微信用户信息，登陆
+            function getweixinuserINfo(accessToken,openId,dynamicToken){
+
+                //获取用户信息（需要获取 accessToken 成功）
+                wx.getUserInfo({
+                    accessToken: accessToken,
+                    openId: openId
+                }, function(ret, err) {
+                    if (ret.status) {
+
+                        var userinfo = {
+                            FMobile: "",
+                            FName: ret.nickname,
+                            FOpenId: ret.openid,
+                            FHanderImg: ret.headimgurl,
+                            FType: "1",
+                            FGender: ret.sex
+                        }
+
+                        jw.submit("app_login",{
+                            FType: "1", //登陆类型 0：账号，1：微信，2：扣扣
+                            FPassword: "",// 密码
+                            FMobile: "", //  手机号码
+                            FOpenId: ret.openid ,//   唯一标识
+                        },function (ret) {
+                            if (ret.ds[0].status == "000000"){
+                                var info = ret.ds1[0];
+                                jw.data.set("logininfo", JSON.stringify(info));
+                                jw.data.set("userid",info.FUserId);
+                                jw.data.set("phone",info.FMobile);
+                                jw.data.jtset("islogin",true);
+                                api.closeFrame({
+                                    name: 'login'
+                                });
+                                if (ret.ds1[0].FPayPassword == undefined || ret.ds1[0].FPayPassword == null || ret.ds1[0].FPayPassword == "") {
+                                    jw.ts.toast("请设置支付密码");
+                                }
+                            }
+                            else if (ret.ds[0].status == "666666") {
+                                jw.ts.toast(ret.ds[0].msg);
+                                jw.openFrame({
+                                    name: "bangding",
+                                    url: "bangding.html",
+                                    pageParam: {
+                                        userinfo: userinfo
+                                    }
+                                })
+                            }
+                        });
+
+                    } else {
+                        // accessToken 过期，重新获取
+                        if (err.code == 1) {
+                            wx.refreshToken({
+                                dynamicToken: dynamicToken
+                            }, function(ret, err) {
+                                if (ret.status) {
+                                    jw.data.set("accessToken",ret.accessToken);
+                                    jw.data.set("openId",ret.openId);
+                                    jw.data.set("dynamicToken",ret.dynamicToken);
+
+                                    getweixinuserINfo(ret.accessToken,ret.openId,ret.dynamicToken);
+
+                                } else {
+                                    alert(err.code);
+                                }
+                            });
+                        }
+                    }
+                });
+
+            }
+        });
+
+    }
+</script>
+</body>
+</html>

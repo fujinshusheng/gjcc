@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>Title</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        html, body {
+            width: auto;
+            height: auto;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+
+
+    <div class="zui-list2" v-cloak>
+
+        <div class="item" v-for="(item,index) in shoplist" @click="goshop(item,1)" v-cloak>
+            <div class="img">
+                <img :src="item.FImg | url" alt="">
+            </div>
+            <!--<div class="touxiang img" :style="getbgimg(item.FImageUrl)"></div>-->
+            <div class="tmain" v-cloak :data-index="index" :data-status="item.FStatus">
+                <p class="title" v-cloak>{{item.FTitle}}</p>
+
+                <p>{{item.FStock}}</p>
+                <p class="fz16 color-red">{{item.FCost}}积分</p>
+                <div>
+                    <div class="z-btn-ms z-btn z-btn-inline z-btn-radius50 z-btn-red z-btn-s" @click="ljdh(item,1)">立即兑换</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- 立即兑换弹出框 -->
+    <div class="zui-alert duihan" v-cloak v-if="duihuanshow">
+        <div class="zui-alert_box jfdh_box" v-cloak v-if="set">
+            <div class="jf_duihuan" >
+                <div class="jf_btn">
+                    <div class="shop_close jfonbtn iconfont icon-del color-white" @click="duihuanshow = false"></div>
+                </div>
+                <div class="wrat_main">
+                    积分兑换
+                </div>
+                <div class="jf_img">
+                </div>
+                <div class="nav_text">
+                    <p>您是否确认兑换此商品?</p>
+                </div>
+                <div class="max_bottom">
+                    <div class="zui-alert_main duihan_alert_main" @click="dhcg">
+                        兑换
+                    </div>
+                    <div class="zui-alert_footer duihan_alert_footer" @click="duihuanshow = false">
+                        取消
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="zui-alert_box jh_main_box" v-if="dhshow">
+            <div class="jf_duihuan jf_duih_wart">
+                <div class="jf_btn">
+                    <div class="shop_close jfonbtn iconfont icon-del color-white" @click="dhcolse"></div>
+                </div>
+                <div class="duih_btn">
+                    恭喜您！兑换成功！
+                </div>
+            </div>
+        </div>
+        <div class="zui-alert_bg"></div>
+    </div>
+
+</div>
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function () {
+        /**
+         * 初始化页面监听事件
+         */
+        function fnInitEvent() {
+            /**上拉加载 */
+            api.addEventListener({
+                name: 'scrolltobottom',
+                extra: {
+                    threshold: 10
+                }
+            }, function (ret, err) {
+                //页码+1，继续请求数据
+                myapp.getshoplist(2);
+            });
+            /** 下拉刷新 */
+            api.setRefreshHeaderInfo({
+                bgColor: '#ccc',
+                textColor: '#fff',
+                textDown: '下拉刷新...',
+                textUp: '松开刷新...'
+            }, function (ret, err) {
+                //重置页码、页面数据，请求数据
+                myapp.getshoplist(1);
+            });
+        };
+        fnInitEvent();
+
+        var sharedModule = api.require('shareAction');
+
+        var myapp = new Vue({
+            "el": "#app",
+            data: {
+                FBusinessBrandId: api.pageParam.FBusinessBrandId, // 商品品牌ID
+                FYear:api.pageParam.FYear,
+                zhifu:api.pageParam.zhifu,//支付成功！
+                navindex2: 1, // 1:最新 2：销量 3：价格 4: 筛选
+                page_index: 1,
+                page_length: 20,
+                page_TotalCount: 1,
+                shoplist: [], // 商品列表
+                Keywords: "", // 搜索词
+                FPriceSort: 0, // 价格 0升 1 降
+                FSalesSort: 0, //销量 0升 1 降
+                FNewSort: 0, //最新 0升 1 降
+                numSort: 0, // 数量 0,1
+                FNetWeight: "", // 净含量
+                FPricemin: "", //最小价格
+                FPricemax: "", //最大价格
+                FTypeId: "", // 分类ID
+                duihuanshow:false, //立即兑换
+                dhshow:false ,//兑换成功
+                set:true ,//兑换完成
+                duihuanbtn:[],//兑换id
+                datamock:"",//ds1
+            },
+            created: function () {
+                this.init();
+            },
+            methods: {
+                dhcolse:function(){
+                    this.duihuanshow=false
+                },
+                init: function () {
+                    var _this = this;
+                    _this.getshoplist(1);
+                },
+                // 获取产品
+                getshoplist: function (ftype) {
+                    var _this = this;
+
+                    // 分类ID
+                    var FTypeId = _this.FTypeId;
+                    //年份
+                    var FYear = _this.FYear;
+                    // 品牌id
+                    var FBusinessBrandId = _this.FBusinessBrandId;
+                    // >=净含量区间
+                    var FNetWeight = _this.FNetWeight;
+                    // <=净含量区间
+                    var FNetWeight1 = "";
+                    // >价格区间
+                    var FPrice = _this.FPricemin;
+                    // <价格区间
+                    var FPrice1 = _this.FPricemax;
+                    var l = _this.page_index;
+                    if (ftype == 1) {
+                        _this.page_index = 1;
+                    } else {
+                        l = parseInt(_this.page_index) + 1;
+                        // console.log(l);
+                        // console.log(_this.page_TotalCount)
+                        if (l > _this.page_TotalCount) {
+                            return false;
+                        } else {
+                            _this.page_index = l;
+                        }
+                    }
+                    //商品列表接口
+                    jw.submit("api41795", { //app_茶市列表New 原接口  api41795新接口
+                        // start: _this.page_index, //	开始页数 分页下标
+                        // Length: _this.page_length, //		每页长度
+                        // FTypeId: FTypeId, //	分类id
+                        // FYear: FYear,//年份
+                        // FBusinessBrandId: FBusinessBrandId, //	品牌id
+                        // FNetWeight: FNetWeight, //		>=净含量区间
+                        // FNetWeight1: FNetWeight1, //	<=净含量区间
+                        // FPrice: FPrice, //		>价格区间
+                        // FPrice1: FPrice1, //		<价格区间
+                        // Keywords: _this.Keywords, //    关键词搜索
+                        // FPriceSort: _this.navindex2 == 3 ? _this.FPriceSort : '', //    价格 0升 1 降
+                        // // FSalesSort: _this.navindex2==2?_this.FSalesSort:'', //     销量 0升 1 降
+                        // FNewSort: _this.navindex2 == 1 ? _this.FNewSort : '', //     最新 0升 1 降
+                        // numSort: _this.navindex2 == 2 ? _this.numSort : "",
+                        // FUserId: jw.data.get("userid"),  //  用户id
+                    }, function (ret) {
+                        setTimeout(function () {
+                            api.refreshHeaderLoadDone();
+                        }, 500);
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds.length > 0) {
+                            // if (ret.ds1[0].TotalCount == undefined || ret.ds1[0].TotalCount == "") {
+                            //     _this.page_TotalCount = 1;
+                            // } else {
+                            //     _this.page_TotalCount = ret.ds1[0].TotalCount;
+                            // }
+                            // if (ftype == 1) {
+                            //     _this.shoplist = ret.ds;
+                            // } else {
+                            //     _this.shoplist.push.apply(_this.shoplist, ret.ds);
+                            // }
+                            _this.shoplist = ret.ds1;
+                            _this.datamock=ret.ds1[0];
+                            _this.$nextTick(function () {
+                                // 列表图片大小重置
+                                $(".zui-list2").find(".img").height($(".zui-list2").find(".img").width());
+                            });
+                        } else {
+                            _this.shoplist = [];
+                            _this.page_TotalCount = 0;
+                        }
+                    },{
+                        log: true
+                    });
+                },
+                // 去抢购 打开 立即兑换
+                goshop: function (item) {
+                    this.duihuanbtn=item.FId;
+                    var option = {
+                        // FOnekeyResaleId: item.FOnekeyResaleId,
+                        // FBusinessId: item.FBusinessId,
+                    };
+                },
+                // duihanwc:function(){
+                //     var _this=this;
+                //     // alert(_this.zhifu);
+                //     if(_this.zhifu==1){
+                //         this.dhshow=true;
+                //     }
+                // },
+                //兑换详情页
+                dhcg:function(){
+                    this.set=false;
+
+                    if(this.dhshow=true){
+                        jw.submit("api41880",{
+                            FId:this.duihuanbtn,//商品id
+                            FUserId:jw.data.get("userid")//登陆人id
+                        },function(datanum){
+                            if(datanum.ds != undefined &&datanum.ds != "" &&datanum.ds[0].status == "000000"){
+                                // jw.ts.toast(datanum.ds[0].msg);
+                                this.dhshow=true
+                            }else{
+                                jw.ts.toast(datanum.ds[0].msg);
+                            }
+                        })
+                    }else{
+                        this.set=true
+                    };
+                },
+                //立即兑换
+                ljdh:function(item){
+                    jw.openWin({
+                        name: "duihuan_main",
+                        url: "duihuan_main.html",
+                        pageParam: {
+                            FId:item.FId, //商品id
+                            FImg: item.FImg,//图片
+                            FNum:item.FNum,//兑换数量
+                            FPickType:item.FPickType,//提货类型
+                            FPrice:item.FPrice, //价格
+                            FCost:item.FCost,//积分
+                            FPickGoodsAddress:item.FPickGoodsAddress,//自提地址
+                        }
+                    });
+                    setTimeout(function() {
+                        this.duihuanshow=true //显示隐藏的兑换页面
+                    }, 400);
+                },
+
+                share: function(item,index){
+                    var _this = this;
+
+                    var url = "http://www.yunpuer.com/app_chashidetails/"+_this.FId+"-"+item.FOnekeyResaleId+"-"+jw.data.get("userid")+".html";
+                    var text = ''
+                    if(item.oldPrice>item.FPrice){
+                        text = item.FId+ " 原价："+item.oldPrice +" 现价："+item.FPrice
+                    }else{
+                        text = item.FId+ " 现价："+item.FPrice
+                    }
+                    jw.openFrame({
+                        name: 'share',
+                        url: '../share.html',
+                        pageParam: {
+                            text: text,
+                            FType: '0',
+                            // Fid: item.FBusinessId,
+                            path: url,
+                            thumb:item.FImageUrl
+                        }
+                    })
+
+                   /* sharedModule.share({
+                        text: item.FBusinessName,
+                        type: 'url',
+                        path: "http://www.yunpuer.com/app_chashidetails.html?FBusinessId="+item.FBusinessId+"&FOnekeyResaleId="+item.FOnekeyResaleId+"&userid="+jw.data.get("userid")
+                    });
+                    jw.submit("app_分享", {
+                        FType: "0", //    类型0：商品，1：新闻
+                        FShareType: "", //  分享、转发渠道 0微信好友 1朋友圈 2微博 3扣扣好友 4扣扣空间
+                        FUserId: jw.data.get("userid"), //   用户id
+                        Fid: item.FBusinessId, //    商品或新闻id
+                    }, function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            // jw.ts.toast(ret.ds[0].msg);
+                        } else {
+                            // jw.ts.toast(ret.ds[0].msg);
+                        }
+                    }, {
+                        jz: false
+                    });*/
+                },
+            }
+        });
+
+    }
+</script>
+</body>
+</html>

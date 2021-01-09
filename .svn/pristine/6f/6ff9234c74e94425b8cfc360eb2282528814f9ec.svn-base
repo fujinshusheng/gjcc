@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+    <form class="zui-header zui-header-dark zui-row-center" onsubmit="return post()">
+        <div class="iconfont icon-back" style="padding: 0 10px;" onclick="jw.back()"></div>
+        <div class="shop_header_seach zui-col zui-row zui-row-center">
+            <div class="seachtxt zui-row zui-col zui-row-center" style="border-radius: 30px;">
+                <i class="iconfont icon-sousuo1"></i>
+                <input id="keywords" type="text" class="zui-col" style="border-radius: 30px;">
+                <i class="iconfont icon-del" style="margin-right: 0;" @click="delkey()"></i>
+            </div>
+            <span class="cancelbtn" onclick="post()" style="font-size: 12px;">搜索</span>
+        </div>
+    </form>
+    <div class="seach_histroy_tip" style="font-size: 12px;">历史搜索</div>
+    <div class="zui-content bg-white">
+        <div class="shop_seachlist zui-list">
+            <div class="zui-item" v-for="item in list" @click="chose(item)" v-cloak>{{item}}</div>
+        </div>
+
+        <div class="z-btn clearbtn" @click="clearbtn()" style="font-size: 12px;">
+            <i class="iconfont icon-lajitong"></i>
+            清空历史记录
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    var post = function(){}
+    apiready = function() {
+        jw.sb.fixStatusBar(".zui-header");
+        post = function () {
+            console.log(777777)
+            var keyword = $("#keywords").val();
+            jw.data.jtset("keywords",keyword)
+            myapp.savedata(keyword);
+            jw.openFrame({
+                name: "shop_search_list",
+                url: "shop_search_list.html",
+            })
+            return false;
+        }
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                keywords: "",
+                list: []
+            },
+            created: function () {
+                var list = jw.data.get("shophistroy");
+                if (list != ""){
+                    list = JSON.parse(list);
+                    this.list = list;
+                }
+            },
+            methods: {
+                // 清空数据
+                delkey: function(){
+                    $("#keywords").val("");
+                },
+                savedata: function(e){
+                    this.list.push(e);
+                    jw.data.set("shophistroy",JSON.stringify(this.list));
+                },
+                chose: function(e){
+                    jw.data.jtset("keywords",e)
+                    jw.openFrame({
+                        name: "shop_search_list",
+                        url: "shop_search_list.html",
+                    })
+
+                },
+                clearbtn: function () {
+                    this.list = [];
+                    jw.data.set("shophistroy","");
+                }
+            }
+        });
+
+    }
+</script>
+</body>
+</html>

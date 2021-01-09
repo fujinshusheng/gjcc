@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<security>
+<item name="aliPay_partner" value="2088231113058095"/>
+<item name="aliPay_seller" value="463548202@qq.com"/>
+<item name="aliPay_rsaPriKey" value="***"/>
+<item name="aliPay_rsaPubKey" value="***"/>
+<item name="aliPay_notifyURL" value="***"/>
+<item name="其它服务需加密的参数配置 " value="***"/>
+
+</security>

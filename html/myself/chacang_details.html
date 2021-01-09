@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>Title</title>
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        .touxiang{
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-header zui-header-dark zui-row-center">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">明细详情</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+    <div class="zui-content ordermain">
+
+        <div class="order_status">
+            <div class="tip zui-row zui-row-center">
+                <div class="zui-col">
+                    <!--<img class="block" src="../../image/price.png" alt="">-->
+                    <!--<span class="text">{{FStatus}}</span>-->
+                    <div class="text2" style="background: url(../../image/price.png) no-repeat;">{{htitle()}}</div>
+                </div>
+            </div>
+            <img class="imgblock" src="../../image/order02.jpg" alt="">
+        </div>
+
+        <div class="weui-form-preview">
+
+            <div class="order_imgbox zui-row zui-row-center zui-row-stretch" v-cloak>
+                <div class="touxiang" :style="getbgimg(d.FImageUrl)"></div>
+                <div class="zui-col zui-row zui-row-column">
+                    <div class="title">{{d.FName}}</div>
+                    <div class="zui-col"></div>
+                    <div class="text"><span class="fr">买入价格：{{d.FPrice}}</span></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="weui-form-preview" v-cloak>
+            <div class="weui-form-preview__bd">
+
+                <template v-if="d.Ftype == '退款'">
+                    <label class="weui-form-preview__item" style="display: block;">
+                        <span class="weui-form-preview__label">时间</span>
+                        <div class="weui-form-preview__value">{{d.FCreateDate | datatime}}</div>
+                    </label>
+                    <label class="weui-form-preview__item" style="display: block;">
+                        <span class="weui-form-preview__label">数量</span>
+                        <div class="weui-form-preview__value">{{d.FRefundNum}}</div>
+                    </label>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">金额</label>
+                        <div class="weui-form-preview__value">{{d.FRefundPrice}}</div>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">退款状态</label>
+                        <div class="weui-form-preview__value">{{d.FStatus}}</div>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">退款原因</label>
+                        <div class="weui-form-preview__value">{{d.FRefundReson}}</div>
+                    </div>
+                    <div class="weui-form-preview__item" v-show="d.FailReason != undefined && d.FailReason != null && d.FailReason != ''">
+                        <label class="weui-form-preview__label">退款失败原因</label>
+                        <div class="weui-form-preview__value">{{d.FailReason}}</div>
+                    </div>
+                </template>
+
+
+                <template v-if="d.Ftype == '转卖'">
+                    <label class="weui-form-preview__item" style="display: block;">
+                        <span class="weui-form-preview__label">转卖数量</span>
+                        <div class="weui-form-preview__value">{{d.FNum}}</div>
+                    </label>
+                    <label class="weui-form-preview__item" style="display: block;">
+                        <span class="weui-form-preview__label">剩余数量</span>
+                        <div class="weui-form-preview__value">{{d.FSurplusNum}}</div>
+                    </label>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">转卖单价</label>
+                        <div class="weui-form-preview__value">{{d.FPrice}}</div>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">转卖手续费</label>
+                        <div class="weui-form-preview__value">{{d.FPoundage}}</div>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">转卖状态</label>
+                        <div class="weui-form-preview__value">{{d.FStatus}}</div>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">创建时间</label>
+                        <div class="weui-form-preview__value">{{d.FCreateDate | datatime}}</div>
+                    </div>
+                </template>
+
+                <template v-if="d.Ftype == '赠送'">
+                    <label class="weui-form-preview__item" style="display: block;">
+                        <span class="weui-form-preview__label">时间</span>
+                        <div class="weui-form-preview__value">{{d.FCreateDate | datatime}}</div>
+                    </label>
+                    <label class="weui-form-preview__item" style="display: block;">
+                        <span class="weui-form-preview__label">数量</span>
+                        <div class="weui-form-preview__value">{{d.FNum}}</div>
+                    </label>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">昵称</label>
+                        <div class="weui-form-preview__value">{{d.userName}}</div>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">手机号</label>
+                        <div class="weui-form-preview__value">{{d.FMobile}}</div>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">转赠状态</label>
+                        <div class="weui-form-preview__value">{{d.FStatus}}</div>
+                    </div>
+                </template>
+
+                <template v-if="d.Ftype == '快递'">
+                    <label class="weui-form-preview__item" style="display: block;">
+                        <span class="weui-form-preview__label">数量</span>
+                        <div class="weui-form-preview__value">{{d.FNum}}</div>
+                    </label>
+                    <label class="weui-form-preview__item" style="display: block;">
+                        <span class="weui-form-preview__label">是否包邮</span>
+                        <div class="weui-form-preview__value">{{d.FIsPostage}}</div>
+                    </label>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">收货地址</label>
+                        <div class="weui-form-preview__value">{{d.FShippingAddress}}</div>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">收货人姓名</label>
+                        <div class="weui-form-preview__value">{{d.FShippingName}}</div>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">收货人电话</label>
+                        <div class="weui-form-preview__value">{{d.FShippingPhone}}</div>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">快递公司</label>
+                        <div class="weui-form-preview__value">{{d.FExpressCompany}}</div>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">快递单号</label>
+                        <div class="weui-form-preview__value">{{d.FExpressNo}}</div>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">快递状态</label>
+                        <div class="weui-form-preview__value">{{d.FStatus}}</div>
+                    </div>
+                    <label class="weui-form-preview__item" style="display: block;">
+                        <span class="weui-form-preview__label">创建时间</span>
+                        <div class="weui-form-preview__value">{{d.FCreateDate | datatime}}</div>
+                    </label>
+                    <label class="weui-form-preview__item" style="display: block;">
+                        <span class="weui-form-preview__label">发货时间</span>
+                        <div class="weui-form-preview__value">{{d.FUpdateDate | datatime}}</div>
+                    </label>
+                    <label class="weui-form-preview__item" style="display: block;">
+                        <span class="weui-form-preview__label">确认收货时间</span>
+                        <div class="weui-form-preview__value">{{d.FEndDate | datatime}}</div>
+                    </label>
+                </template>
+
+
+                <template v-if="d.Ftype == '自提'">
+                    <label class="weui-form-preview__item" style="display: block;">
+                        <span class="weui-form-preview__label">数量</span>
+                        <div class="weui-form-preview__value">{{d.FNum}}</div>
+                    </label>
+                    <label class="weui-form-preview__item" style="display: block;">
+                        <span class="weui-form-preview__label">提货码</span>
+                        <div class="weui-form-preview__value">{{d.FPickCode}}</div>
+                    </label>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">预计提货时间</label>
+                        <div class="weui-form-preview__value">{{d.FPickDate}}</div>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">提货地址</label>
+                        <div class="weui-form-preview__value">{{d.FPickAddress}}</div>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">联系人姓名</label>
+                        <div class="weui-form-preview__value">{{d.FPickName}}</div>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">电话</label>
+                        <div class="weui-form-preview__value">{{d.FPickPhone}}</div>
+                    </div>
+                    <label class="weui-form-preview__item" style="display: block;">
+                        <span class="weui-form-preview__label">状态</span>
+                        <div class="weui-form-preview__value">{{d.FStatus}}</div>
+                    </label>
+                    <label class="weui-form-preview__item" style="display: block;">
+                        <span class="weui-form-preview__label">创建时间</span>
+                        <div class="weui-form-preview__value">{{d.FCreateDate | datatime}}</div>
+                    </label>
+                </template>
+
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../res/weui/jquery-weui.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script src="../../js/md5.js"></script>
+<script>
+    apiready = function () {
+        jw.sb.fixStatusBar(".zui-header");
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                ftype: api.pageParam.Ftype,
+                Fid: api.pageParam.Fid,
+                d: {}, // 详情
+            },
+            created: function () {
+                var _this = this;
+                _this.getorderdetails();
+            },
+            methods: {
+                htitle: function(){
+                    switch (this.d.Ftype){
+                        case "退款": return "退款记录";
+                        case "转卖": return "转卖记录";
+                        case "赠送": return "赠送记录";
+                        case "快递": return "快递记录";
+                        case "自提": return "提货记录";
+                    }
+                },
+                // 获取订单详情
+                getorderdetails: function () {
+                    var _this = this;
+                    jw.submit("app_茶仓明细详情", {
+                        Ftype: _this.ftype, //  传入列表数据里的Ftype
+                        Fid: _this.Fid, //   传入列表数据里的Fid
+                    }, function (ret) {
+                        if (ret.ds != undefined && ret.ds != "") {
+                            _this.d = ret.ds[0];
+                        }else{
+                            jw.ts.toast("暂无数据");
+                            setTimeout(function () {
+                                api.closeWin();
+                            },2000);
+                        }
+                    });
+                },
+            }
+        });
+    }
+</script>
+</body>
+</html>

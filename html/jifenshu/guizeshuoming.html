@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-header zui-header-dark zui-row-center">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">种树规则</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+    <div class="zui-content rule_content" v-html="rule"></div>
+</div>
+
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function() {
+        jw.sb.fixStatusBar(".zui-header");
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                rule: ""
+            },
+            created: function () {
+                this.getjifenrule();
+            },
+            methods: {
+                // 获取积分规则
+                getjifenrule: function () {
+                    var _this = this;
+                    jw.submit("api32750"
+                        ,{}
+                    ,function (ret) {
+                            console.error(JSON.stringify(ret));
+                        try {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0] != null) {
+                                _this.rule = ret.ds[0].FTreeRule;
+                            } else {
+                                jw.ts.toast(ret.ds[0].msg);
+                            }
+                        } catch (e) {
+
+                        }
+                    });
+                },
+            }
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-header zui-header-dark zui-row-center">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">普洱茶事</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+    <div class="zui-content" style="background: #fff;">
+        <div class="dimg">
+            <img style=" width: 100%;" :src="news.FImageUrl | url" />
+        </div>
+        <div class="tj-content">
+            <div class="title">{{news.FName}}</div>
+            <p class="text-center">{{news.FCreateDate | datatime}}</p>
+            <div class="row-bottom tj-border">
+                <span @click="dianzan()"><i class="iconfont icon-zan" :class="{'color-red':zan==1}"></i>&nbsp;{{news.FPraiseNum}}</span>
+                <span @click="share()"><i class="iconfont icon-fenxiang1"></i>&nbsp;{{news.FShareNum}}</span>
+            </div>
+            <div class="tj-subcont cimg" v-html="news.FSummary"></div>
+            <div v-html="htmlsrc(news.FContent)" class="cimg"></div>
+
+        </div>
+        <div class="tj-h" v-if="NewsBusiness.length>0"></div>
+        <div class="tj-history" v-if="NewsBusiness.length>0">
+            <div>相关推荐</div>
+        </div>
+        <div class="hot-comment clearfix">
+            <div class="hot-row" v-for="item in NewsBusiness"  @click="goshop(item)" v-cloak>
+                <div class="himg touxiang" :style="getbgimg(item.FImageUrl)">
+                    <!--<img :src="item.FImageUrl|url" />-->
+                </div>
+                <div class="row-txt text-center">{{item.FName}}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script src="../../res/weui/jquery-weui.min.js"></script>
+<script src="../../res/weui/swiper.min.js"></script>
+<script>
+    apiready = function() {
+        jw.sb.fixStatusBar(".zui-header");
+
+        var sharedModule = api.require('shareAction');
+
+
+        var photoBrowser = api.require('photoBrowser');
+
+        function getftype(t) {
+            var l = t.split(".");
+            var f = l[l.length - 1];
+            return f;
+        }
+
+        function photobrowder(imglist, index) {
+            photoBrowser.open({
+                images: imglist,
+                placeholderImg: 'widget://res/loading.gif',
+                bgColor: '#000',
+                activeIndex: index
+            }, function (ret, err) {
+                if (ret.eventType == "click") {
+                    photoBrowser.close();
+                    api.closeFrame({
+                        name: 'photoBrowser'
+                    });
+                }
+                if (ret.eventType == "longPress") {
+                    var img = imglist[ret.index];
+                    jw.ts.actionSheet({
+                        title: '',
+                        buttons: ["保存"],
+                    }, function (ret) {
+                        if (ret == 1) {
+                            var t1 = new Date().getTime();
+                            var fname = t1 + "." + getftype(img);
+                            jw.ts.jiazaiShow();
+                            api.download({
+                                url: img,
+                                report: true,
+                                cache: false,
+                            }, function (ret, err) {
+                                console.log(JSON.stringify(ret));
+                                if (ret.state == 1) {
+                                    //下载成功
+                                    api.saveMediaToAlbum({
+                                        path: ret.savePath
+                                    }, function (ret, err) {
+                                        if (ret && ret.status) {
+                                            jw.ts.jiazaiHide();
+                                            jw.ts.toast("保存成功");
+                                        } else {
+                                            jw.ts.jiazaiHide();
+                                            jw.ts.toast("保存失败");
+                                        }
+                                    });
+                                }
+                                if (ret.state == 2) {
+                                    jw.ts.jiazaiHide();
+                                    jw.ts.toast("保存失败");
+                                }
+                            });
+                        }
+                    })
+                }
+
+            });
+        }
+
+        function imgclick() {
+
+            setTimeout(function () {
+                $(".dimg").on("click",function (e) {
+                    e.stopPropagation();
+                    var imgsrc = $(this).find("img").attr("src");
+                    var imglist = [imgsrc];
+                    photobrowder(imglist, 0)
+                });
+
+
+                $(".cimg").on("click","img",function (e) {
+                    e.stopPropagation();
+                    var imgsrc = $(this).attr("src");
+                    var imglist = [];
+                    var l = $(this).closest(".cimg").find("img").length;
+                    var index = 0,isrc = "";
+                    for (var i =0;i<l;i++){
+                        isrc = $(this).closest(".cimg").find("img").eq(i).attr("src");
+                        imglist.push(isrc);
+                        if (isrc == imgsrc) {
+                            index = i;
+                        }
+                    }
+                    photobrowder(imglist, index);
+                });
+            },1000);
+        }
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                news: "",
+                zan: 0,
+                NewsBusiness:[]//新闻对应推荐商品
+            },
+            created: function () {
+                this.getnews();
+            },
+            methods: {
+                getnews: function () {
+                    var _this = this;
+                    jw.submit("app_茶新闻内容",{
+                        FNewsId: api.pageParam.FNewsId,
+                        FUserId: jw.data.get("userid")
+                    },function (ret) {
+                        if (ret.ds != undefined && ret.ds[0].status == "000000"){
+                            _this.news = ret.ds1[0];
+                            _this.zan = ret.ds1[0].isPraise;
+                            _this.NewsBusiness=ret.ds2;
+                            _this.$nextTick(function(){
+                                imgclick();
+                                _this.imgload();
+                            });
+                        }else{
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                },
+                imgload: function(){
+                    $(".hot-row").each(function () {
+                        $(this).find(".himg").height($(this).find(".himg").width());
+                    });
+                },
+                dianzan: function () {
+                    var _this = this;
+                    if (_this.zan!=true&&_this.zan!='true'){
+                        jw.submit("app_点赞",{
+                            Fid: _this.news.FNewsId, //  商品或新闻id
+                            FUserId: jw.data.get("userid"), //   用户id
+                            FType: "1", //   类型0商品1新闻
+                        },function (ret) {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                                jw.ts.toast(ret.ds[0].msg);
+                                _this.zan = 1;
+                                _this.news.FPraiseNum = parseInt(_this.news.FPraiseNum)+1;
+                            } else {
+                                jw.ts.toast(ret.ds[0].msg);
+                            }
+                        },{
+                            jz: false
+                        });
+                    }
+                },
+                /* 分享 */
+                share: function () {
+                    var _this = this;
+                    jw.openFrame({
+                        name: 'share',
+                        url: '../share.html',
+                        pageParam: {
+                            text: _this.news.FName,
+                            FType: '1',
+                            Fid: _this.news.FNewsId,
+                            path: "http://www.yunpuer.com/app_news/"+api.pageParam.FNewsId+"-"+jw.data.get("userid")+".html"
+                        }
+                    })
+                    /*sharedModule.share({
+                        text: _this.news.FName,
+                        type: 'url',
+                        path: "http://www.yunpuer.com/app_news.html?FNewsId="+api.pageParam.FNewsId+"&userid="+jw.data.get("userid")
+                    });
+                    jw.submit("app_分享",{
+                        FType: "1", //    类型0：商品，1：新闻
+                        FShareType: "", //  分享、转发渠道 0微信好友 1朋友圈 2微博 3扣扣好友 4扣扣空间
+                        FUserId: jw.data.get("userid"), //   用户id
+                        Fid: _this.news.FNewsId, //    商品或新闻id
+                    },function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            // jw.ts.toast(ret.ds[0].msg);
+                            _this.news.FShareNum = parseInt(_this.news.FShareNum)+1;
+                        } else {
+                            // jw.ts.toast(ret.ds[0].msg);
+                        }
+                    },{
+                        jz: false
+                    });*/
+                },
+                // 去抢购 打开 商品详情页
+                goshop: function (item) {
+                    var option = {
+                        FBusinessId: item.FBusinessId,
+                        FPageType: 2, // 1： 限时抢购 2 普通商品
+                        Ftype: 0, // 0 茶商城 1茶市
+                        FlashSaleId: "",
+                    };
+                    /* 普通商品*/
+                    jw.openWin({
+                        name: "shopdetails",
+                        url: "../shangcheng/shopdetails.html",
+                        pageParam: option
+                    });
+                },
+            }
+        })
+    }
+</script>
+</body>
+</html>

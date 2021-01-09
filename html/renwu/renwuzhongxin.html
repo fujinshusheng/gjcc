@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>任务中心</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+<div class="zui-app">
+    <div class="zui-header zui-row-center renwu_header">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">任务中心</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+
+    <div class="zui-content jifen_bg">
+
+        <div class="nowjifen zui-row zui-row-center" v-for="(items,index) in jflist">
+            <div class="zui-col" onclick="jw.openWin({name:'jifen',url:'../jifen/jifenlist.html'})">
+                <span class="tip">当前积分：</span><span class="number">{{items.FIntegral}}</span>
+            </div>
+            <div class="more" onclick="jw.openWin({name:'jifen',url:'../jifen/jifen.html'})">积分中心>></div>
+        </div>
+        <div class="renwu_card zui-row zui-row-column">
+            <div class="renwu_card_nav zui-row zui-row-center">
+                <div class="zui-col"></div>
+                <div class="nav" :class="{'active':nav==2}" @click="nav=2">
+                    <span>互动</span>
+                </div>
+                <div class="nav" :class="{'active':nav==1}" @click="nav=1">
+                    <span>消费</span>
+                </div>
+                <div class="zui-col"></div>
+            </div>
+            <div class="renwu_card_main zui-col">
+
+                <!-- 消费 -->
+                <div class="renwu_list" v-show="nav==1" v-for="(item,index) in list" v-cloak>
+                    <div class="item zui-row zui-row-center" v-cloak>
+                        <div class="img">
+                            <!-- 服务器图片 -->
+                            <img id="imges_xf" :src="item.FIcon | url" alt="">
+                            <!-- 本地图片 -->
+                            <!-- <img id="imges_xf" src="../../image/renwu1.png" alt=""> -->
+                        </div>
+                        <div class="textbox zui-col">
+                            <p class="title">{{item.FTitle}}</p>
+                            <p class="t2">{{item.FSubTitle}}</p>
+                        </div>
+                        <div class="text-right">
+                            <div :class="item.FStatus==0?'color-gray9':'color-red'">{{item.FStatusName}}</div>
+                            <div class="color-gray9">{{item.FDailyCeiling}}</div>
+                        </div>
+                        <!--<div class="z-btn z-btn-s z-btn-red" v-if="item.FStatus==0" @click="postFost(item,1)">{{item.FStatusName}}</div>-->
+                        <!--<div class="z-btn z-btn-s z-btn-greed" v-if="item.FStatus==2" @click="postFost(item,1)">{{item.FStatusName}}</div>-->
+                    </div>
+                    <!-- <div class="item zui-row zui-row-center">
+                        <div class="img"><img src="../../image/renwu2.png" alt=""></div>
+                        <div class="textbox zui-col">
+                            <p class="title">{{item.FTitle}}</p>
+                            <p class="t2">积分+100</p>
+                        </div>
+                        <div class="z-btn z-btn-s z-btn-red">{{item.FStatusName}}</div>
+                    </div>
+                    <div class="item zui-row zui-row-center">
+                        <div class="img"><img src="../../image/renwu3.png" alt=""></div>
+                        <div class="textbox zui-col">
+                            <p class="title">每消费10元递增10积分</p>
+                            <p class="t2">积分无上限</p>
+                        </div>
+                        <div class="z-btn z-btn-s z-btn-greed">待领取</div>
+                    </div>
+                    <div class="item zui-row zui-row-center">
+                        <div class="img"><img src="../../image/renwu4.png" alt=""></div>
+                        <div class="textbox zui-col">
+                            <p class="title">首次消费满10元</p>
+                            <p class="t2">积分+1</p>
+                        </div>
+                        <div class="z-btn z-btn-s z-btn-gray5">已完成</div>
+                    </div> -->
+                </div>
+
+                <!-- 互动 -->
+                <div class="renwu_list" v-show="nav==2" v-for="item in most" v-cloak>
+                    <div class="item zui-row zui-row-center" v-cloak>
+                        <div class="img">
+                                <img :src="item.FIcon | url" alt="">
+                            <!-- <img src="../../image/renwu5.png" alt=""> -->
+                        </div>
+                        <div class="textbox zui-col">
+                            <p class="title">{{item.FTitle}}</p>
+                            <p class="t2">{{item.FSubTitle}}</p>
+                        </div>
+
+                        <div class="text-right">
+                            <div :class="item.FStatus==0?'color-gray9':'color-red'">{{item.FStatusName}}</div>
+                            <div class="color-gray9">{{item.FDailyCeiling}}</div>
+                        </div>
+                        <!--<div class="z-btn z-btn-s z-btn-red" v-if="item.FStatus==0 && (item.FUrl!='')" @click="postFost(item,1)">{{item.FStatusName}}</div>-->
+                        <!--<div class="z-btn z-btn-s z-btn-greed" v-if="item.FStatus==2 && (item.FUrl!='')" @click="postFost(item,1)">{{item.FStatusName}}</div>-->
+                    </div>
+                    <!-- <div class="item zui-row zui-row-center">
+                        <div class="img"><img src="../../image/renwu6.png" alt=""></div>
+                        <div class="textbox zui-col">
+                            <p class="title">参加一次茶品竞价</p>
+                            <p class="t2">积分+5</p>
+                        </div>
+                        <div class="z-btn z-btn-s z-btn-red">去完成</div>
+                    </div>
+                    <div class="item zui-row zui-row-center">
+                        <div class="img"><img src="../../image/renwu7.png" alt=""></div>
+                        <div class="textbox zui-col">
+                            <p class="title">参加一次众筹活动</p>
+                            <p class="t2">积分+5</p>
+                        </div>
+                        <div class="z-btn z-btn-s z-btn-greed">待领取</div>
+                    </div>
+                    <div class="item zui-row zui-row-center">
+                        <div class="img"><img src="../../image/renwu8.png" alt=""></div>
+                        <div class="textbox zui-col">
+                            <p class="title">活动留言</p>
+                            <p class="t2">积分+1</p>
+                        </div>
+                        <div class="z-btn z-btn-s z-btn-gray5">已完成</div>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function() {
+        jw.sb.fixStatusBar(".zui-header");
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                nav: 2,
+                imgsxf:'',
+                // scjfimg:'',//首次积分img
+                // qwctext:'', //去完成
+                // xfmtext:'',//去完
+                list:[], //任务中心_消费数据
+                most:[], //任务中心_互动
+                jflist:[],//总积分
+            },
+            created: function () {
+                this.getxf();
+                this.gethd();
+                this.zjfdata();
+            },
+            methods: {
+                //任务中心_消费接口
+                getxf:function(){
+                    var _this=this;
+                    //api41646 任务中心_消费
+                    jw.submit("api41646",{
+                        FUserId:jw.data.get("userid")//登录id
+                    },
+                    function(data){
+                        if(data.ds[0].status=="000000"){
+                            _this.list=data.ds1
+                        }else if(data.ds[0].status=="999999"){
+                            jw.ts.toast(data.ds[0].msg);
+                        }
+                    })
+                },
+                //任务中心_互动接口
+                gethd:function(){
+                    var _this=this;
+                    //api41720 任务中心_互动
+                    jw.submit("api41720",{
+                        FUserId:jw.data.get("userid") //登录id
+                    },function(data){
+                        if(data.ds[0].status=="000000"){
+                            _this.most=data.ds1
+                        }else if(data.ds[0].status=="999999"){
+                            jw.ts.toast(data.ds[0].msg);
+                        }
+                    })
+                },
+                //总积分接口
+                zjfdata:function(){
+                    var _this=this;
+                    //api42959 获取用户信息
+                    jw.submit("api42959",{
+                        FUserId:jw.data.get("userid") //登录id
+                    },function(data){
+                        if(data.ds[0].status=="000000"){
+                            _this.jflist=data.ds1
+                        }else if(data.ds[0].status=="999999"){
+                            jw.ts.toast(data.ds[0].msg);
+                        }
+                    })
+                },
+                //点击跳转页面路径
+                postFost:function(item){
+                    console.log(JSON.stringify(item))
+                    if (item.FUrl != undefined && item.FUrl != null && item.FUrl != ""){
+                        jw.openWin({
+                            url: item.FUrl,
+                        });
+                    }
+                },
+            }
+        });
+
+    }
+</script>
+</body>
+</html>

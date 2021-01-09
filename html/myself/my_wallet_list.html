@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>个人中心</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-header zui-row-center myjifen_header">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">我的钱包</div>
+
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+
+    <!--
+    <div class="myjifen_headertop zui-row zui-row-center zui-row-column">
+        <div class="zui-col"></div>
+        <div class="touxiang" :style="getbgimg(logininfo.FHanderImg)" v-cloak></div>
+        <div class="tip" v-cloak><span>可用金额：{{FRemainingSum}}</span></div>
+    </div> -->
+
+    <!-- <div class="myjifen_nav zui-row zui-row-center">
+        <div class="zui-col nav" :class="{'selected':navindex==1}" @click="navindex=1">充值明细</div>
+        <div class="zui-col nav" :class="{'selected':navindex==2}" @click="navindex=2">消费明细</div>
+    </div> -->
+
+    <div class="zui-content">
+
+        <!--<div class="zui-list my_jifenlist" v-show="navindex == 1" v-cloak>-->
+            <!--<div class="zui-item zui-row" v-for="item in jifenlist">-->
+                <!--<div class="img">-->
+                    <!--<img src="../../image/jifen_p.png" alt="">-->
+                <!--</div>-->
+                <!--<div class="zui-col">-->
+                    <!--<p class="fz16">{{item.FTitle}} <span class="fr">{{item.FIntegral}}</span></p>-->
+                    <!--<p class="fz12">{{item.FCreateDate | data}}</p>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+
+        <!-- 兑换记录 -->
+
+        <div class="zui-list my_jifenlist" v-cloak>
+            <div class="zui-item zui-row" v-for="item in list2">
+                <div class="img">
+                    <img src="../../image/jifen_p.png" alt="">
+                </div>
+                <div class="zui-col">
+                    <p class="fz16">{{item.FReMark}} <span class="fr">{{item.price}}</span></p>
+                    <p class="fz12">{{item.paytype}} <span class="fr">{{item.createtime | datatime}}</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!--<p class="fz12 color-gray9 text-center" style="margin-top: 30px;">没有更多数据了</p>-->
+
+    </div>
+</div>
+
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function() {
+        jw.sb.fixStatusBar(".zui-header");
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                navindex: 1,
+                logininfo: "",
+                walldata: api.pageParam.walldata,
+                list1: [],
+                list2: [],
+            },
+            created: function () {
+                this.logininfo = JSON.parse(jw.data.get("logininfo"));
+                this.getlist();
+            },
+            methods: {
+                getlist: function () {
+                    var _this = this;
+                    jw.submit("app_钱包明细",{
+                        FUserId: jw.data.get("userid")
+                    },function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            _this.list2 = ret.ds1;
+                        }
+                    });
+                }
+            }
+        })
+
+    }
+</script>
+</body>
+</html>

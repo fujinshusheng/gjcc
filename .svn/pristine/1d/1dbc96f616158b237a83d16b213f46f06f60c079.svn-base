@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+
+<body>
+
+
+    <div class="zui-app">
+        <div class="zui-header zui-header-dark zui-row-center">
+            <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+            <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">物流信息</div>
+             <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+            onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+        </div>
+        <div class="zui-content">
+
+
+            <div id="daofubox" class="zui-list wuliu-border-bottom noborder">
+                <!-- <div class="zui-item">收货地址</div> -->
+                <div class="zui-item font-bold">{{order2.FShippingName+'&nbsp;&nbsp;&nbsp;'+order2.FShippingPhone}}
+                </div>
+                <div class="zui-item font-bold">{{order2.FShippingAddress}}</div>
+            </div>
+
+
+            <div class="weui-form-preview" style="margin-top: 5px;">
+
+                <div class="order_imgbox zui-row zui-row-center zui-row-stretch">
+                    <div class="touxiang" :style="getbgimg(order.FImg)"></div>
+                    <div class="zui-col">
+                        <p><b>状态：已发货</b></p>
+                        <p><b>{{order2.FTitle}}</b></p>
+                        <p><b>运单号：{{order2.FExpressNo}}</b></p>
+                        <div class="fz12 color-gray9">如需帮助请联系官方电话 <span class="color-red">0574-88014560</span></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="zui-steps wuliu_steps">
+                <div class="zui-step" v-for="item in list">
+                    <p>{{item.AcceptStation}}</p>
+                    <p class="fz12">{{item.AcceptTime}}</p>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+    <script src="../../js/jquery-2.1.1.min.js"></script>
+    <script src="../../res/weui/jquery-weui.min.js"></script>
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/vuefilter.js"></script>
+    <script src="../../js/jw.js"></script>
+    <script src="../../js/zui.js"></script>
+    <script>
+        apiready = function () {
+            jw.sb.fixStatusBar(".zui-header");
+            var myapp = new Vue({
+                "el": ".zui-app",
+                data: {
+                    order: api.pageParam.order, // 订单内容
+                    order2: api.pageParam.order2, //订单内容
+                    list: [], // 物流详情
+                },
+                created: function () {
+                    var _this = this;
+
+                    _this.getlist();
+                },
+                methods: {
+                    getlist: function () {
+                        var _this = this;
+                        jw.submit_ykt("kd", {
+                        //jw.submit("kd", {
+                            "ShipperCode": _this.order2.FShipperCode,
+                            "LogisticCode": _this.order2.FExpressNo
+                        }, function (ret) {
+                            var datas = eval("(" + ret + ")");
+                            if (datas.Success == true && datas.State == "0") {
+                                $(".zui-step").html(datas.Reason);
+                            } else {
+                                _this.list = datas.Traces;
+                            }
+                        }, {
+                            jz: true,
+                            Url: jw.config.url3,
+                            Ip: jw.config.ip3
+                        });
+                    }
+                }
+            })
+        }
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>商品详情</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+
+<div class="zui-app" v-cloak>
+    <div class="zui-header zui-header-dark zui-row-center">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">商品详情</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="right: 45px;font-size:30px"
+            onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+        <div class="iconfont zui-header-icon icon-fenxiang1 zui-header-right" @click="share()"></div>
+    </div>
+    <div class="zui-row shopdetails_nav">
+        <div class="zui-col nav" :class="{'selected':navindex==1}" @click="navclick1(1)">商品</div>
+        <div class="zui-col nav" :class="{'selected':navindex==2}" @click="navclick1(2)">评价</div>
+        <div class="zui-col nav" :class="{'selected':navindex==3}" @click="navclick1(3)">参数</div>
+    </div>
+    <div class="commit_nav zui-row zui-row-center" v-show="navindex==2" v-cloak>
+        <div class="nav zui-col" :class="{'selected':navindex2==1}" @click="navclick2(1)"><i
+                class="iconfont icon-dui"></i>全部 {{shopevaluate_nav.quanbu}}
+                <!-- <span v-show="navindex2==1" v-cloak>{{shopevaluate_nav.quanbu}}</span> -->
+        </div>
+        <div class="nav zui-col" :class="{'selected':navindex2==2}" @click="navclick2(2)"><i
+                class="iconfont icon-dui"></i>好评 {{shopevaluate_nav.hao}}
+                <!-- <span v-show="navindex2==2" v-cloak>{{shopevaluate_nav.hao}}</span> -->
+        </div>
+        <div class="nav zui-col" :class="{'selected':navindex2==3}" @click="navclick2(3)"><i
+                class="iconfont icon-dui"></i>中评 {{shopevaluate_nav.zhong}}
+                <!-- <span v-show="navindex2==3" v-cloak>{{shopevaluate_nav.zhong}}</span> -->
+        </div>
+        <div class="nav zui-col" :class="{'selected':navindex2==4}" @click="navclick2(4)"><i
+                class="iconfont icon-dui"></i>差评 {{shopevaluate_nav.cha}}
+                <!-- <span v-show="navindex2==4" v-cloak>{{shopevaluate_nav.cha}}</span> -->
+        </div>
+    </div>
+    <div class="zui-content shopdetails" v-cloak v-show="navindex==1">
+        <div class="shopdetails_banner" style="cursor:pointer">
+            <img :src="shopdetails.FImageUrl | url" alt=""
+                 v-longtap="{fn:saveimg,name:'test',url:shopdetails.FImageUrl}">
+            <!--<div class="touxiang pbimg" :style="getbgimg(shopdetails.FImageUrl)"></div>-->
+        </div>
+
+        <!-- <div class="zui-footer zui-row zui-row-center zui-row-stretch"
+             v-show="navindex == 1 &&  shopdetails.FStock>0" v-cloak>
+            <div class="shopfooterbtn bl1" @click="joinshopcar()">
+                <i class="iconfont icon-gouwuche"></i>
+                <p>购物车</p>
+            </div>
+            <div class="footer_btn zui-col bg-red color-white" @click="justbuy()">立即抢购</div>
+        </div> -->
+
+        <div class="shop_imgtext">
+            <div class="t1">{{shopdetails.FName}} </div>
+
+            <p><b class="fz20 color-red">￥{{shopdetails.FPrice}} </b><span class="fr">{{shopdetails.FAddress}}</span></p>
+            <div class="zui-row">
+                <div class="zui-col text-left">销量：{{shopdetails.FSaleNum}}</div>
+                <div class="zui-col text-right">库存：{{shopdetails.FStock}}</div>
+            </div>
+            <div class="zui-row">
+                <div class="zui-col text-left">返回积分：{{shopdetails.FIntegral}}</div>
+                <div class="zui-col text-right" v-if="shopdetails.FLimitNum>0">限购：{{shopdetails.FLimitNum}}</div>
+            </div>
+            <div class="zui-row">
+                <div class="zui-col text-right" @click="kefushow = true"><i class="iconfont icon-kefu color-red"></i>咨询电话</div>
+            </div>
+
+            <!--<div>提货方式：{{shopdetails.FPickType}}</div>-->
+        </div>
+
+        <div class="shop_details_content" v-html="htmlsrc(shopdetails.FContent)"></div>
+    </div>
+
+
+    <div class="zui-content" v-cloak v-show="navindex==2">
+
+        <div class="commit_list">
+            <div class="item" v-for="item in valuatelist(shopevaluate)">
+                <div class="zui-row zui-row-center">
+                    <!-- <div class="touxiang" style="background-image: url(../../image/tx01.jpg)"></div> -->.
+                    <div class="touxiang" style=" width: 30px; height: 30px;border-radius: 50%; margin-top: -5px;">
+                        <img :src ="imgsrcfilter(item.FHanderImg)" style=" width: 100%;height: 100%;border-radius: 50%;" >
+                    </div>
+                    <div class="zui-col">
+                        <p class="name">{{stringlf(item.FUserName)}}</p>
+                        <div>
+                            <i class="iconfont icon-xing" :class="{'color-yellow':item.FLevel>=1}"></i>
+                            <i class="iconfont icon-xing" :class="{'color-yellow':item.FLevel>=2}"></i>
+                            <i class="iconfont icon-xing" :class="{'color-yellow':item.FLevel>=3}"></i>
+                            <i class="iconfont icon-xing" :class="{'color-yellow':item.FLevel>=4}"></i>
+                            <i class="iconfont icon-xing" :class="{'color-yellow':item.FLevel>=5}"></i>
+                        </div>
+                    </div>
+                    <div class="time">{{item.FCreateDate | datatime}}</div>
+                </div>
+                <div class="commit_main">{{item.FAssess}}</div>
+                <div class="zui-cboxlist">
+                    <div class="zui-cbox" v-for="img in imglistfun(item.FImageUrl)">
+                        <div class="box">
+                            <img :src="imgsrcfilter(img)" style="width: 100%;" alt="">
+                        </div>
+                    </div>
+                </div>
+                <div class="commit_hf" v-if="item.FReAssess != null">{{item.FReAssess}}</div>
+                <!-- <div class="commit_footer zui-row zui-row-center">
+                    <div class="zui-col">浏览 125</div>
+                    <div class="commit_zan active"><i class="iconfont icon-xin2"></i>11</div>
+                </div> -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- <div class="zui-content" v-cloak v-show="navindex==3" v-html="shopdetails.parameters">
+        <img id="parameters" style="width: 100%;" @click="canshuimg(imgsrcfilter(shopdetails.parameters))"
+             v-show="shopdetails.parameters!=null&&shopdetails.parameters!=undefined"
+             :src="imgsrcfilter(shopdetails.parameters)" alt="">
+    </div> -->
+    <div class="zui-content" v-cloak v-show="navindex==3">
+        <img id="parameters" style="width: 100%; height: 100%;  " @click="canshuimg(imgsrcfilter(shopdetails.parameters))"
+             v-show="shopdetails.parameters!=null&&shopdetails.parameters!=undefined"
+             :src="imgsrcfilter(shopdetails.parameters)" alt="">
+    </div>
+
+
+    <!-- 客服弹出框 -->
+    <div class="zui-alert shop_alert" v-cloak v-if="kefushow">
+        <div class="zui-alert_box">
+            <div class="shop_close iconfont icon-del color-red" @click="kefushow = false"></div>
+            <div class="tip">
+                <div class="iconfont icon-kefu"></div>
+            </div>
+            <div class="title">咨询电话</div>
+            <div class="cont">联系方式：<a href="Tel:15867203999">15867203999</a></div>
+        </div>
+        <div class="zui-alert_bg" @click="kefushow = false"></div>
+    </div>
+    <!-- 客服弹出框 end -->
+
+    <!-- 充值弹出框 -->
+    <div class="zui-alert shop_alert" v-cloak v-if="chongzhishow">
+        <div class="zui-alert_box">
+            <div class="shop_close iconfont icon-del color-red" @click="chongzhishow = false"></div>
+            <div class="tip">0
+                <img src="../../image/price.png" alt="">
+            </div>
+            <div class="title">充值</div>
+            <div class="cont">
+                <p>抱歉！</p>
+                您的钱包当前余额不足，请先充值！
+            </div>
+            <div class="z-btn z-btn-red z-btn-noradius">立即充值</div>
+        </div>
+        <div class="zui-alert_bg"></div>
+    </div>
+    <!-- 充值弹出框 end -->
+
+    <!-- 商品详情 底部 -->
+    <div class="zui-footer zui-row zui-row-center zui-row-stretch"
+         v-show="navindex == 1 &&  shopdetails.FStock>0" v-cloak>
+        <!--<div class="shopfooterbtn" :class="{'color-red':zan==true||zan=='true'}" @click="dianzan()">-->
+        <!--<i class="iconfont icon-xin2" v-show="zan==true||zan=='true'"></i>-->
+        <!--<i class="iconfont icon-xin" v-show="zan!=true&&zan!='true'"></i>-->
+        <!--<p>点赞</p>-->
+        <!--</div>-->
+        <div class="shopfooterbtn bl1" @click="joinshopcar()">
+            <i class="iconfont icon-gouwuche"></i>
+            <p>购物车</p>
+        </div>
+        <div class="footer_btn zui-col bg-red color-white" @click="justbuy()">立即抢购</div>
+    </div>
+    <!-- 商品详情 底部 end -->
+
+
+</div>
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function () {
+        jw.sb.fixStatusBar(".zui-header");
+        api.addEventListener({
+            name: 'swipeleft'
+        }, function (ret, err) {
+            if (myapp.navindex < 3) {
+                myapp.navindex = myapp.navindex + 1;
+                myapp.navclick1(myapp.navindex);
+            }
+        });
+
+        api.addEventListener({
+            name: 'swiperight'
+        }, function (ret, err) {
+            if (myapp.navindex > 1) {
+                myapp.navindex = myapp.navindex - 1;
+                myapp.navclick1(myapp.navindex);
+            }
+        });
+
+        var sharedModule = api.require('shareAction');
+
+        // 显示抢购 剩余时间
+        var timefun = setInterval(function () {
+            $(document).find(".toend").each(function (e, i) {
+                var t = $(this).data('time');
+                var type = $(this).closest(".footer_btn").data("type");
+                if (t != undefined && t != "") {
+                    var a = zDate.getendtimehoures(t);
+                    if(a == "0"){
+                        if (myapp.shopdetails.FStatus == 0 && type == 1){
+                            myapp.shopdetails.FStatus = 1;
+                        }
+                        if (myapp.shopdetails.FStatus == 1 && type == 2) {
+                            myapp.shopdetails.FStatus = 2;
+                            clearInterval(timefun);
+                        }
+                        if (myapp.shopdetails.FStatus == 2 && type == 2) {
+                            clearInterval(timefun);
+                        }
+                    }else{
+                        $(this).text(a);
+                    }
+                }
+            });
+        }, 1000);
+        // 显示抢购 剩余时间
+        // setInterval(function () {
+        //     myapp.toendtime();
+        // }, 1000);
+
+        var photoBrowser = api.require('photoBrowser');
+
+
+        function getftype(t) {
+            var l = t.split(".");
+            var f = l[l.length - 1];
+            return f;
+        }
+
+        function photobrowder(imglist, index) {
+            photoBrowser.open({
+                images: imglist,
+                placeholderImg: 'widget://res/loading.gif',
+                bgColor: '#000',
+                activeIndex: index
+            }, function (ret, err) {
+                if (ret.eventType == "click") {
+                    photoBrowser.close();
+                    api.closeFrame({
+                        name: 'photoBrowser'
+                    });
+                }
+                if (ret.eventType == "longPress") {
+                    var img = imglist[ret.index];
+                    jw.ts.actionSheet({
+                        title: '',
+                        buttons: ["保存"],
+                    }, function (ret) {
+                        if (ret == 1) {
+                            var t1 = new Date().getTime();
+                            var fname = t1 + "." + getftype(img);
+                            jw.ts.jiazaiShow();
+                            api.download({
+                                url: img,
+                                report: true,
+                                cache: false,
+                            }, function (ret, err) {
+                                console.log(JSON.stringify(ret));
+                                if (ret.state == 1) {
+                                    //下载成功
+                                    api.saveMediaToAlbum({
+                                        path: ret.savePath
+                                    }, function (ret, err) {
+                                        if (ret && ret.status) {
+                                            jw.ts.jiazaiHide();
+                                            jw.ts.toast("保存成功");
+                                        } else {
+                                            jw.ts.jiazaiHide();
+                                            jw.ts.toast("保存失败");
+                                        }
+                                    });
+                                }
+                                if (ret.state == 2) {
+                                    jw.ts.jiazaiHide();
+                                    jw.ts.toast("保存失败");
+                                }
+                            });
+                        }
+                    })
+                }
+
+            });
+        }
+
+        function imgclick() {
+
+            setTimeout(function () {
+
+                $(document).on("click", ".shopdetails_banner", function (e) {
+                    e.stopPropagation();
+                    var imgsrc = $(this).find("img").attr("src");
+                    var imglist = [imgsrc];
+                    photobrowder(imglist, 0)
+                });
+
+                $(".shop_details_content").on("click", "img", function (e) {
+                    e.stopPropagation();
+                    var imgsrc = $(this).attr("src");
+                    var imglist = [];
+                    var l = $(".shop_details_content").find("img").length;
+                    var index = 0, isrc = "";
+                    for (var i = 0; i < l; i++) {
+                        isrc = $(".shop_details_content").find("img").eq(i).attr("src");
+                        imglist.push(isrc);
+                        if (isrc == imgsrc) {
+                            index = i;
+                        }
+                    }
+                    photobrowder(imglist, index);
+                });
+            }, 1000);
+        }
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                navindex: 1, // 1:商品 2： 评价 选项卡切换
+                navindex2: 1, // 1全部 2好评 3中评 4差评 选项卡切换
+                shopdetails: "", // 商品详情信息
+                shopevaluate_nav: "", // 商品评价数量
+                shopevaluate: [], // 商品评价列表
+                zan: false,  // 是否点赞
+                kefushow: false, // 客服弹出框显示隐藏
+                chongzhishow: false, // 充值弹出框显示隐藏
+            },
+            created: function () {
+                this.getshopdetails();
+                this.getshopevaluate();
+                $(".shopdetails_banner").find(".pbimg").height(api.winWidth);
+            },
+            methods: {
+                saveimg: function (s, e) {
+                    jw.ts.confirm({
+                        msg: "是否保存图片"
+                    }, function (index) {
+                        if (index == 1) {
+                            var url = s.imgurl;
+                        }
+                    })
+                },
+                toendtime: function () {
+                    var endtime = this.shopdetails.FEndDate;
+                    if (endtime != undefined && endtime != "") {
+                        var a = zDate.getendtime(endtime);
+                        return a;
+                    }
+                },
+                imglistfun: function (a) {
+                    if (a != undefined && a != "") {
+                        var list = a.split(",");
+                        return list.filter(function (item) {
+                            return item
+                        })
+                    }
+                },
+                navclick1: function (t) {
+                    switch (t) {
+                        case 1:
+                            // 商品
+
+                            break;
+                        case 2:
+                            // 评价
+
+                            break;
+                    }
+                    this.navindex = t;
+                },
+                navclick2: function (t) {
+                    switch (t) {
+                        case 1:
+                            // 全部
+
+                            break;
+                        case 2:
+                            // 好评
+
+                            break;
+                        case 3:
+                            // 中评
+
+                            break;
+                        case 4:
+                            // 差评
+
+                            break;
+                    }
+                    this.navindex2 = t;
+                },
+                canshuimg: function (imgsrc) {
+
+                    photoBrowser.open({
+                        images: [imgsrc],
+                        placeholderImg: 'widget://res/loading.gif',
+                        bgColor: '#000'
+                    }, function (ret, err) {
+                        if (ret.eventType == "click") {
+                            photoBrowser.close();
+                        }
+                    });
+
+                },
+                /* 获取商品详情 */
+                getshopdetails: function () {
+                    var _this = this;
+                    jw.submit("api45546", {
+                        FId: api.pageParam.FId, //商品id
+                        FUserId: jw.data.get("userid"), //   用户id
+                    }, function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            _this.shopdetails = ret.ds1[0];
+                            // 是否已点赞
+                            _this.zan = ret.ds2[0].ifPraise;
+
+                            _this.$nextTick(function () {
+                                imgclick();
+                            });
+
+
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                },
+                // 商品评价
+                getshopevaluate: function () {
+                    var _this = this;
+
+                    jw.submit("api47047", {
+                        FId: api.pageParam.FId, //商品id
+                    }, function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            _this.shopevaluate_nav = ret.ds1[0];
+                            _this.shopevaluate = ret.ds2;
+
+                            _this.$nextTick(function () {
+                                $(".zui-cboxlist").find("img").height($(".zui-cboxlist").find("img").width())
+                            });
+                        } else {
+                            //jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                },
+                // 筛选评价
+                valuatelist: function (list) {
+                    var _this = this;
+                    return list.filter(function (item) {
+                        if (_this.navindex2 == 1) {
+                            return item
+                        } else if (_this.navindex2 == 2) {
+                            return item.FLevel > 4
+                        } else if (_this.navindex2 == 3) {
+                            return item.FLevel > 2 && item.FLevel < 5
+                        } else if (_this.navindex2 == 4) {
+                            return item.FLevel <= 2
+                        }
+                    })
+                },
+                // 点赞
+                dianzan: function () {
+                    var _this = this;
+                    if (_this.zan != true && _this.zan != 'true') {
+                        jw.submit("app_点赞", {
+                            Fid: api.pageParam.FId, //  商品或新闻id
+                            FUserId: jw.data.get("userid"), //   用户id
+                            FType: "0", //   类型0商品1新闻
+                        }, function (ret) {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                                jw.ts.toast(ret.ds[0].msg);
+                                _this.zan = true;
+                            } else {
+                                jw.ts.toast(ret.ds[0].msg);
+                            }
+                        }, {
+                            jz: false
+                        });
+                    }
+                },
+                /* 分享 */
+                share: function () {
+                    var _this = this;
+                    var url = "http://www.yunpuer.com/app_cq_details/"+api.pageParam.FId+".html";
+                    var text = ''
+                    if(_this.shopdetails.oldFPrice>_this.shopdetails.FPrice){
+                        text = _this.shopdetails.FName+ " 原价："+_this.shopdetails.oldFPrice +" 现价："+_this.shopdetails.FPrice
+                    }else{
+                        text = _this.shopdetails.FName+ " 现价："+_this.shopdetails.FPrice
+                    }
+                    jw.openFrame({
+                    name: 'share',
+                    url: '../share.html',
+                    pageParam: {
+                        text: text,
+                        FType: '0',
+                        Fid: _this.FBusinessId,
+                        path: url,
+                        thumb:_this.shopdetails.FImageUrl
+                        }
+                    })
+                },
+                // 加入购物车
+                joinshopcar: function () {
+                    var _this = this;
+                    if (jw.data.get("userid") == "") {
+                        jw.ts.toast("请先登录！");
+                        jw.openFrame({
+                            name: 'login',
+                            url: '../login.html',
+                        });
+                    } else {
+                        jw.submit("app_加入购物车New", {
+                            FUserId: jw.data.get("userid"),  //用户id
+                            FBusinessId: api.pageParam.FId,  //商品id
+                            FNumber: 1,  //数量
+                            FType: "3",  //来源0商城1茶市 2茶市3茶器
+                            FOnekeyResaleId: "",  //FType为1时茶市转卖表id
+                        }, function (ret) {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                                jw.ts.toast(ret.ds[0].msg);
+                            } else {
+                                jw.ts.toast(ret.ds[0].msg);
+                            }
+                        });
+                    }
+                },
+                // 立即购买
+                justbuy: function () {
+                    var _this = this;
+                    if (jw.data.get("userid") == "") {
+                        jw.ts.toast("请先登录！");
+                        jw.openFrame({
+                            name: 'login',
+                            url: '../login.html',
+                        });
+                    } else {
+                       
+                        var ly = api.pageParam.ly;
+                        if (ly == undefined || ly == "") {
+                            ly = "shopdetails"
+                        }
+                        jw.openWin({
+                            name: "firm_order",
+                            url: "firm_order.html",
+                            pageParam: {
+                                FId: api.pageParam.FId,
+                                ly: ly,
+                                shopdetails: JSON.stringify(_this.shopdetails),
+                            }
+                        });
+                    }
+
+                }
+            }
+        })
+    }
+</script>
+</body>
+</html>

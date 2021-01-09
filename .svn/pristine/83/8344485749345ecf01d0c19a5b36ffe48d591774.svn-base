@@ -1,0 +1,92 @@
+/*
+<div class="zui-radiolist">
+    <label class="zui-radiobox">
+        <input type="radio">
+        <i class="zui-checked"></i>
+        <span class="zui-radiotxt">货物或应税劳务、服务</span>
+    </label>
+</div>
+*/
+.zui-radiobox{
+  height: 30px;
+  line-height: 30px;
+  .zui-radiotxt{
+    display: inline-block;
+    margin-left: 5px;
+    line-height: 30px;
+  }
+  .zui-radio,
+  input[type=checkbox],
+  input[type=radio]{
+    display: none;
+  }
+  .zui-radio + .zui-checked,
+  input[type=checkbox] + .zui-checked,
+  input[type=radio] + .zui-checked{
+    display: inline-block;
+    width: 23px;
+    position: relative;
+    top: 3px;
+    height: 23px;
+    background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' width='200px' height='200px' viewBox='0 0 200 200' enable-background='new 0 0 200 200' xml:space='preserve'%3E%3Ccircle fill='none' stroke='%23d8d8d8' stroke-width='4' stroke-miterlimit='10' cx='100' cy='100' r='98'/%3E%3C/svg%3E") no-repeat;
+    background-size: 100%;
+    float: left;
+  }
+  .zui-radio:checked + .zui-checked,
+  input[type=checkbox]:checked + .zui-checked,
+  input[type=radio]:checked + .zui-checked{
+    background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%230fc464' x='0px' y='0px' width='200px' height='200px' viewBox='0 0 200 200' enable-background='new 0 0 200 200' xml:space='preserve'%3E%3Cpath d='M100,0C44.771,0,0,44.772,0,100c0,55.229,44.772,100.001,100,100.001S200,155.229,200,100C200,44.772,155.229,0,100,0z M80.488,143.581l-34.688-34.702l13.008-13.013l21.68,21.688l60.704-60.727L154.2,69.84L80.488,143.581z'/%3E%3C/svg%3E%0A") no-repeat;
+    background-size: 100%;
+  }
+}
+.zui-radiolist{
+  .zui-radiobox{
+    display: inline-block;
+  }
+}
+
+
+/*
+<div class="zui-checklist">
+    <label class="zui-checkbox">
+        <input type="checkbox">
+        <i class="zui-checked"></i>
+        <span class="zui-checktxt">货物或应税劳务、服务</span>
+    </label>
+</div>
+*/
+
+.zui-checkbox{
+  height: 30px;
+  line-height: 30px;
+  .zui-checktxt{
+    display: inline-block;
+    margin-left: 5px;
+    line-height: 30px;
+  }
+  input[type=radio],
+  input[type=checkbox]{
+    display: none;
+  }
+  input[type=radio] + .zui-checked,
+  input[type=checkbox] + .zui-checked{
+    display: inline-block;
+    width: 23px;
+    position: relative;
+    top: 3px;
+    height: 23px;
+    background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200px' height='200px' viewBox='0 0 200 200'%3E%3Cpath fill='%23ccc' d='M161.666,12.5H37.917C23.75,12.5,12.5,24.167,12.5,38.333v123.333c0,14.168,11.25,25.834,25.417,25.834 h123.75c14.168,0,25.834-11.666,25.834-25.416V38.333C187.5,24.167,175.834,12.5,161.666,12.5z M177.084,162.084 c0,8.332-7.084,15.416-15.418,15.416H37.917c-8.333,0-15.417-7.084-15.417-15.416V38.333c0-8.333,7.083-15.417,15.417-15.417h123.75 c8.334,0,15.418,7.083,15.418,15.417V162.084L177.084,162.084z'/%3E%3C/svg%3E%0A") no-repeat;
+    background-size: 100%;
+    float: left;
+  }
+  input[type=radio]:checked + .zui-checked,
+  input[type=checkbox]:checked + .zui-checked{
+    background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 1024' width='200' height='200'%3E%3Cdefs%3E%3Cstyle type='text/css'%3E%3C/style%3E%3C/defs%3E%3Cpath d='M827.733333 64H194.133333C121.6 64 64 123.733333 64 196.266667v631.466666C64 900.266667 121.6 960 194.133333 960h633.6c72.533333 0 132.266667-59.733333 132.266667-130.133333V196.266667C960 123.733333 900.266667 64 827.733333 64z m78.933334 765.866667c0 42.666667-36.266667 78.933333-78.933334 78.933333H194.133333c-42.666667 0-78.933333-36.266667-78.933333-78.933333V196.266667c0-42.666667 36.266667-78.933333 78.933333-78.933334h633.6c42.666667 0 78.933333 36.266667 78.933334 78.933334v633.6z' fill='%231bc416' p-id='4624'%3E%3C/path%3E%3Cpath d='M814.933333 279.466667c-8.533333-8.533333-23.466667-8.533333-32 0L439.466667 625.066667c-6.4 6.4-14.933333 6.4-21.333334 0L243.2 448c-8.533333-8.533333-23.466667-8.533333-32 0l-32 29.866667c-8.533333 8.533333-8.533333 23.466667 0 32l232.533333 234.666666c8.533333 10.666667 23.466667 10.666667 32 0l403.2-401.066666c8.533333-8.533333 8.533333-23.466667 0-32l-32-32z' fill='%231bc416' p-id='4625'%3E%3C/path%3E%3C/svg%3E") no-repeat;
+    background-size: 100%;
+  }
+}
+.zui-checklist{
+  .zui-checkbox{
+    display: inline-block;
+  }
+}

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>修改密码</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-header zui-row-center myjifen_header">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">设置密码</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+    <div class="zui-content">
+
+        <div class="fromlist2 zui-col">
+            <div class="item zui-row zui-row-center">
+                <span class="title zui-col-20">密码</span>
+                <input type="password" class="zui-col" v-model="password" maxlength="6" placeholder="请输入密码">
+            </div>
+            <div class="item zui-row zui-row-center">
+                <span class="title zui-col-20">确认密码</span>
+                <input type="password" class="zui-col" v-model="password2" maxlength="6" placeholder="再次输入密码">
+            </div>
+        </div>
+        <p style="padding: 10px 15px;"><span class="color-red">*</span>支付密码设置为6个数字</p>
+
+    </div>
+
+    <div class="zui-footer zui-row zui-row-stretch">
+        <div class="footer_btn zui-col bg-red color-white" @click="setpaypassword()">确定</div>
+    </div>
+
+</div>
+
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../res/weui/jquery-weui.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function() {
+        jw.sb.fixStatusBar(".zui-header");
+
+        $(".icon-look").changepassword("#password");
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                password: "",
+                password2: "",
+            },
+            created: function () {
+                var _this = this;
+                setTimeout(function () {
+                    api.closeWin({name: "setting_newpaypassword"});
+                },1000);
+            },
+            methods: {
+                setpaypassword: function () {
+                    var _this = this;
+
+                    if (_this.password == ""){
+                        jw.ts.toast("请输入支付密码，格式为6位数字！");
+                        return false;
+                    }
+                    if (_this.password2 == ""){
+                        jw.ts.toast("请输入确认支付密码，格式为6位数字！");
+                        return false;
+                    }
+                    if (!/\d{6}/.test(_this.password)) {
+                        jw.ts.toast("请输入正确格式支付密码，格式为6位数字！");
+                        return false;
+                    }
+                    if (_this.password != _this.password2) {
+                        jw.ts.toast("两次输入密码不一致，请重新输入！");
+                        return false;
+                    }
+
+                    jw.submit("app_设置支付密码",{
+                      FUserId:jw.data.get("userid"),
+                      FPayPassword:_this.password
+                    },function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            jw.ts.toast(ret.ds[0].msg);
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                }
+            }
+        })
+    }
+</script>
+</body>
+</html>

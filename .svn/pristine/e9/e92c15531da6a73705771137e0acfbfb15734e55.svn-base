@@ -1,0 +1,14 @@
+body,html{
+  padding: 0;
+  margin: 0;
+}
+#box_img{
+  width: 100%;
+  height: auto;
+  position: relative;
+  /*height: 700px;*/
+}
+#box_img img{
+  width: 100%;
+  height: auto;
+}

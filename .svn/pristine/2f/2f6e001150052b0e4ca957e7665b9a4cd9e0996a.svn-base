@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>商品详情</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+
+<div class="zui-app paimai_list_main">
+    <div class="zui-header zui-header-dark zui-row-center">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">商品竞价</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+    <div class="zui-content maxin_box">
+
+        <div class="paimai_details_header">
+            <div class="bannerimg">
+<!--                <img src="../../image/paimai_img.png" alt="">-->
+<!--                 <img :src="order.FImg"/>-->
+                <div class="shopdetails_banner" style="cursor:pointer">
+                    <div class="touxiang pbimg" :style="getbgimg(order.FImg)"></div>
+                </div>
+                <div class="fenxiang" @click="share()"><i class="iconfont icon-share-fill"></i>分享</div>
+            </div>
+            <div class="title">{{order.FTitle}}</div>
+        </div>
+
+
+        <div class="paimai_title" style="text-align: center;">商品详情</div>
+        <div class="paimai_html" v-html="order.FContent">
+        </div>
+        <div class="paimai_title">竞价说明</div>
+
+        <div class="paimaishuoming1">
+            <img class="img" src="../../image/paimaishuoming.png" alt="" >
+        </div>
+        <div class="paimaishuoming2 fz14">
+            <div class="zui-row zui-row-center">
+                <span class="text">当前出价人数：{{jpname.FMember}}人</span>
+                <span class="time zui-col text-center">{{jpname.timenow}}</span>
+                <a href="javascript:;" class="update" @click="gxcj()">更新出价</a>
+            </div>
+            <div class="zui-row zui-row-center fz14">
+                <span class="text color-red">{{order.subTitle1}}</span>
+                <span class="zui-col text-right" style="font-size: 10px;">（起{{order.FCost}}/加{{order.FNum}}积分）</span>
+            </div>
+            <div class="zui-row zui-row-center fz14">
+                <span class="timebox z-btn-red" style="margin-left: 0;">{{order.subTitle2}}</span>
+                <span v-if="order.subTitle2secondsum>0" class="starttime" v-show="mocktime=true"
+                      v-html="time(order.subTitle2secondsum)"></span>
+            </div>
+        </div>
+        <div class="paimaichujia_list" style="border-bottom: 1px solid #ccc;margin: 3px;"
+             v-for="(item,index) in memberlist">
+            <div class="item zui-row zui-row-center">
+                <div class="txbox"><img width="40" :src="item.FHanderImg | url" alt=""></div>
+                <div class="zui-col">
+                    <p class="fz14">{{item.FName}}</p>
+                    <b class="fz16 color-orange">{{item.FNum}}</b>
+                </div>
+                <div class="rbox">
+                    <img width="45" :src="item.isFirstUrl | url" alt=""/>
+                    <!-- <img width="45" src="../../image/lingxian.png" alt=""> -->
+                    <p class="fz14">{{item.FCreateTime}}</p>
+                </div>
+
+            </div>
+            <!-- <div class="item zui-row zui-row-center">
+                <div  class="txbox"><img width="40" src="../../image/tx01.jpg" alt=""></div>
+                <div class="zui-col">
+                    <p class="fz14">y***g</p>
+                    <b class="fz16 color-orange">500积分</b>
+                </div>
+                <div class="rbox">
+                    <img width="45" src="../../image/chuju.png" alt="">
+                    <p class="fz14">19-03-15 21:50:36</p>
+                </div>
+
+            </div>
+            <div class="item zui-row zui-row-center">
+                <div  class="txbox"><img width="40" src="../../image/tx01.jpg" alt=""></div>
+                <div class="zui-col">
+                    <p class="fz14">y***g</p>
+                    <b class="fz16 color-orange">500积分</b>
+                </div>
+                <div class="rbox">
+                    <img width="45" src="../../image/chuju.png" alt="">
+                    <p class="fz14">19-03-15 21:50:36</p>
+                </div>
+
+            </div> -->
+        </div>
+
+    </div>
+
+    <!-- 商品详情 底部 -->
+    <div class="zui-footer zui-row zui-row-center">
+        <div class="paimai_btn">
+            <i class="iconfont icon-kefu"></i>
+            <span class="fz16 color-blue" @click="lxkf()">联系客服>></span>
+        </div>
+        <!-- {{order.btnStatu}} -->
+        <div class="footer_btn zui-col bg-red color-white" v-if="order.FStatus==1" v-show="true" @click="justbuy()">
+            {{order.btnTitle}}
+        </div>
+        <div class="footer_btn zui-col color-white" style="background-color: #ccc;" v-if="order.FStatus!==1"
+             v-show="openbtn=true">{{order.btnTitle}}
+        </div>
+    </div>
+    <!-- 商品详情 底部 end -->
+
+    <!-- 客服弹出框 -->
+    <div class="zui-alert shop_alert" v-cloak v-if="kefushow">
+        <div class="zui-alert_box">
+            <div class="shop_close iconfont icon-del color-red" @click="kefushow = false"></div>
+            <div class="tip">
+                <div class="iconfont icon-kefu"></div>
+            </div>
+            <div class="title">咨询电话</div>
+            <div class="cont">联系方式：<a href="Tel:15867203999">15867203999</a></div>
+        </div>
+        <div class="zui-alert_bg"></div>
+    </div>
+    <!-- 客服弹出框 end -->
+
+    <div class="z-popup paimai_chujia_modal" v-if="addoneshow">
+        <div class="z-popup_modal popup-bottom zui-row zui-row-column">
+            <div class="zui-col chujia_content">
+                <div class="zui-list2 paimai_list">
+
+                    <div class="item">
+                        <div class="img">
+                            <img alt="">
+                        </div>
+                        <!--<div class="touxiang img" :style="getbgimg(order.FImageUrl)"></div>-->
+                        <div class="tmain">
+                            <p class="title"></p>
+                            <!-- <p>领先价：100积分</p> -->
+                            <div>
+                                <span class="tag1">{{order.FNum}}积分加一手</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="chujia_modal_footer" @click="chujiabtn(0)">
+                出个价
+            </div>
+        </div>
+        <div class="z-popup_bg" @click="chgj()"></div>
+    </div>
+
+    <!-- 立即兑换弹出框 -->
+    <div class="zui-alert duihan" v-cloak v-if="duihuanshow">
+        <div class="zui-alert_box jfdh_box" v-cloak v-if="set">
+            <div class="jf_duihuan">
+                <div class="jf_btn">
+                    <div class="shop_close jfonbtn iconfont icon-del color-white" @click="duihuanshow = false"></div>
+                </div>
+                <div class="wrat_main">
+                    商品地址
+                </div>
+                <div class="jf_img">
+                </div>
+                <div class="nav_text">
+                    <p>您还未填写收货地址!</p>
+                    <p>是否前往填写</p>
+                </div>
+                <div class="max_bottom">
+                    <div class="zui-alert_main duihan_alert_main" @click="dhcg">
+                        是
+                    </div>
+                    <div class="zui-alert_footer duihan_alert_footer" @click="duihuanshow = false">
+                        否
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="zui-alert_bg"></div>
+    </div>
+
+    <!-- 交保证金 -->
+    <div class="zui-alert baozhengjinalert" v-show="bzjshow" v-cloak>
+        <div class="zui-alert_box">
+            <div class="box">
+                <div class="close" @click="bzjshow=false"><img src="../../image/close.png" alt=""></div>
+                <div class="z-btn z-btn-bolck z-btn-noradius z-btn-s z-btn-red">{{bzjtext}}</div>
+                <div class="text1">若竞价未成功，保证金将在竞价结束 后1-15个工作日解冻至电子钱包！</div>
+
+                <div class="btnlist zui-row text-center">
+                    <div class="zui-col z-btn z-btn-red z-btn-s z-btn-radius50" @click="chujiabtn(1)">确认</div>
+                    <div class="zui-col z-btn z-btn-cancel z-btn-s z-btn-radius50" @click="bzjshow=false">取消</div>
+                </div>
+            </div>
+        </div>
+        <div class="zui-alert_bg"></div>
+    </div>
+
+    <!-- 充值保证金 -->
+    <div class="zui-alert baozhengjinalert" v-show="bzjczshow" v-cloak>
+        <div class="zui-alert_box">
+            <div class="box">
+                <div class="close" @click="bzjczshow=false"><img src="../../image/close.png" alt=""></div>
+
+                <div class="img text-center"><img width="80" src="../../image/bzj2.png" alt=""></div>
+                <div class="fz14">您的保证金不足，请立即充值！</div>
+
+                <div class="btnlist zui-row text-center">
+                    <div class="zui-col z-btn z-btn-red z-btn-s z-btn-radius50" @click="gochongzhi()">去充值</div>
+                    <div class="zui-col z-btn z-btn-cancel z-btn-s z-btn-radius50" @click="bzjczshow=false">取消</div>
+                </div>
+            </div>
+        </div>
+        <div class="zui-alert_bg"></div>
+    </div>
+
+</div>
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function () {
+        jw.sb.fixStatusBar(".zui-header");
+
+        //商品倒计时
+        setInterval(function () {
+            var starttime = $(".starttime");
+            var t1 = starttime.data("time");
+
+            var status = myapp.order.subTitle2secondsum;
+            // alert(new Date(status))
+            const end = Date.parse(new Date(status));
+            const now = Date.parse(new Date());
+            const msec = end - now;
+        }, 1000);
+
+        // 返回页面监听
+        api.addEventListener({
+            name: 'viewappear'
+        }, function (ret, err) {
+            try {
+            } catch (e) {
+
+            }
+        });
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                // Ftype: api.pageParam.Ftype, // 0： 茶商城 1：茶市
+                // FBusinessId: api.pageParam.FBusinessId, // 商品ID
+                // FPageType: api.pageParam.FPageType, // 页面来源 1，限时抢购 2、普通
+                // FBusinessId: api.pageParam.FBusinessId, // 商品ID
+                // FlashSaleId: api.pageParam.FlashSaleId, // 限时抢购ID
+                kefushow: false,
+
+                order: {},
+
+                addoneshow: false,//关闭弹窗
+                mocktime: false,//竞价时间
+                memberlist: [],//竞价人员
+                jpname: "",//当前时间
+                newbtn: false,//按钮状态
+                openbtn: false,//按钮隐藏
+                duihuanshow: false, //立即兑换
+                dhshow: false,//兑换成功
+                set: true,//兑换完成
+
+                bzjtext: "",
+                bzjshow: false, // 交保证金 弹出框显示隐藏
+                bzjczshow: false, // 保证金充值 弹出框显示隐藏
+            },
+            created: function () {
+
+                this.paimeilist();
+                if (this.ticker) { //这一段是防止进入页面出去后再进来计时器重复启动
+                    clearInterval(this.ticker);
+                }
+                this.getTime();
+                this.gxcj();
+                this.dzqw();
+                $(".shopdetails_banner").find(".pbimg").height(api.winWidth);
+            },
+            methods: {
+                time: function (time, flag) { //这个函数是每秒把时间重新计算下
+                    if (time >= 0) {
+                        var day = Math.floor(time / 86400)
+                        hour = Math.floor((time % 86400) / 3600)
+                        minutes = Math.floor((time % 3600) / 60)
+                        seconds = Math.floor(time % 60)
+                        if (flag == 1) {
+                            if (time > 86400) {
+                                if (hour < 10) {
+                                    hour = '0' + hour
+                                }
+                                if (minutes < 10) {
+                                    minutes = '0' + minutes
+                                }
+                                return day + '天' + hour + '时' + minutes + '分';
+                            } else {
+                                if (hour < 10) {
+                                    hour = '0' + hour
+                                }
+                                if (minutes < 10) {
+                                    minutes = '0' + minutes
+                                }
+                                return '即将开启<span class="timeclass">' + hour + '</span>:<span class="timeclass">' + minutes + '</span>';
+                            }
+                        } else {
+                            if (time > 86400) {
+                                if (hour < 10) {
+                                    hour = '0' + hour
+                                }
+                                if (minutes < 10) {
+                                    minutes = '0' + minutes
+                                }
+                                return day + '天' + hour + '时' + minutes + '分';
+                            } else {
+                                if (hour < 10) {
+                                    hour = '0' + hour
+                                }
+                                if (minutes < 10) {
+                                    minutes = '0' + minutes
+                                }
+                                return '<span class="timeclass">' + hour + '</span>:<span class="timeclass">' + minutes + '</span>' + '</span>:<span class="timeclass">' + minutes;
+                            }
+                        }
+                    }
+                },
+                paimeilist: function () {
+                    alert(1)
+                    var _this = this;
+                    //api42151 竞价详情
+                    jw.submit("api42151", {
+                            FId: api.pageParam.FId, //活动id
+                            FUserId: jw.data.get("userid") //登录id
+                        },
+                        function (data) {
+                            if (data.ds != undefined && data.ds != "" && data.ds[0].status == "000000") {
+                                _this.order = data.ds1[0];
+                            } else {
+                                jw.ts.toast(data.ds[0].msg);
+                            }
+                        });
+                    // jw.submit("app_商品详情new", {
+                    //     FId: api.pageParam.FId, //商品id
+                    //     FUserId: jw.data.get("userid"), //   用户id
+                    //     FType: _this.FPageType,
+                    // }, function (ret) {
+                    //     _this.initshow = true;
+                    //     if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                    //         _this.shopdetails = ret.ds1[0];
+                    //         if (_this.FPageType == 2) {
+                    //             // 是否已点赞
+                    //             _this.zan = ret.ds2[0].ifPraise;
+                    //         }
+
+                    //         _this.$nextTick(function () {
+                    //             imgclick();
+                    //         });
+
+
+                    //     } else {
+                    //         jw.ts.toast(ret.ds[0].msg);
+                    //     }
+                    // });
+                },
+                dzqw: function () {
+                    var _this = this;
+                    setTimeout(function () {
+                        // alert(_this.order.ifAddAddress);
+                        if (_this.order.ifAddAddress == 1) {
+                            this.duihuanshow = true //显示隐藏的兑换页面
+                        }
+                    }, 400);
+                },
+                //兑换详情页
+                dhcg: function () {
+                    this.set = false;
+                    var FShoppingCarIds = [];
+                    jw.openWin({
+                        name: "shoppingCar_pickGoods",
+                        url: "../shangcheng/shoppingCar_pickGoods.html",
+                        // pageParam: {
+                        //         FShoppingCarIds: FShoppingCarIds.join(),
+                        //         ly: "my_Shopping_Cart",
+                        //     }
+                    })
+                    // if(this.dhshow=true){
+                    //     jw.submit("api41880",{
+                    //         FId:this.duihuanbtn,//商品id
+                    //         FUserId:jw.data.get("userid")//登陆人id
+                    //     },function(datanum){
+                    //         if(datanum.ds != undefined &&datanum.ds != "" &&datanum.ds[0].status == "000000"){
+                    //             // jw.ts.toast(datanum.ds[0].msg);
+                    //             this.dhshow=true
+                    //         }else{
+                    //             jw.ts.toast(datanum.ds[0].msg);
+                    //         }
+                    //     })
+                    // }else{
+                    //     this.set=true
+                    // };
+                },
+                gxcj: function () {
+                    var _this = this;
+                    //api42275 更新出价
+                    jw.submit("api42275", {
+                        FId: api.pageParam.FId, //活动id
+                        FUserId: jw.data.get("userid") //登录id
+                    }, function (datares) {
+                        if (datares.ds != undefined && datares.ds != "" && datares.ds[0].status == "000000") {
+                            // jw.ts.toast(datares.ds[0].msg);
+                            _this.memberlist = datares.ds1;//参与竞价人员列表
+                            _this.jpname = datares.ds2[0];//当前时间
+                        } else {
+                            // _this.jpname=datares.ds1;
+                            jw.ts.toast(datares.ds[0].msg);
+                            _this.jpname = datares.ds2[0];
+                        }
+                    })
+                },
+                // 去充值
+                gochongzhi: function () {
+                    this.bzjczshow = false;
+                    jw.openWin({
+                        name: "my_wallet",
+                        url: "../myself/my_wallet.html"
+                    })
+                },
+                //加一手按钮
+                justbuy: function () {
+                    var _this = this;
+                    if (_this.addoneshow = false) {
+                    } else {
+                        _this.addoneshow = true;
+                        if (_this.addoneshow == "true") {
+                            this.chujiabtn(0);
+                        }
+                    }
+                },
+                // 加价
+                chujiabtn: function (ifFDeposit) {
+                    var _this = this;
+                    jw.submit("api42212", {
+                        FId: api.pageParam.FId,//活动id
+                        FUserId: jw.data.get("userid"),//登录id
+                        ifFDeposit: ifFDeposit// 是否冻结保证金0否1是
+                    }, function (datas) {
+                        _this.bzjshow = false;
+                        if (datas.ds != undefined && datas.ds.length > 0) {
+                            if (datas.ds[0].status == "000000") {
+                                jw.ts.toast(datas.ds[0].msg);
+                                _this.addoneshow = false;
+
+                                _this.gxcj();
+
+                            } else if (datas.ds[0].status == "666666") {
+                                _this.bzjshow = true;
+                                _this.bzjtext = datas.ds[0].msg;
+                            } else if (datas.ds[0].status == "888888") {
+                                _this.bzjczshow = true;
+
+                            } else {
+                                jw.ts.toast(datas.ds[0].msg);
+                                _this.addoneshow = false;
+
+                                _this.gxcj();
+                            }
+                        } else {
+
+                        }
+                    });
+                },
+                /* 分享 */
+                share: function () {
+                    //console.log(11111111111111);
+
+                    var _this = this;
+                    var url = "http://www.yunpuer.com/app_details/" + _this.Ftype + "-" + _this.FPageType + "-" + _this.FBusinessId + "-" + _this.FlashSaleId + ".html";
+                    jw.openFrame({
+                        name: 'share',
+                        url: '../share.html',
+                        pageParam: {
+                            FType: '0',
+                            Fid: _this.FBusinessId,
+                            path: url
+                        }
+                    })
+                },
+                chgj: function () {
+                    this.addoneshow = false;
+                },
+                //获取时间
+                getTime: function () {
+                    var _this = this;
+                    this.ticker = setTimeout(function () {
+                        _this.order.subTitle2secondsum = _this.order.subTitle2secondsum - 1;
+                    }, 1000);
+                },
+                //联系客服
+                lxkf: function () {
+                    window.location.href = 'tel:' + 15867203999;
+                },
+            }
+        })
+    }
+</script>
+</body>
+</html>

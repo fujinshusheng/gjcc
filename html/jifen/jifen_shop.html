@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-header zui-header-dark zui-row-center">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">积分商城</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="right: 90px;font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+        <div class="iconfont icon-gouwuche zui-header-icon zui-header-right" style="right: 45px;" onclick="jw.openWin({name:'my_Shopping_Cart',url:'../myself/my_Shopping_Cart.html'})"></div>
+        <div class="iconfont zui-header-icon icon-sousuo zui-header-right" onclick="jw.openWin({'name':'shop_seach','url':'shop_search.html'})"></div>
+    </div>
+    <!-- <div class="zui-row shop_nav3">
+        <div class="nav" :class="{'selected':navindex==1}" @click="navclick(1)">最新</div>
+        <div class="nav" :class="{'selected':navindex==2}" @click="navclick(2)">销量</div>
+        <div class="nav" :class="{'selected':navindex==4}" @click="navclick(4)">年份</div>
+        <div class="nav" :class="{'selected':navindex==3}" @click="navclick(3)">价格 <i class="iconfont icon-paixu"></i></div>
+        <div class="zui-col"></div>
+        <div class="nav" @click="shaixuan()">筛选</div>
+    </div> -->
+
+    <!--<div class="zui-row yearlist">-->
+        <!--<div class="yearbox" v-for="item in FYears" @click="fyearchose(item)" :class="{'active':item.FYear == FYear}">{{item.FYear}}</div>-->
+    <!--</div>-->
+
+    <div style="padding: 0 15px;" v-if="Keywords != ''"  v-cloak>搜索关键词：{{Keywords}} <i class="iconfont icon-del" @click="nokeywords()"></i></div>
+    <div class="zui-content">
+    </div>
+</div>
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function() {
+        jw.sb.fixStatusBar(".zui-header");
+
+        /* 打开列表 */
+        function openlist() {
+            var y = $(".zui-content").offset().top;
+            jw.openFrame({
+                name: "jifen_shop_list",
+                url: "jifen_shop_list.html",
+                rect: {
+                    x: 0,
+                    y: y,
+                    w: "auto",
+                    h: "auto"
+                },
+                pageParam: {
+                },
+            })
+        }
+        function setlist() {
+            setTimeout(function () {
+                var y = $(".zui-content").offset().top;
+                api.setFrameAttr({
+                    name: 'jifen_shop_list',
+                    rect: {
+                        x: 0,
+                        y: y,
+                        w: "auto",
+                        h: "auto"
+                    }
+                });
+            },100);
+        }
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                navindex:1, // 1:最新 2：销量 3：价格 4: 筛选
+                xianshilist:[], // 限时抢购列表
+                page_index: 1,
+                page_length: 20,
+                page_TotalCount: 1,
+                shoplist: [], //商品列表
+                Keywords: "", //搜索词
+                FPriceSort: 0, //价格 0升 1 降
+                FSalesSort: 0, //销量 0升 1 降
+                FNewSort: 0, //最新 0升 1 降
+                FYears: 0
+            },
+            created: function () {
+                openlist();
+                setlist();
+            },
+            watch:{
+                Keywords: function (newval, oldval) {
+                    setlist();
+                }
+            },
+            methods: {
+                init: function(){
+                    var _this = this;
+                    _this.getxianshilist();
+                    _this.getshoplist();
+                },
+                fyearchose: function(item){
+                    this.FYear = item.FYear;
+                    jw.data.jtset("shoppingyear_shaixuan",item.FYear);
+                },
+                // 排序选择
+                navclick: function (t) {
+                    this.navindex = t;
+                    jw.data.jtset("jifen_shop_list_nav",t);
+                    setlist();
+                },
+                shaixuan: function(){
+                    api.openDrawerPane({
+                        type: 'right'
+                    });
+                },
+                nokeywords: function () {
+                    this.Keywords = "";
+                    jw.data.jtset("keywords","");
+                },
+            }
+        });
+
+        jw.data.jtget("keywords",function (ret) {
+            myapp.Keywords = ret;
+            setlist();
+        });
+
+    }
+</script>
+</body>
+</html>

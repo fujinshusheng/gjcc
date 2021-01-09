@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>个人中心</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+
+
+</head>
+<body>
+
+
+<div class="zui-app grzxmain" v-cloak>
+    <div class="zui-header zui-header-dark zui-row-center">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" @click="back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">我的订单</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+        <!--<div class="iconfont zui-header-icon icon-sousuo zui-header-right"></div>-->
+    </div>
+    <div class="zui-row shop_nav zui-row-center grzx_warp"  style="padding: 0 15px;">
+        <div class="zui-col nav2 text-left btncolor" :class="{active:num==0}"  @click="num=0">商城</div>
+        <div class="zui-col nav2 text-left btncolor" :class="{active:num==1}" @click="num=1">竞价</div>
+        <div class="zui-col nav2 text-left btncolor" :class="{active:num==2}" @click="num=2">众筹</div>
+        <div class="zui-col nav2 text-left btncolor" :class="{active:num==3}" @click="num=3">兑换</div>
+        <div class="zui-col nav2 text-left btncolor" :class="{active:num==4}" @click="num=4">种树</div>
+        <i class="iconfont icon-down" @click="navindex=1"></i>
+    </div>
+    <div class="zui-row shop_nav2" v-show="navindex!=0">
+        <div class="zui-col nav fz12" :class="{'selected':navindex==1}" @click="navindex=1">待付款</div>
+        <div class="zui-col nav fz12" :class="{'selected':navindex==2}" @click="navindex=2">待发货</div>
+        <div class="zui-col nav fz12" :class="{'selected':navindex==3}" @click="navindex=3">待收货</div>
+        <div class="zui-col nav fz12" :class="{'selected':navindex==4}" @click="navindex=4">待提货</div>
+        <div class="zui-col nav fz12" :class="{'selected':navindex==5}" @click="navindex=5">待评价</div>
+    </div>
+    <div class="zui-content">
+        <div class="bal_main" v-show="num==0">
+            <div class="zui-card myordercard" v-for="item in listfifter(orderlist)">
+                <div class="zui-card-main" @click="btn_gengduo(item)">
+                    <div class="title zui-row zui-row-center">
+                        <!--未支付时显示选择框-->
+                        <label class="zui-radiobox" v-if="item.FOrderStatus == 0 && navindex == 1">
+                            <input type="checkbox" class="zui-radio">
+                            <i class="zui-checked"></i>
+                        </label>
+                        <div class="zui-col">
+                            {{item.FOrderType==2?"茶友集市":"茶品选购"}}
+                        </div>
+                        <span :class="ordertipcolor(item)">{{ordertip(item)}}</span>
+                    </div>
+
+                    <div class="zui-list">
+                        <div class="zui-item zui-row zui-row-center">
+                            <div class="productbox zui-row zui-row-center zui-row-stretch">
+                                <div class="touxiang" :style="getbgimg(item.FImg)"></div>
+                                <div class="zui-col zui-row">
+                                    <div class="zui-col">
+                                        <p class="title">{{item.FName}}</p>
+                                        <p class="color-orange">{{item.FTitleName}}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-right text">￥{{item.FPrice}}</p>
+                                        <p class="text-right text">X{{item.FBuyNum}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="zui-card-footer text-right">共{{item.FBuyNum}}件商品 合计：<span class="color-red">￥{{item.FTotal}}</span></div>
+
+
+                <div class="zui-card-footer text-right" v-if="item.BusinessOrTeaSet ==1">
+
+                    <!-- 未支付 底部按钮-->
+                    <template v-if="item.FOrderStatus == 0">
+                        <!-- <div class="z-btn z-btn-ms z-btn-inline" @click="payway(item)">付款</div> -->
+                        <div class="z-btn z-btn-ms z-btn-inline z-btn-cancel" @click="btn_order_cancel(item)">取消订单</div>
+                    </template>
+
+                    <!-- 已支付 底部按钮-->
+                    <template v-if="item.FOrderStatus == 1 && item.FIfCancel==true && item.FPickType<2">
+                        <div class="z-btn z-btn-ms z-btn-inline" @click="btn_tuikuan(item)">退款</div>
+                    </template>
+
+                    <!-- 退款中 底部按钮-->
+                    <template v-if="item.FOrderStatus == 2">
+                        <div class="z-btn z-btn-ms z-btn-inline z-btn-cancel" @click="btn_tuikuan_cancel(item)">取消退款</div>
+                    </template>
+
+                    <!-- 已退款 底部按钮-->
+                    <template v-if="item.FOrderStatus == 3">
+
+                    </template>
+
+                    <!-- 已收货 底部按钮-->
+                    <template v-if="item.FOrderStatus == 5 && item.FPickType == 1 && item.FIsAssess == 0">
+                        <div class="z-btn z-btn-ms z-btn-inline" @click="btn_commit(item)">去评价</div>
+                    </template>
+
+                    <!-- 已提货 底部按钮-->
+                    <template v-if="item.FOrderStatus == 4 && item.FPickType == 0 && item.FIsAssess == 0">
+                        <div class="z-btn z-btn-ms z-btn-inline" @click="btn_commit(item)">去评价</div>
+                    </template>
+
+                    <!-- 已发货 底部按钮-->
+                    <template v-if="item.FOrderStatus == 4 && item.FPickType == 1">
+                        <div class="z-btn z-btn-ms z-btn-inline" @click="look_wuliu(item)">查看物流</div>
+                        <div class="z-btn z-btn-ms z-btn-inline" @click="btn_shouhuo(item)">确认收货</div>
+                    </template>
+
+                    <!-- 已发货 底部按钮-->
+                    <template v-if="item.FOrderStatus == 6">
+                        <div class="z-btn z-btn-ms z-btn-inline"  @click="btn_del(item)" >删除订单</div>
+                    </template>
+
+
+                    <!-- 快递提货 底部按钮-->
+                    <!-- <template v-if="item.FOrderStatus == 1 && item.FPickType == 0">
+                        <div class="z-btn z-btn-ms z-btn-inline z-btn-red" @click="btn_tihuo(item)">确认提货</div>
+                    </template> -->
+
+                    <!-- <div class="z-btn z-btn-ms z-btn-inline z-btn-red" @click="btn_kiapiao(item)">开票</div> -->
+                    <div class="z-btn z-btn-ms z-btn-inline" v-if="item.FIfInvoice==1" @click="btn_kiapiao(item)">开票</div>
+
+                    <div class="z-btn z-btn-ms z-btn-inline z-btn-grey__plane" @click="btn_gengduo(item)">更多</div>
+                </div>
+
+            </div>
+        </div>
+        <div class="bal_main" v-show="num==1" v-cloak>
+            <div class="zui-card myordercard" v-for="item in auctlist">
+
+                <div class="zui-card-main" @click="paimtest(item)" :id="item.RowNumber">
+
+                    <div class="zui-list warp_main">
+                        <div class="zui-item zui-row zui-row-center jin_box">
+                            <div class="productbox zui-row zui-row-center zui-row-stretch">
+                                 <!-- <div class="touxiang" :style="getbgimg(item.FImg)"></div> -->
+                               <div class="touxiang" :id="item.FIntegralAuctionId" :src="item.FImg | url"></div>
+                                <div class="zui-col zui-row csjd">
+                                    <div class="zui-col">
+                                        <p class="title">{{item.FTitle}}</p>
+                                        <p class="color-red">{{item.statusname}}</p>
+                                        <p class="text">{{item.FCreateTime}}</p>
+                                        <p class="text">{{item.FNum}}积分</p>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="zui-card-footer text-right">
+                    <!-- <div v-for="(items,index) in numfils" :class="items.divclass" v-show="items.id==0&&item.btnstatu!=null" @click="dingdaxqshowp(item)">{{items.divhtml}}</div>
+                    <div v-for="(items,index) in numfils" :class="items.divclass" v-show="items.id==1&&item.btnstatu!=null" @click="dingdaxqddzt(item)">{{items.divhtml}}</div> -->
+                </div>
+            </div>
+        </div>
+        <div class="bal_main" v-show="num==2" v-cloak>
+            <div class="zui-card myordercard" v-for="item in listfifter(macklist)">
+
+                <div class="zui-card-main" @click="details(item)" :id="item.FActivityMemberID">
+                    <div class="title zui-row zui-row-center">
+                        <!-- &lt;!&ndash;未支付时显示选择框&ndash;&gt; v-if="item.FOrderStatus == 0 &&num == 2"-->
+                        <label class="zui-radiobox" v-if="item.FOrderStatus == 0 && num == 2">
+                            <input type="checkbox" class="zui-radio">
+                            <i class="zui-checked"></i>
+                        </label>
+                        <div class="zui-col">
+                            {{item.FOrderType==2?"茶友集市":"茶品选购"}}
+                        </div>
+                        <span :class="">{{item.statusname}}</span>
+                    </div>
+
+                    <div class="zui-list warp_main">
+                        <div class="zui-item zui-row zui-row-center jin_box">
+                            <div class="productbox zui-row zui-row-center zui-row-stretch">
+                                 <!-- <div class="touxiang" :style="getbgimg(item.FImg)"></div> -->
+                               <div class="touxiang" :src="item.FImg"></div>
+                                <div class="zui-col zui-row csjd">
+                                    <div class="zui-col">
+                                        <p class="title">{{item.FTitle}}</p>
+                                        <p class="color-orange">{{item.FTitleName}}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-right text">￥{{item.FPrice}}</p>
+                                        <p class="text-right text">X{{item.FNum}}</p>
+                                    </div>
+                                    <div class="jdt_main">
+                                        <div class="jingdutiao">
+                                            <div class="jindu" style="width: 60%;"></div>
+                                        </div>
+                                        <div class="zui-row zui-row-center">
+                                            <span class="">{{item.FPercent}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="zui-card-footer text-right">共{{item.FNum}}件商品 合计：<span class="color-red">￥{{item.FPrice}}</span></div>
+                <div class="zui-card-footer text-right">
+                    <div v-for="(items,index) in btnlist" :class="items.divclass" v-show="items.id== item.btnstatu" @click="details(item)">{{items.divhtml}}</div>
+                </div>
+            </div>
+        </div>
+        <div class="bal_main" v-show="num==3">
+            <div class="zui-card myordercard" v-for="item in listfifter(duihuan)">
+                <div class="zui-card-main" @click="dingdaxq(item)" :id="item.FId">
+                    <div class="title zui-row zui-row-center">
+                        <!-- &lt;!&ndash;未支付时显示选择框&ndash;&gt; v-if="item.FOrderStatus == 0 &&num == 2"-->
+                        <label class="zui-radiobox" v-if="item.FOrderStatus == 0 && num == 2">
+                            <input type="checkbox" class="zui-radio">
+                            <i class="zui-checked"></i>
+                        </label>
+                        <div class="zui-col">
+                            {{item.FOrderType==2?"茶友集市":"茶品选购"}}
+                        </div>
+                        <span :class="">{{item.statusname}}</span>
+                    </div>
+
+                    <div class="zui-list warp_main">
+                        <div class="zui-item zui-row zui-row-center jin_box">
+                            <div class="productbox zui-row zui-row-center zui-row-stretch">
+                                 <!-- <div class="touxiang" :style="getbgimg(item.FImg)"></div> -->
+                               <div class="touxiang" :style="getbgimg(item.FImg)"></div>
+                                <div class="zui-col zui-row csjd">
+                                    <div class="zui-col">
+                                        <p class="title">{{item.FTitle}}</p>
+                                        <p class="color-orange">{{item.FTitleName}}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-right text">{{item.OnePay}}</p>
+                                        <p class="text-right text">X{{item.FNum}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="zui-card-footer text-right">共{{item.FNum}}件商品 合计：<span class="color-red">{{item.TotalPay}}</span></div>
+                <div class="zui-card-footer text-right">
+                    <!-- item.btnstatu -->
+                    <div v-for="(items,index) in numfils" :class="items.divclass" v-show="items.id==0&&item.btnstatu!=null" @click="dingdaxqshowp(item)">{{items.divhtml}}</div>
+                    <div v-for="(items,index) in numfils" :class="items.divclass" v-show="items.id==2&&item.btnstatu!=null" @click="dingdaxqddzt(item)">{{items.divhtml}}</div>
+                </div>
+            </div>
+
+        </div>
+        <div class="bal_main" v-show="num==4">
+        </div>
+<!--
+
+        &lt;!&ndash; 已发货 &ndash;&gt;
+        <div class="zui-card myordercard">
+            <div class="zui-card-main">
+                <div class="title">茶企名字/茶友转卖 <span class="fr color-red">已发货</span></div>
+
+                <div class="zui-list">
+                    <div class="zui-item zui-row zui-row-center">
+                        <div class="productbox zui-row zui-row-center zui-row-stretch">
+                            <div class="touxiang" style="background-image: url(../../image/order01.jpg)"></div>
+                            <div class="zui-col zui-row zui-row-column">
+                                <div class="title">精选古树熟茶老茶头100g吉普号</div>
+                                <div class="zui-col"></div>
+                                <p class="text-right text">X1</p>
+                                <p class="text-right text">价格：￥498</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="zui-card-footer text-right">共1一件商品 合计：<span class="color-red">￥498</span></div>
+            <div class="zui-card-footer text-right">
+                <div class="z-btn z-btn-ms z-btn-inline z-btn-grey__plane">更多</div>
+                <div class="z-btn z-btn-ms z-btn-inline">查看物流</div>
+                <div class="z-btn z-btn-ms z-btn-inline z-btn-red">确认收货</div>
+            </div>
+        </div>
+
+        &lt;!&ndash; 代付款 &ndash;&gt;
+        <div class="zui-card myordercard">
+            <div class="zui-card-main">
+                <div class="title zui-row zui-row-center">
+                    <label class="zui-radiobox">
+                        <input type="checkbox" class="zui-radio">
+                        <i class="zui-checked"></i>
+                    </label>
+                    茶企名字/茶友转卖 <span class="fr color-orange">等待卖家付款</span>
+                </div>
+
+                <div class="zui-list">
+                    <div class="zui-item zui-row zui-row-center">
+                        <div class="productbox zui-row zui-row-center zui-row-stretch">
+                            <div class="touxiang" style="background-image: url(../../image/order01.jpg)"></div>
+                            <div class="zui-col zui-row zui-row-column">
+                                <div class="title">精选古树熟茶老茶头100g吉普号</div>
+                                <div class="zui-col"></div>
+                                <p class="text-right text">X1</p>
+                                <p class="text-right text">价格：￥498</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="zui-card-footer text-right">共1一件商品 合计：<span class="color-red">￥498</span></div>
+            <div class="zui-card-footer text-right">
+                <div class="z-btn z-btn-ms z-btn-inline z-btn-grey__plane">更多</div>
+                <div class="z-btn z-btn-ms z-btn-inline z-btn-red">付款</div>
+            </div>
+        </div>
+
+        &lt;!&ndash; 转卖中 &ndash;&gt;
+        <div class="zui-card myordercard">
+            <div class="zui-card-main">
+                <div class="title">茶企名字/茶友转卖 <span class="fr color-orange">转卖中</span></div>
+
+                <div class="zui-list">
+                    <div class="zui-item zui-row zui-row-center">
+                        <div class="productbox zui-row zui-row-center zui-row-stretch">
+                            <div class="touxiang" style="background-image: url(../../image/order01.jpg)"></div>
+                            <div class="zui-col zui-row zui-row-column">
+                                <div class="title">精选古树熟茶老茶头100g吉普号</div>
+                                <div class="zui-col"></div>
+                                <p class="text-right text">X1</p>
+                                <p class="text-right text">价格：￥498</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="zui-card-footer text-right">共1一件商品 合计：<span class="color-red">￥498</span></div>
+            <div class="zui-card-footer text-right">
+                <div class="z-btn z-btn-ms z-btn-inline z-btn-grey__plane">更多</div>
+                <div class="z-btn z-btn-ms z-btn-inline">取消转卖</div>
+            </div>
+        </div>
+
+        &lt;!&ndash; 转卖成功 &ndash;&gt;
+        <div class="zui-card myordercard">
+            <div class="zui-card-main">
+                <div class="title">茶企名字/茶友转卖 <span class="fr color-green">转卖成功</span></div>
+
+                <div class="zui-list">
+                    <div class="zui-item zui-row zui-row-center">
+                        <div class="productbox zui-row zui-row-center zui-row-stretch">
+                            <div class="touxiang" style="background-image: url(../../image/order01.jpg)"></div>
+                            <div class="zui-col zui-row zui-row-column">
+                                <div class="title">精选古树熟茶老茶头100g吉普号</div>
+                                <div class="zui-col"></div>
+                                <p class="text-right text">X1</p>
+                                <p class="text-right text">价格：￥498</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="zui-card-footer text-right">共1一件商品 合计：<span class="color-red">￥498</span></div>
+        </div>
+
+        &lt;!&ndash; 转卖已取消 &ndash;&gt;
+        <div class="zui-card myordercard">
+            <div class="zui-card-main">
+                <div class="title">茶企名字/茶友转卖 <span class="fr color-green">转卖已取消</span></div>
+
+                <div class="zui-list">
+                    <div class="zui-item zui-row zui-row-center">
+                        <div class="productbox zui-row zui-row-center zui-row-stretch">
+                            <div class="touxiang" style="background-image: url(../../image/order01.jpg)"></div>
+                            <div class="zui-col zui-row zui-row-column">
+                                <div class="title">精选古树熟茶老茶头100g吉普号</div>
+                                <div class="zui-col"></div>
+                                <p class="text-right text">X1</p>
+                                <p class="text-right text">价格：￥498</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="zui-card-footer text-right">共1一件商品 合计：<span class="color-red">￥498</span></div>
+            <div class="zui-card-footer text-right">
+                <div class="z-btn z-btn-ms z-btn-inline z-btn-grey__plane">更多</div>
+            </div>
+        </div>
+
+        &lt;!&ndash; 退货申请中 &ndash;&gt;
+        <div class="zui-card myordercard">
+            <div class="zui-card-main">
+                <div class="title">茶企名字/茶友转卖 <span class="fr color-red">退货申请中</span></div>
+
+                <div class="zui-list">
+                    <div class="zui-item zui-row zui-row-center">
+                        <div class="productbox zui-row zui-row-center zui-row-stretch">
+                            <div class="touxiang" style="background-image: url(../../image/order01.jpg)"></div>
+                            <div class="zui-col zui-row zui-row-column">
+                                <div class="title">精选古树熟茶老茶头100g吉普号</div>
+                                <div class="zui-col"></div>
+                                <p class="text-right text">X1</p>
+                                <p class="text-right text">价格：￥498</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="zui-card-footer text-right">共1一件商品 合计：<span class="color-red">￥498</span></div>
+            <div class="zui-card-footer text-right">
+                <div class="z-btn z-btn-ms z-btn-inline z-btn-grey__plane">更多</div>
+                <div class="z-btn z-btn-ms z-btn-inline z-btn-red">取消退货</div>
+            </div>
+        </div>
+
+        &lt;!&ndash; 退货成功 &ndash;&gt;
+        <div class="zui-card myordercard">
+            <div class="zui-card-main">
+                <div class="title">茶企名字/茶友转卖 <span class="fr color-green">退货成功</span></div>
+
+                <div class="zui-list">
+                    <div class="zui-item zui-row zui-row-center">
+                        <div class="productbox zui-row zui-row-center zui-row-stretch">
+                            <div class="touxiang" style="background-image: url(../../image/order01.jpg)"></div>
+                            <div class="zui-col zui-row zui-row-column">
+                                <div class="title">精选古树熟茶老茶头100g吉普号</div>
+                                <div class="zui-col"></div>
+                                <p class="text-right text">X1</p>
+                                <p class="text-right text">价格：￥498</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="zui-card-footer text-right">共1一件商品 合计：<span class="color-red">￥498</span></div>
+            <div class="zui-card-footer text-right">
+                <div class="z-btn z-btn-ms z-btn-inline z-btn-grey__plane">更多</div>
+            </div>
+        </div>
+
+        &lt;!&ndash; 已赠送 &ndash;&gt;
+        <div class="zui-card myordercard">
+            <div class="zui-card-main">
+                <div class="title">茶企名字/茶友转卖 <span class="fr color-red">已赠送</span></div>
+
+                <div class="zui-list">
+                    <div class="zui-item zui-row zui-row-center">
+                        <div class="productbox zui-row zui-row-center zui-row-stretch">
+                            <div class="touxiang" style="background-image: url(../../image/order01.jpg)"></div>
+                            <div class="zui-col zui-row zui-row-column">
+                                <div class="title">精选古树熟茶老茶头100g吉普号</div>
+                                <div class="zui-col"></div>
+                                <p class="text-right text">X1</p>
+                                <p class="text-right text">价格：￥498</p>
+                                <p class="text-right text">手续费：¥20</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="zui-card-footer text-right">共1一件商品 合计：<span class="color-red">￥498</span></div>
+            <div class="zui-card-footer text-right">
+                <div class="z-btn z-btn-ms z-btn-inline z-btn-grey__plane">更多</div>
+            </div>
+        </div>
+-->
+
+    </div>
+
+
+    <!-- 输入密码弹出框 -->
+    <div class="zui-alert shop_alert" v-cloak v-show="payshow">
+        <div class="zui-alert_box">
+            <div class="shop_close iconfont icon-del color-red" @click="payshow=false"></div>
+            <div class="tip">
+                <img src="../../image/money01.png" alt="">
+            </div>
+            <div class="title">请输入支付密码</div>
+            <div class="cont" style="padding: 15px;">
+                <b style="font-size: 45px;">￥{{choseprice}}</b>
+                <div class="clearfix fz14">
+                    <span onclick="jw.openWin({name:'setting_paypassword',url:'../myself/setting_paypassword.html'})" class="fl">设置密码</span>
+                    <span onclick="jw.openWin({name:'setting_newpaypassword',url:'../myself/setting_newpaypassword.html'})" class="fr color-red">忘记密码？</span>
+                </div>
+                <div id="mimabox"></div>
+            </div>
+        </div>
+        <div class="zui-alert_bg"></div>
+    </div>
+
+</div>
+
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../res/weui/jquery-weui.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function() {
+        jw.sb.fixStatusBar(".zui-header");
+
+
+        api.addEventListener({
+            name: 'keyback'
+        }, function(ret, err) {
+            myapp.back();
+        });
+
+        function init() {
+
+            setTimeout(function () {
+                $("#mimabox").mimakeywords({
+                    onend: function (v,p) {
+                        myapp.payshow = false;
+                        p.close();
+                        myapp.orderpay(v);
+                    }
+                });
+            },1000);
+
+        }
+
+
+        jw.data.jtget("myorderupdata",function (ret) {
+            myapp.getorderlist();
+        });
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                navindex: 0, // 选项切换
+                orderlist: [],
+                macklist:[], //众筹列表
+                btnlist:[],//按钮状态
+                duihuan:[],//兑换列表
+                numfils:[],//按钮状态
+                auctlist:[],//竞价列表
+                choseprice: "", // 选择付款的价格
+                FBusinessOrderId: "", // 选择的商品ID
+                payshow: false, // 支付密码显示
+                listfore:true,//显示隐藏订单切换
+                num:0, //选项卡
+                page_index: 1,//当前分页
+                dqfy_index:1,//分页
+                paimindex:0,//竞价分页
+                btnshow:false,//订单按钮
+                index:1,//设置变量
+
+            },
+            created: function () {
+                var _this = this;
+                _this.getorderlist();
+                // 众筹 订单列表
+                _this.getmacklist();
+                // 积分商城列表
+                _this.papgduihuan();
+                _this.initnum();
+                // 竞价 订单列表
+                _this.getauction();
+                // btnvshow();
+                // 输入支付密码
+                init();
+            },
+            methods: {
+                //当前分页
+                initnum:function(){
+                    var _this = this;
+                    _this.getnumlist();
+                    _this.posumlist();
+                    _this.auctionlist();
+
+                },
+                getnumlist:function(ftype){
+                    var _this = this;
+                    var l = _this.page_index;
+                    if (ftype == 1) {
+                        _this.page_index = 1;
+                    } else {
+                        l = parseInt(_this.page_index) + 1;
+
+                        if (l > _this.page_TotalCount) {
+                            return false;
+                        } else {
+                            _this.page_index = l;
+                        }
+                    }
+                },
+                posumlist:function(qtype){
+                    var _this=this;
+                    var lisl=_this.dqfy_index;
+                    if (qtype == 1) {
+                        _this.dqfy_index = 1;
+                    } else {
+                        lisl = parseInt(_this.dqfy_index) + 1;
+
+                        if (lisl > _this.page_TotalCount) {
+                            return false;
+                        } else {
+                            _this.dqfy_index = lisl;
+                        }
+                    }
+                },
+                auctionlist:function(mtype){
+                    var _this = this;
+                    var l = _this.paimindex;
+                    if (mtype == 1) {
+                        _this.paimindex = 1;
+                    } else {
+                        l = parseInt(_this.paimindex) + 1;
+
+                        if (l > _this.page_TotalCount) {
+                            return false;
+                        } else {
+                            _this.paimindex = l;
+                        }
+                    }
+                },
+                //判断按钮的显示隐藏
+                // btnvshow:function(){
+                //     if(this.btnlist.btnstatu.lenght==0){
+                //         this.btnlist.btnstatu=true;
+                //     }else{
+                //         this.btnlist.btnstatu=false;
+                //     }
+                // },
+                //当前分页
+                back: function(){
+                    if (api.pageParam.ly != undefined && api.pageParam.ly != "") {
+                        api.closeToWin({
+                            name: api.pageParam.ly,
+                        });
+                    } else {
+                        api.closeWin();
+                    }
+                },
+                // 列表筛选
+                listfifter: function(list){
+                    var _this = this;
+                    return list.filter(function (item) {
+                        switch (_this.navindex){
+                            //全部
+                            case 0: return item
+                            //待付款
+                            case 1: return item.FOrderStatus == 0
+                            //待发货  我要提货
+                            case 2: return item.FOrderStatus == 1&&item.FPickType==0
+                            // 我要退货
+                            case 3: return item.FOrderStatus == 4&&item.FPickType==0
+                            //待收货
+                            case 3: return item.FOrderStatus == 4&&item.FPickType==1
+                            //待提货
+                            case 4: return item.FOrderStatus == 1&&item.FPickType==0
+                            //待评价
+                            case 5: return item.FOrderStatus == 5 || (item.FOrderStatus == 4&&item.FPickType==0)
+                        }
+                    })
+                },
+                /* 显示订单状态文字 */
+                ordertip: function(item){
+                    switch (item.FOrderStatus) {
+                        case 0: return "未付款"
+                        case 1: return "买家已付款"
+                        case 2: return "申请退款中"
+                        case 3: return "退款成功"
+                        case 4:
+                            switch (item.FPickType){
+                                case 0: return "已提货"
+                                case 1: return "卖家已发货"
+                                case 2: return "已转到茶仓"
+                            }
+                        case 5: return "买家已收货"
+                        case 6: return "交易取消"
+                    }
+                },
+                /* 显示订单状态文字 */
+                ordertipcolor: function(item){
+                    switch (item.FOrderStatus) {
+                        case 0: return "color-orange"
+                        case 1: return "color-green"
+                        case 2: return "color-red"
+                        case 3: return "color-orange"
+                        case 4: return "color-green"
+                        case 5: return "color-green"
+                        case 6: return "color-gray9"
+                    }
+                },
+                // 获取订单
+                getorderlist: function () {
+                    var _this = this;
+                    jw.submit("app_我的订单",{
+                        FUserId: jw.data.get("userid"), //   用户id
+                    },function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            _this.orderlist = ret.ds1;
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                },
+                //众筹页
+                getmacklist:function(){
+                    var _this = this;
+                    //api42064 众筹 订单列表
+                    jw.submit("api42064",{
+                        FUserId: jw.data.get("userid"), //   用户id
+                        page:_this.page_index,//当前分页
+                    },function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            _this.macklist = ret.ds2;
+                            _this.btnlist=ret.ds1;
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                },
+                // 积分商城列表
+                papgduihuan:function(){
+                    var _this = this;
+                    jw.submit("api41881",{
+                        FUserId:jw.data.get("userid"),
+                        page:_this.dqfy_index,//当前分页
+                    },function(duidata){
+                        if(duidata.ds != undefined && duidata.ds != "" && duidata.ds[0].status == "000000"){
+                           _this.duihuan=duidata.ds2;
+                           _this.numfils=duidata.ds1;
+                        }else{
+                            jw.ts.toast(duidata.ds[0].msg);
+                        }
+                    })
+                },
+                //竞价页
+                getauction:function(){
+                    var _this = this;
+                    //api42695 竞价 订单列表
+                    jw.submit("api42695",{
+                        FUserId:jw.data.get("userid"),
+                        page:_this.paimindex,//当前分页
+                    },function(paimai){
+                        if(paimai.ds != undefined && paimai.ds != "" && paimai.ds[0].status == "000000"){
+                        //    _this.duihuan=duidata.ds2;
+                        //    _this.numfils=duidata.ds1;
+                        // alert(JSON.stringify(paimai));
+                        _this.auctlist=paimai.ds1;
+                        }else{
+                            jw.ts.toast(paimai.ds[0].msg);
+                        }
+                    })
+                },
+                // 开票
+                btn_kiapiao: function(item){
+                    var _this = this;
+
+                    jw.openWin({
+                        name: "my_kaipiao",
+                        url: "my_kaipiao.html",
+                        pageParam: {
+                            BId: item.FBusinessOrderId,
+                            FType:1
+                        }
+                    })
+
+                },
+                // 订单详情 支付尾款  //兑换详情
+                details: function (item) {
+                    jw.openWin({
+                        name: "order_details",
+                        url: "my_order_details.html",
+                        pageParam: {
+                            FBusinessOrderId: item.FBusinessOrderId,
+                            FActivityMemberID:item.FActivityMemberID,
+                            btnstatu:item.btnstatu,
+                        }
+                    })
+                },
+                //商城 详情
+                btn_gengduo:function(item){
+                    jw.openWin({
+                        name: "order_detailscopy",
+                        url: "my_order_detailscopy.html",
+                        pageParam: {
+                            FBusinessOrderId: item.FBusinessOrderId,
+                            FActivityMemberID:item.FActivityMemberID,
+                        }
+                    })
+                },
+                //兑换已支付订单
+                dingdaxq:function(item){
+                    var _this=this;
+                    jw.openWin({
+                        name:'duihuanxq',
+                        url: "duihuanxq.html",
+                        pageParam: {
+                            btnstatu:item.btnstatu,
+                            FId:item.FId, //订单id
+                            index:_this.index //传入变量
+                        }
+                    })
+                },
+                //竞价详情页面 paimaidet
+                paimtest:function(item){
+                    var _this=this;
+                    jw.openWin({
+                        name:'paimaidet',
+                        url: "paimaidet.html",
+                        pageParam: {
+                            FId:item.FId, //订单id
+                        }
+                    })
+                },
+                // dingdaxqddqx:function(item){
+                // },
+                //点击支付
+                dingdaxqddzt:function(item){
+                    // alert(JSON.stringify())
+                    jw.openWin({
+                        name:'duihuanxq',
+                        url: "duihuanxq.html",
+                        pageParam: {
+                            btnstatu:item.btnstatu,
+                            FId:item.FId, //订单id
+                            FPrice:item.FPrice,//价格
+                        }
+                    })
+                },
+                //退款按钮  点击取消订单
+                dingdaxqshowp:function(item){
+                    // var _this=this;
+                    jw.submit("api41933",{
+                        FId:item.FId, //列表id
+                        FUserId:jw.data.get("userid"),//登录id
+                    },function(ret){
+                        if(ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000"){
+                            jw.ts.toast(ret.ds[0].msg);
+                        }else{
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                    //申请退款
+                    // if(item.beforeAsk==1){
+                    //     jw.ts.confirm({
+                    //         msg: item.asktitle,
+                    //     }, function (index) {
+                    //         if(index==1){
+                    //             jw.submit("api42038",{
+                    //                 FId:item.FId, //列表id
+                    //                 FUserId:jw.data.get("userid"),//登录id
+
+                    //             },function(resdata){
+                    //                 if(resdata.ds != undefined &&resdata.ds != "" &&resdata.ds[0].status == "000000"){
+                    //                     jw.ts.toast(resdata.ds[0].msg);
+                    //                 }else{
+                    //                     jw.ts.toast(resdata.ds[0].msg);
+                    //                 }
+                    //             })
+                    //         }else{
+                    //             jw.submit("api42039",{
+                    //                 FId:item.FId, //列表id
+                    //                 FUserId:jw.data.get("userid"),//登录id
+                    //             },function(datas){
+                    //                 jw.ts.toast(datas.ds[0].msg);
+                    //             })
+                    //         }
+                    //     });
+                    // }
+                },
+                // shenqingqx:function(){
+                //     //api42038 申请退款
+                //     jw.submit("api42038",{},function(){
+                //     })
+                // },
+                // 付款
+                payway: function (item) {
+                    var _this = this;
+                    _this.payshow = true;
+                    _this.choseprice = item.FTotal;
+                    _this.FBusinessOrderId = item.FBusinessOrderId;
+                },
+                // 订单支付
+                orderpay: function (password) {
+                    var _this = this;
+                    jw.submit("app_余额支付",{
+                        FBusinessOrderId:  _this.FBusinessOrderId,  //商品id
+                        FUserId:  jw.data.get("userid"),  //用户ID
+                        PayPassword: password, // 支付密码
+                        Price: _this.choseprice, // 支付价格
+                    },function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            jw.ts.toast(ret.ds[0].msg);
+                            _this.getorderlist();
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                },
+                /* app申请退款 */
+                btn_tuikuan: function (item) {
+                    var _this = this;
+                    // jw.ts.confirm({msg:"是否确定申请退款？"},function (index) {
+                    //     if (index == 1) {
+                    //         jw.submit("app_申请退款",{
+                    //             FBusinessOrderId: item.FBusinessOrderId, // 订单id
+                    //         },function (ret) {
+                    //             if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                    //                 jw.ts.toast(ret.ds[0].msg);
+                    //                 _this.getorderlist();
+                    //             } else {
+                    //                 jw.ts.toast(ret.ds[0].msg);
+                    //             }
+                    //         });
+                    //     }
+                    // })
+                    jw.openWin({
+                        name: "my_order_tuikuan",
+                        url: "my_order_tuikuan.html",
+                        pageParam: {
+                            FBusinessOrderId: item.FBusinessOrderId
+                        }
+                    });
+                },
+                /* app_取消退款 */
+                btn_tuikuan_cancel: function (item) {
+                    var _this = this;
+                    jw.ts.confirm({msg:"是否确定取消退款？"},function (index) {
+                        if (index == 1) {
+                            jw.submit("app_取消退款",{
+                                FBusinessOrderId: item.FBusinessOrderId // 订单id
+                            },function (ret) {
+                                if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                                    jw.ts.toast(ret.ds[0].msg);
+                                    _this.getorderlist();
+                                } else {
+                                    jw.ts.toast(ret.ds[0].msg);
+                                }
+                            });
+                        }
+                    })
+                },
+                /* app_取消订单 */
+                btn_order_cancel: function (item) {
+                    var _this = this;
+                    jw.ts.confirm({msg:"确定取消订单？"},function (index) {
+                        if (index == 1) {
+                            jw.submit("app_取消订单",{
+                                FBusinessOrderId: item.FBusinessOrderId, // 订单id
+                                FOrderType:item.FOrderType,//订单来源
+                                FBuyNum:item.FBuyNum,//数量
+                                FBusinessId:item.FBusinessId,//商品id
+                                FId:item.FOrderSource,//来源id
+                            },function (ret) {
+                                if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                                    jw.ts.toast(ret.ds[0].msg);
+                                    _this.getorderlist();
+                                } else {
+                                    jw.ts.toast(ret.ds[0].msg);
+                                }
+                            });
+                        }
+                    })
+                },
+                /* app_取消订单 */
+                btn_del: function(item){
+                    var _this = this;
+                    jw.ts.confirm({msg:"是否确认删除？"},function (index) {
+                        if (index == 1) {
+                            jw.submit("app_删除订单",{
+                                FBusinessOrderId: item.FBusinessOrderId, // 订单id
+                            },function (ret) {
+                                if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                                    jw.ts.toast(ret.ds[0].msg);
+                                    _this.getorderlist();
+                                } else {
+                                    jw.ts.toast(ret.ds[0].msg);
+                                }
+                            });
+                        }
+                    })
+                },
+                /* app_确认提货 */
+                btn_tihuo: function (item) {
+                    var _this = this;
+                    jw.ts.confirm({msg:"是否确认提货？"},function (index) {
+                        if (index == 1) {
+                            jw.submit("app_确认提货",{
+                                FBusinessOrderId: item.FBusinessOrderId, // 订单id
+                                FMemberType: 0
+                            },function (ret) {
+                                if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                                    jw.ts.toast(ret.ds[0].msg);
+                                    _this.getorderlist();
+                                } else {
+                                    jw.ts.toast(ret.ds[0].msg);
+                                }
+                            });
+                        }
+                    })
+                },
+                /* app_确认收货 */
+                btn_shouhuo: function (item) {
+                    var _this = this;
+                    jw.ts.confirm({msg:"是否确认收货？"},function (index) {
+                        if (index == 1) {
+                            jw.submit("app_确认收货",{
+                                FBusinessOrderId: item.FBusinessOrderId, // 订单id
+                            },function (ret) {
+                                if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                                    jw.ts.toast(ret.ds[0].msg);
+                                    _this.getorderlist();
+                                } else {
+                                    jw.ts.toast(ret.ds[0].msg);
+                                }
+                            });
+                        }
+                    })
+                },
+                /* 查看物流*/
+                look_wuliu: function (item) {
+                    jw.openWin({
+                        name: "look_wuliu",
+                        url: "../shangcheng/look_wuliu.html",
+                        pageParam: {
+                            FBusinessOrderId: item.FBusinessOrderId, // 订单ID
+                        }
+                    })
+                },
+                /* 去评价 */
+                btn_commit: function (item) {
+                    jw.openWin({
+                        name: "order_commit",
+                        url: "../shangcheng/order_commit.html",
+                        pageParam: {
+                            FBusinessId: item.FBusinessId,
+                            FBusinessOrderId: item.FBusinessOrderId
+                        }
+                    })
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

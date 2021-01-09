@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+
+<body>
+
+
+    <div class="zui-app">
+        <div class="zui-header zui-header-dark zui-row-center">
+            <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+            <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">众筹确认</div>
+             <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+            onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+        </div>
+        <div class="zui-content ordermain">
+
+            <div class="weui-form-preview">
+                <div class="weui-form-preview__bd">
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">购买数量</label>
+                        <div class="weui-form-preview__value">
+                            <div class="z-numbercol">
+                                <div class="z-numbercol_add iconfont icon-jian" @click="number_less()"></div>
+                                <input style="background-color: #fff;" type="number" class="z-numbercol_text input_tel" v-model="FNum"
+                                    oninput="value=value.replace(/[^\d]/g,'')">
+                                <div class="z-numbercol_less iconfont icon-add" @click="number_add()"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">提货方式</label>
+                        <div class="weui-form-preview__value">
+                            <div class="zui-radiolist">
+                                <label class="zui-radiobox" v-show="zt">
+                                    <input type="radio" name="tihuo" v-model="FPickType" value="0">
+                                    <i class="zui-checked"></i>
+                                    <span class="zui-radiotxt">自提</span>
+                                </label>
+                                <label class="zui-radiobox" v-show="cc">
+                                    <input type="radio" name="tihuo" v-model="FPickType" value="2">
+                                    <i class="zui-checked"></i>
+                                    <span class="zui-radiotxt">转入茶仓</span>
+                                </label>
+                                <label class="zui-radiobox" v-show="kd">
+                                    <input type="radio" name="tihuo" v-model="FPickType" value="1">
+                                    <i class="zui-checked"></i>
+                                    <span class="zui-radiotxt">快递</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="weui-form-preview__item zui-row zui-row-center">
+                        <label class="weui-form-preview__label">提货时间</label>
+                        <div class="weui-form-preview__value zui-col zui-row zui-row-center">
+                            <input type="text" class="zui-col text-right" id='tihuodata' placeholder="请选择提货时间" />
+                        </div>
+                    </div>
+                    <div id="mimabox"></div>
+                </div>
+            </div>
+            <div id="zitibox" class="weui-form-preview" v-cloak v-show="FPickType == 0">
+                <div class="weui-form-preview__bd">
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">提货地址</label>
+                        <span class="weui-form-preview__value">{{FPickAddres}}</span>
+                    </div>
+                    <!-- <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">联系人</label>
+                    <span class="weui-form-preview__value">谢小姐</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">联系方式</label>
+                    <span class="weui-form-preview__value">15566112350</span>
+                </div> -->
+                </div>
+            </div>
+
+            <!-- 转入茶仓 -->
+            <div id="zhuanrubox" class="ccxieyi" v-cloak v-show="FPickType == 2">
+                <div class="ccxieyi_nav zui-row zui-row-center" @click="cangchushow = !cangchushow">
+                    <label class="zui-radiobox">
+                        <input class="zui-radio" type="checkbox" name="chuchun" id="chuchun">
+                        <i class="zui-checked"></i>
+                        <span class="zui-radiotxt"></span>
+                    </label>
+                    <span>茶仓储存协议</span>
+                    <i class="iconfont icon-down" v-show="!cangchushow"></i>
+                    <i class="iconfont icon-up" v-show="cangchushow"></i>
+                </div>
+                <div class="ccxieyi_main" v-html="cangchuhtml" v-show="cangchushow"></div>
+            </div>
+
+
+            <!-- 快递 -->
+            <div id="daofubox" class="weui-form-preview wuliu-border-top wuliu-border-bottom" v-cloak
+                v-show="FPickType == 1" @click="choseplace()">
+                <div class="weui-form-preview__bd">
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">收件人</label>
+                        <div class="weui-form-preview__value" v-show="FShippingAddressId!=''">
+                            <span>{{FUserName}}</span><span class="fr">{{FMobile}}</span></div>
+                        <div class="weui-form-preview__value" v-show="FShippingAddressId==''">请选择收货地址</div>
+                    </div>
+                    <div class="weui-form-preview__item" style="border-top: none">
+                        <label class="weui-form-preview__label">收件地址</label>
+                        <span class="weui-form-preview__value">{{FShippingAddress}}</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="zui-footer zui-row zui-row-center zui-row-stretch firm_footer">
+            <div class="footer_btn zui-col bg-red color-white" id="okbtn" @click="post()">确定</div>
+        </div>
+
+
+        <!-- 交保证金 -->
+        <div class="zui-alert baozhengjinalert" v-show="bzjshow" v-cloak>
+            <div class="zui-alert_box">
+                <div class="box">
+                    <div class="close" @click="bzjshow=false"><img src="../../image/close.png" alt=""></div>
+                    <div class="z-btn z-btn-bolck z-btn-noradius z-btn-s z-btn-red">{{bzjtext}}</div>
+                    <div class="text1">若众筹未成功，保证金将在结束 后1-15个工作日解冻至电子钱包！</div>
+
+                    <div class="btnlist zui-row text-center">
+                        <div class="zui-col z-btn z-btn-red z-btn-s z-btn-radius50" @click="baozhengjing(1)">确认</div>
+                        <div class="zui-col z-btn z-btn-cancel z-btn-s z-btn-radius50" @click="bzjshow=false">取消</div>
+                    </div>
+                </div>
+            </div>
+            <div class="zui-alert_bg"></div>
+        </div>
+
+        <!-- 充值保证金 -->
+        <!--<div class="zui-alert baozhengjinalert">-->
+        <div class="zui-alert baozhengjinalert" v-show="bzjczshow" v-cloak>
+            <div class="zui-alert_box">
+                <div class="box">
+                    <div class="close" @click="bzjczshow=false"><img src="../../image/close.png" alt=""></div>
+                    <div class="img text-center"><img width="80" src="../../image/bzj2.png" alt=""></div>
+                    <div class="fz14">您的保证金不足，请立即充值！</div>
+                    <div class="btnlist zui-row text-center">
+                        <div class="zui-col z-btn z-btn-red z-btn-s z-btn-radius50" @click="gochongzhi()">去充值</div>
+                        <div class="zui-col z-btn z-btn-cancel z-btn-s z-btn-radius50" @click="bzjczshow=false">取消</div>
+                    </div>
+                </div>
+            </div>
+            <div class="zui-alert_bg"></div>
+        </div>
+
+    </div>
+
+
+    <script src="../../js/jquery-2.1.1.min.js"></script>
+    <script src="../../res/weui/jquery-weui.min.js"></script>
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/vuefilter.js"></script>
+    <script src="../../js/jw.js"></script>
+    <script src="../../js/zui.js"></script>
+    <script>
+        apiready = function () {
+            jw.sb.fixStatusBar(".zui-header");
+
+            // 获取选择地址
+            jw.data.jtget("chose_address", function (ret) {
+                if (typeof (ret) == "string") {
+                    ret = JSON.parse(ret);
+                }
+                myapp.FShippingAddressId = ret.FShippingAddressId;
+                myapp.FUserName = ret.FUserName;
+                myapp.FMobile = ret.FMobile;
+                myapp.FShippingAddress = ret.FShippingAddress;
+            });
+
+            var myapp = new Vue({
+                "el": ".zui-app",
+                data: {
+                    nowtime: "", // 现在时间
+                    FPickType2: api.pageParam.FPickType,
+                    FPickType: "", //提货类型 0：自提，1：快递,2:到茶仓
+                    FShippingAddressId: "", // 收获地址ID
+                    FUserName: "", //收货人姓名
+                    FMobile: "", //收货人电话
+                    FShippingAddress: "", //收货地址
+                    cangchuhtml: "", // 仓储协议
+                    cangchushow: false, // 仓储协议显示隐藏
+
+                    FPickAddres: api.pageParam.FPickAddres, //自提地址
+                    FNum: 1, //数量
+                    FNumdata: api.pageParam.FNumdata, //数量
+                    zt: false,
+                    cc: false,
+                    kd: false,
+                    bzjshow: false, // 交保证金 弹出框显示隐藏
+                    bzjczshow: false, // 保证金充值 弹出框显示隐藏
+                    baozhengjin: false,
+                    addoneshow: false, //关闭弹窗
+                    bzjtext: "",
+                    ifFDeposit: 0//保证金是否冻结  0否1是
+
+                },
+                created: function () {
+                    var _this = this;
+                    this.getcangchu();
+                    this.gettihuo1();
+
+                    if (_this.FPickType2 != "") {
+                        if (_this.FPickType2.indexOf("茶仓") != -1) {
+                            _this.cc = true;
+                        }
+                        if (_this.FPickType2.indexOf("快递") != -1) {
+                            _this.kd = true;
+                        }
+                        if (_this.FPickType2.indexOf("自提") != -1) {
+                            _this.zt = true;
+                        }
+                    }
+                    setTimeout(function () {
+                        $("#tihuodata").datetimePicker();
+                    }, 100);
+                    setInterval(function () {
+                        _this.nowtime = zDate.getNowdata("datatime");
+
+                    }, 1000);
+                },
+                methods: {
+                    // 获取app 仓储协议
+                    getcangchu: function () {
+                        var _this = this;
+                        jw.submit("app_协议及说明", {
+                            agreementId: 1
+                        }, function (ret) {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status ==
+                                "000000") {
+                                _this.cangchuhtml = ret.ds1[0].FContent;
+                            } else {}
+                        });
+                    },
+                    // // 获取 app_获取默认地址
+                    gettihuo1: function () {
+                        var _this = this;
+                        jw.submit("app_获取默认地址", {
+                            FUserId: jw.data.get("userid")
+                        }, function (ret) {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                                _this.FShippingAddressId = ret.ds1[0].FShippingAddressId;
+                                _this.FUserName = ret.ds1[0].FUserName;
+                                _this.FMobile = ret.ds1[0].FMobile;
+                                _this.FShippingAddress = ret.ds1[0].FShippingAddress;
+                            } else {
+                                //jw.ts.toast("内容不能为空");
+                            }
+                        });
+                    },
+                    // 增加数量
+                    number_add: function () {
+                        var _this = this;
+                        if (this.FNum < this.FNumdata) {
+                            this.FNum++;
+                        } else {
+                            jw.ts.toast("最大购买数是" + this.FNumdata);
+                        }
+                    },
+                    // 减少数量
+                    number_less: function () {
+                        if (this.FNum > 1) {
+                            this.FNum--;
+                        }
+                    },
+                    // // 选择地址
+                    choseplace: function () {
+                        jw.openWin({
+                            name: "chose_address",
+                            url: "../shangcheng/chose_address.html"
+                        });
+                    },
+                    // 去充值
+                    gochongzhi: function () {
+                        console.error(11111111111111111111111);
+                        this.bzjczshow = false;
+                        jw.openWin({
+                            name: "my_wallet",
+                            url: "../myself/my_wallet.html"
+                        })
+                    },
+                    //保证金
+                    baozhengjing: function(){
+                        myapp.ifFDeposit = 1;
+                        this.bzjshow = false;
+                        this.post();
+                    },
+                    post: function () {
+                        var _this = this;
+                        if (this.FPickType === "") {
+                            jw.ts.toast("请选择提货类型！");
+                            return;
+                        }
+                        var FPickAddres;
+                        if (this.FPickType == 0){
+                            FPickAddres = this.FPickAddres;
+                        } else if (this.FPickType == 1){
+                            FPickAddres = this.FUserName + " " + this.FMobile + " " + this.FShippingAddress;
+                        }
+
+                        var option = {
+                            FUserId: jw.data.get('userid'), //用户id
+                            FActiviteID: api.pageParam.FActiviteID, //活动id
+                            FNum: this.FNum,
+                            FPickType: this.FPickType,
+                            FPickDate: $("#tihuodata").val(),
+                            FPickAddress: FPickAddres,
+                            ifFDeposit: myapp.ifFDeposit
+                        }
+
+                        jw.submit("api42147", option, function (ret) {
+                            console.error(ret);
+                            _this.bzjshow = false;
+                            if (ret.ds != undefined && ret.ds.length > 0) {
+                                if (ret.ds[0].status == "000000") {
+                                    jw.ts.toast(ret.ds[0].msg);
+                                    _this.addoneshow = false;
+                                } else if (ret.ds[0].status == "666666") {
+                                    _this.bzjshow = true;
+                                    _this.bzjtext = ret.ds[0].msg;
+                                } else if (ret.ds[0].status == "888888") {
+                                    _this.bzjczshow = true;
+                                } else {
+                                    jw.ts.toast(ret.ds[0].msg);
+                                    _this.addoneshow = false;
+
+                                }
+                            } else {
+
+                            }
+
+                            if (ret.ds[0].status == "000000") {
+                                jw.ts.toast(ret.ds[0].msg);
+                                setTimeout(function () {
+                                    api.closeWin();
+                                }, 2000);
+                            } else {
+                                jw.ts.toast(ret.ds[0].msg);
+                            }
+                        });
+                    }
+                }
+            });
+
+            function init() {
+                setTimeout(function () {
+
+                    $("#tihuodata").mobiscroll().date();
+                    var currYear = (new Date()).getFullYear() - 50;
+                    //初始化日期控件
+                    var opt = {
+                        preset: 'datetime', //日期，可选：date\datetime\time\tree_list\image_text\select
+                        theme: 'Android Holo Light', //皮肤样式，可选：default\android\android-ics light\android-ics\ios\jqm\sense-ui\wp light\wp
+                        display: 'modal', //显示方式 ，可选：modal\inline\bubble\top\bottom
+                        mode: 'mixed', //日期选择模式，可选：scroller\clickpick\mixed
+                        lang: 'zh',
+                        dateFormat: 'yyyy-mm-dd', // 日期格式,
+                        timeFormat: 'HH:ii:ss', //24小时时间
+                        timeWheels: 'HHii', //24小时时间
+                        setText: '确定', //确认按钮名称
+                        cancelText: '取消', //取消按钮名籍我
+                        dateOrder: 'yyyymmdd', //面板中日期排列格式
+                        dayText: '日',
+                        monthText: '月',
+                        yearText: '年', //面板中年月日文字
+                        showNow: false,
+                        nowText: "今",
+                        startYear: currYear, //开始年份
+                        endYear: currYear + 85 //结束年份
+                        //endYear:2099 //结束年份
+                    };
+
+                    $("#tihuodata").mobiscroll(opt);
+
+                    $("#qrbtn").jiaoyibox({
+                        onend: function (t, params) {
+
+                            jw.submit_ykt("yzwxmsg", {
+                                userPhone: jw.data.get("phone"), // 手机号
+                                yzm: t
+                            }, function (ret) {
+                                if (ret == "1") {
+                                    myapp.payshow = true;
+                                    $("#numberkeyobj").show();
+                                    params.clear();
+                                } else {
+                                    jw.ts.toast("验证码错误");
+                                }
+                            }, {
+                                jz: false,
+                                Url: jw.config.url3,
+                                Ip: jw.config.ip3
+                            });
+                        }
+                    });
+                    $("#mimabox").mimakeywords({
+                        onend: function (v, p) {
+                            myapp.payshow = false;
+                            p.close();
+                            myapp.orderpay(v);
+                        }
+                    });
+                }, 1000);
+
+            }
+        }
+    </script>
+</body>
+
+</html>

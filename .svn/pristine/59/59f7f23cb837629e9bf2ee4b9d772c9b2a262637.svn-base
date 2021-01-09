@@ -1,0 +1,63 @@
+.zui-tag {
+  position: relative;
+  font-style: normal;
+  display: inline-block;
+  padding: 2px 5px;
+  line-height: normal;
+  border-radius: 3px;
+  font-size: 10px;
+  background: #c9c9c9;
+  color: #fff;
+}
+.zui-tag:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 200%;
+  -webkit-transform: scale(0.5);
+  transform: scale(0.5);
+  -webkit-transform-origin: 0 0;
+  transform-origin: 0 0;
+  pointer-events: none;
+  box-sizing: border-box;
+  border: 0 solid #e5e5e5;
+  border-color: currentColor;
+  border-radius: 4px;
+  border-width: 1px;
+}
+.zui-tag-red {
+  background: #f44;
+}
+.zui-tag-blue {
+  background: #38f;
+}
+.zui-tag-yellow {
+  background: #e2d645;
+}
+.zui-tag-orange {
+  background: #ff7e17;
+}
+.zui-tag-green {
+  background: #06bf04;
+}
+.zui-tag--plain {
+  background: #fff;
+  color: #c9c9c9;
+}
+.zui-tag--plain.zui-tag-red {
+  color: #f44;
+}
+.zui-tag--plain.zui-tag-blue {
+  color: #38f;
+}
+.zui-tag--plain.zui-tag-yellow {
+  color: #e2d645;
+}
+.zui-tag--plain.zui-tag-orange {
+  color: #ff7e17;
+}
+.zui-tag--plain.zui-tag-green {
+  color: #06bf04;
+}

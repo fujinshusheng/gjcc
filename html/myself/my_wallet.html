@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>个人中心</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-header zui-row-center myjifen_header">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">我的钱包</div>
+
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+        <!--<div class="zui-header-icon zui-header_text zui-header-right" @click="lookmingxi()">查看明细</div>-->
+    </div>
+
+    <div class="my_wallet_header">
+        <div class="zui-row zui-row-center">
+            <div class="zui-col">总金额：<span class="price2">{{walldata.TotalAmount || 0}}</span></div>
+            <span class="lookmx" @click="lookmingxi()">查看明细>></span>
+        </div>
+        <div class="zui-row zui-row-center">
+            <div class="zui-col">可提现金额：<span class="price">{{walldata.FRemainingSum || 0}}</span></div>
+        </div>
+        <div class="zui-row zui-row-center">
+            <div class="zui-col">冻结额：<span class="price">{{walldata.FFreezingAmount || 0}}</span></div>
+        </div>
+    </div>
+
+    <div class="zui-content">
+
+        <div class="zui-list my_wallet_list">
+            <!-- <div class="zui-item zui-row zui-row-center" @click="chongzhibtn_test()">
+                <i class="iconfont icon-chongzhi color-orange"></i>
+                <div class="zui-col">充值测试</div>
+            </div> -->
+            <div class="zui-item zui-row zui-row-center" @click="chongzhibtn()">
+                <i class="iconfont icon-chongzhi color-orange"></i>
+                <div class="zui-col">充值</div>
+            </div>
+            <div class="zui-item zui-row zui-row-center" @click="tixianbtn()">
+                <i class="iconfont icon-tixian color-green"></i>
+                <div class="zui-col">提现</div>
+            </div>
+            <div class="zui-item zui-row zui-row-center" onclick="jw.openWin({name:'setting_newpaypassword',url:'setting_newpaypassword.html'})">
+                <i class="iconfont icon-zhifuguanli color-blue"></i>
+                <div class="zui-col">支付管理</div>
+            </div>
+            <div class="zui-item zui-row zui-row-center" onclick="jw.openWin({name:'my_Bank_card',url:'my_Bank_card.html'})">
+                <i class="iconfont icon-tixian color-green"></i>
+                <div class="zui-col">我的银行卡</div>
+            </div>
+            <div class="zui-item zui-row zui-row-center" onclick="jw.openWin({name:'my_wallet_userknow',url:'my_wallet_userknow.html'})">
+                <i class="iconfont icon-tixian color-green"></i>
+                <div class="zui-col">用户须知</div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script src="../../js/md5.js"></script>
+<script src="../../js/layer/layer.js"></script>
+<script>
+    apiready = function () {
+        jw.sb.fixStatusBar(".zui-header");
+
+
+        api.addEventListener({
+            name:'viewappear'
+        }, function(ret, err){
+            myapp.getwallet();
+            //myapp.getbankcard();
+            myapp.getbanklist();
+        });
+
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                tixianshow: false, // 提现隐藏
+                walldata: {},
+
+                chongzhishow: false, //充值 显示隐藏
+                cztype: "", // 充值方式
+                FWay: "1", //提现途径 1：支付宝，2：微信,3:银联
+                tixianyue: "",
+                FNumber: "",//上一次提现的支付宝账号
+                username: "", // 上一次提现的支付宝用户名称
+                isalipay: false, //
+                alinumber: "", // 支付宝账号
+                FBank: "",//选择的银行卡
+                FBankCardId: "",//银行卡表id
+                yinhangka: [],//银行卡
+                zhifubao_number: "",
+                weixin_number: "",
+                chongzhitype: 1,
+                duigong: '',//对公账号
+                banklist: [], // 银行卡列表
+            },
+            created: function () {
+            },
+            methods: {
+                // 充值测试按钮
+                chongzhibtn_test: function(){
+                    jw.openWin({
+                        name: "my_wallet_cz",
+                        url: "http://erp.jiwanginfo.com:21901/res/apk/html/demo/test.html?t="+new Date().getTime()
+                    })
+                },
+                // 充值按钮
+                chongzhibtn: function(){
+                    jw.openWin({
+                        name: "my_wallet_cz",
+                        url: "my_wallet_cz.html"
+                    })
+                },
+                // 提现按钮
+                tixianbtn: function(){
+                    jw.openWin({
+                        name: "my_wallet_tx",
+                        url: "my_wallet_tx.html"
+                    })
+                },
+                chongzhiType: function (ret) {
+                    var _this = this;
+                    if (ret == 1) {
+                        _this.chongzhitype = 1;
+                    } else if (ret == 3) {
+                        _this.getduigong();
+                        _this.chongzhitype = 3;
+                    }
+                },
+                /* 查看明细*/
+                lookmingxi: function () {
+                    var _this = this;
+                    jw.openWin({
+                        name: "my_wallet_list",
+                        url: "my_wallet_list.html",
+                        pageParam: {
+                            walldata: _this.walldata
+                        }
+                    })
+                },
+                getbanklist: function () {
+                    var _this = this;
+                    jw.submit("app_银行卡信息", {
+                        FUserId: jw.data.get("userid")
+                    }, function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            _this.banklist = ret.ds1;
+                            var FNumber = "";//jw.data.get("lastalipayname");
+                            var username = "";//jw.data.set("lastalipayFNumber");
+                            if (ret.ds2 != "" && ret.ds2.length > 0) {
+                                if(FNumber == ""){
+                                    _this.FNumber = ret.ds2[0].FNumber;
+                                    _this.username = ret.ds2[0].FUserName;
+                                }else{
+                                    _this.FNumber = FNumber;
+                                    _this.username = username;
+                                }
+                                if(_this.username == ""){
+                                    _this.isalipay = false;
+                                }else{
+                                    _this.isalipay = true;
+                                }
+                            }
+                            _this.tixianChoose(1);
+                        } else {
+                            //jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                },
+                // getbankcard: function () {
+                //     var _this = this;
+                //     jw.submit("app_我的银行卡", {
+                //         FUserId: jw.data.get("userid")
+                //     }, function (ret) {
+                //         if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                //             _this.zhifubao_number = ret.ds1[0];
+                //             _this.weixin_number = ret.ds2[0];
+                //             _this.yinhangka = ret.ds3;
+                //             _this.tixianChoose(1);
+                //         } else {
+                //             // jw.ts.toast(ret.ds[0].msg);
+                //         }
+                //     });
+                // },
+                getwallet: function () {
+                    var _this = this;
+
+                    jw.submit("app_钱包余额", {
+                        FUserId: jw.data.get("userid")
+                    }, function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            _this.walldata = ret.ds1[0];
+                        } else {
+                            //jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                },
+                tixianChoose: function (FWay) {
+                    var _this = this;
+                    _this.FWay = FWay;
+                    if (FWay == 3) {
+                      if(_this.banklist.length<=0){
+                        jw.ts.toast("请先添加银行卡信息");
+                      }
+                    }
+                    // if (FWay == 1) {
+                    //     _this.FBankCardId = "";
+                    // }
+                    // else if (FWay == 3) {
+                    //     _this.FNumber = "";
+                    //     _this.FUserName = "";
+                    // }
+                },
+                // 选择银行卡
+                bankchose: function(){
+                    var _this = this;
+                    _this.FBankCardId = _this.FBank.FBankId;
+                },
+                //申请提现
+                tixian: function () {
+                    var _this = this;
+
+                    var xuzhi = $("#tixianxuzhi").prop("checked");
+                    if (xuzhi != true) {
+                        jw.ts.toast("请先同意用户须知");
+                        return false;
+                    }
+                    var TotalFee = $("#tixianyue").val();
+                    if (TotalFee == "" || TotalFee <= 0) {
+                        jw.ts.toast("请输入提现金额");
+                        return false;
+                    }
+                    var patter_money = /^[0-9]+(.[0-9]{1,2})?$/;
+                    if (!patter_money.test(TotalFee)) {
+                        jw.ts.toast("请输入正确金额");
+                        return false;
+                    }
+
+                    if (_this.FWay == 1 || _this.FWay == "1") {
+                        if (_this.FNumber == "" || _this.FUserName == "") {
+                            jw.ts.toast("请输入完整信息");
+                            return false;
+                        }
+                        _this.FBankCardId == ""
+                    } else if (_this.FWay == 3 || _this.FWay == "3") {
+                        if (_this.FBankCardId == "") {
+                            jw.ts.toast("请输入完整信息");
+                            return false;
+                        }
+                        _this.FNumber == "";
+                        _this.FUserName == "";
+                    }
+
+                    jw.ts.confirm({
+                        msg: "是否确认申请提现？"
+                    }, function (ret) {
+                        if (ret == 1) {
+                            jw.submit("app_申请提现", {
+                                FUserId: jw.data.get("userid"),
+                                FPrice: _this.tixianyue,
+                                FNumber: _this.FNumber,
+                                FBankCardId: _this.FBankCardId,
+                                FWay: _this.FWay,
+                                FUserName: _this.username, // 用户名
+                            }, function (ret) {
+                                if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                                    _this.tixianshow = false;
+                                    if (ret.ds1 != undefined && ret.ds1.length > 0) {
+                                        _this.FRemainingSum = ret.ds1[0].FRemainingSum;
+                                    }
+                                    jw.ts.toast("提现申请成功");
+
+                                    // if (_this.FWay == 1 || _this.FWay == "1") {
+                                    //     jw.data.set("lastalipayname",_this.username);
+                                    //     jw.data.set("lastalipayFNumber",_this.username);
+                                    // }
+
+                                    _this.getwallet();
+                                } else {
+                                    jw.ts.toast(ret.ds[0].msg);
+                                }
+                            });
+                        }
+                    });
+                },
+                getduigong: function () {
+                    var _this = this;
+                    if (_this.duigong == '') {
+                        jw.submit("对公账户", {}, function (ret) {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                                _this.duigong = ret.ds1[0];
+                            } else {
+                                jw.ts.toast(ret.ds[0].msg);
+                            }
+                        });
+                    }
+                },
+                chongzhi: function () {
+                    var _this = this;
+
+                    var xuzhi = $("#chongzhixuzhi").prop("checked");
+                    if (xuzhi != true) {
+                        jw.ts.toast("请先同意用户须知");
+                        return false;
+                    }
+
+                    var chongzhitype = $('input:radio[name="chongzhitype"]:checked').val();
+                    if (chongzhitype == null) {
+                        jw.ts.toast("请选择充值方式");
+                        return false;
+                    }
+                    var TotalFee = parseFloat($("#TotalFee").val());
+                    if (TotalFee == "" || TotalFee <= 0) {
+                        jw.ts.toast("请输入充值金额");
+                        return false;
+                    }
+                    var patter_money = /^[0-9]+(.[0-9]{1,2})?$/;
+                    if (!patter_money.test(TotalFee)) {
+                        jw.ts.toast("请输入正确金额");
+                        return false;
+                    }
+                    if (chongzhitype == 1) {//支付宝
+                        jw.submit_ykt("Alipay", {
+                            "Body": "钱包充值测试数据",
+                            "Subject": "钱包充值",
+                            "TotalFee": TotalFee,
+                            "NotifyUrl": "http://www.yunpuer.com/SelfModel/hander.aspx?cmd=AlipayNotify",
+                            "userId": jw.data.get("userid")
+                        }, function (ret) {
+                            if (ret != "") {
+                                var aliPayPlus = api.require('aliPayPlus');
+                                aliPayPlus.payOrder({
+                                    orderInfo: ret
+                                }, function (ret, err) {
+                                    if (ret.code == "9000") {
+                                        _this.chongzhishow = false;
+                                        _this.tixianshow = false;
+                                        jw.ts.toast("充值成功");
+                                        _this.getwallet();
+                                    } else {
+                                        jw.ts.toast("失败");
+                                    }
+                                });
+                            }
+                        }, {
+                            jz: true,
+                            Url: jw.config.url3,
+                            Ip: jw.config.ip3
+                        });
+
+                    } else if (chongzhitype == 2) {//微信
+                        jw.submit_ykt("WXpay", {
+                            "totalFee": TotalFee,
+                            "body": "钱包充值",
+                            "notifyUrl": "http://www.yunpuer.com/SelfModel/paysuccess.aspx",
+                            "userId": jw.data.get("userid")
+                        }, function (ret) {
+                            if (ret.result_code == "SUCCESS") {
+                                var now = Date.parse(new Date()) / 1000;
+                                var stringA = "appid=wx7f1cca191b9b3caf&noncestr=" + ret.nonce_str + "&package=Sign=WXPay&partnerid=1512144871&prepayid=" + ret.prepay_id + "&timestamp=" + now;
+                                var stringSignTemp = stringA + "&key=qweasdzxc123456789qazwsxedcrfvtg";
+                                console.log(stringSignTemp);
+                                var sign = hex_md5(stringSignTemp).toUpperCase();
+                                var wxPay = api.require('wxPayPlus');
+                                wxPay.payOrder({
+                                    apiKey: "wx7f1cca191b9b3caf",//ret.appid,
+                                    orderId: ret.prepay_id,
+                                    mchId: "1512144871",//ret.mch_id,
+                                    nonceStr: ret.nonce_str,
+                                    timeStamp: now,
+                                    package: 'Sign=WXPay',
+                                    sign: sign
+                                }, function (ret, err) {
+                                    if (ret.status) {
+                                        _this.chongzhishow = false;
+                                        jw.ts.toast("充值成功");
+                                        _this.getwallet();
+                                    } else {
+                                        alert(err.code);
+                                    }
+                                });
+                            } else {
+                                jw.ts.toast("失败");
+                            }
+                        }, {
+                            jz: true,
+                            Url: jw.config.url3,
+                            Ip: jw.config.ip3
+                        });
+                    } else if (chongzhitype == 4) {
+                        //一网通
+                        jw.submit('app_新增充值',{
+                            FUserId:jw.data.get("userid"),
+                            FPrice:TotalFee,
+                            FPaytype:4
+                        },function(ret){
+                            if(null!=ret.ds[0].msg){
+                                layer.open({
+                                    type:2,
+                                    title:'一网通支付',
+                                    shadeClose:true,
+                                    shade:0.3,
+                                    area:['100%','90%'],
+                                    end:function(){
+                                        myapp.chongzhishow = false;
+                                        myapp.getwallet();
+                                    },
+                                    content: "http://www.yunpuer.com/SelfModel/Payment.aspx?mark=1&amount="+TotalFee+"&orderNo="+ret.ds[0].msg
+                                });
+                            }
+                        });
+                    }
+                }
+            }
+        })
+
+    }
+</script>
+</body>
+</html>

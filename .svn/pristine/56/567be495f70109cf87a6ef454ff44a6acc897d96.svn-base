@@ -1,0 +1,61 @@
+@import "../../base/fn";
+
+@import "../zui-flex/zui-flex";
+
+.zui-login{
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -moz-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+
+  justify-content: center;
+  .zui-loginbox{
+
+  }
+}
+.loginlist{
+  padding: 0 15px;
+  .item{
+    height: 45px;
+    line-height: 45px;
+    //background: rgba(0, 0, 0, 0.61);
+    margin-bottom: 15px;
+    border-bottom: solid 1px #ffffff;
+
+    .icon{
+      width: 45px;
+      height: 30px;
+      line-height: 30px;
+      font-size: 24px;
+      text-align: center;
+      display: block;
+      color: #ffffff;
+      cursor: pointer;
+    }
+    input{
+      background: transparent;
+      padding: 0 10px;
+      color: #ffffff;
+    }
+  }
+}
+.zui-login_btn{
+  display: block;
+  width: 100%;
+  background: rgba(207, 0, 8, 0.3);
+  color: #ffffff;
+  font-size: 18px;
+  height: 45px;
+  line-height: 45px;
+  text-align: center;
+}

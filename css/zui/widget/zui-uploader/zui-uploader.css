@@ -1,0 +1,42 @@
+.zui-uploader {
+  padding: 5px;
+  background-color: #ffffff;
+}
+.zui-uploader:before,
+.zui-uploader:after {
+  content: '';
+  display: block;
+  clear: both;
+}
+.zui-uploader .zui-upload {
+  display: inline-block;
+  float: left;
+  width: 33.3333%;
+  padding: 5px;
+  position: relative;
+}
+.zui-uploader .zui-upload .zui-upload-addbox,
+.zui-uploader .zui-upload .zui-upload-img {
+  width: 100%;
+  min-height: 100px;
+  display: block;
+  background-size: cover;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+}
+.zui-uploader .zui-upload .zui-upload-addbox {
+  border: dashed 1px #999999;
+  background: transparent url("data:image/svg+xml;charset=utf8, %3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23ccc' viewBox='0 0 1024 1024' width='200' height='200'%3E%3Cdefs%3E%3Cstyle type='text/css'%3E%3C/style%3E%3C/defs%3E%3Cpath d='M512 980c-12.8 0-24-11.2-24-24V536H67.2c-12.8 0-24-11.2-24-24s10.4-24 24-24H488V67.2c0-12.8 11.2-24 24-24s24 10.4 24 24V488h420c12.8 0 24 11.2 24 24s-10.4 24-24 24H536v420c0 12.8-11.2 24-24 24z' fill='' p-id='2205'%3E%3C/path%3E%3C/svg%3E") no-repeat;
+  background-size: 50%;
+  background-position: center center;
+}
+.zui-uploader .zui-upload-del {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 30px;
+  height: 30px;
+  background: transparent url("data:image/svg+xml;charset=utf8, %3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23f60f20' viewBox='0 0 1024 1024' width='60' height='60'%3E%3Cdefs%3E%3Cstyle type='text/css'%3E%3C/style%3E%3C/defs%3E%3Cpath d='M511.674077 66.707284c-246.52265 0-446.347744 199.835328-446.347744 446.347744s199.825095 446.356954 446.347744 446.356954c246.50423 0 446.348768-199.844537 446.348768-446.356954S758.177284 66.707284 511.674077 66.707284zM744.967424 667.159826c21.8701 21.8701 21.8701 57.310264 0 79.199807-21.8701 21.851681-57.30924 21.851681-79.198783-0.019443L511.674077 592.264045 357.56007 746.359632c-21.8701 21.8701-57.30924 21.851681-79.17934-0.019443s-21.8701-57.290821 0-79.160921L432.493713 513.065262 278.379707 358.950232c-21.8701-21.86089-21.8701-57.328683 0-79.18855 21.8701-21.87931 57.30924-21.87931 79.17934 0l154.114007 154.104797 154.095587-154.104797c21.889543-21.87931 57.32766-21.87931 79.198783-0.010233 21.8701 21.8701 21.8701 57.348126 0 79.207993L590.89128 513.065262 744.967424 667.159826z' p-id='1919'%3E%3C/path%3E%3C/svg%3E") no-repeat;
+  background-size: 100%;
+  background-position: center center;
+}

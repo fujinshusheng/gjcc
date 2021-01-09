@@ -1,0 +1,81 @@
+@import "../../base/fn";
+
+.zui-tag{
+  position: relative;
+  font-style: normal;
+  display: inline-block;
+  padding: 2px 5px;
+  line-height: normal;
+  border-radius: 3px;
+  font-size: 10px;
+  background: #c9c9c9;
+  color: #fff;
+  &:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 200%;
+    -webkit-transform: scale(.5);
+    transform: scale(.5);
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+    pointer-events: none;
+    box-sizing: border-box;
+    border: 0 solid #e5e5e5;
+
+    border-color: currentColor;
+    border-radius: 4px;
+    border-width: 1px;
+  }
+}
+.zui-tag-red{
+  background: @red;
+}
+.zui-tag-blue{
+  background: @blue;
+}
+.zui-tag-yellow{
+  background: @yellow;
+}
+.zui-tag-orange{
+  background: @orange;
+}
+.zui-tag-green{
+  background: @green;
+}
+.zui-tag-greg{
+  background: #f1f1f1;
+  color: #8d8d8d;
+}
+
+.zui-tag--plain {
+  background: #fff;
+  color: #c9c9c9;
+
+  &.zui-tag-red{
+    color: @red;
+  }
+  &.zui-tag-blue{
+    color: @blue;
+  }
+  &.zui-tag-yellow{
+    color: @yellow;
+  }
+  &.zui-tag-orange{
+    color: @orange;
+  }
+  &.zui-tag-green{
+    color: @green;
+  }
+}
+.zui-tag--r50{
+  -webkit-border-radius: 50px;
+  -moz-border-radius: 50px;
+  border-radius: 50px;
+  padding: 2px 10px!important;
+  &:after {
+    display: none;
+  }
+}

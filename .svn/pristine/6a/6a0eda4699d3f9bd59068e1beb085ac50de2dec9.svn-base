@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>个人中心</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        .touxiang{
+            border-radius: 10px;
+        }
+   
+    </style>
+</head>
+<body>
+
+
+<div class="zui-app" v-cloak>
+    <div class="zui-header zui-header-dark zui-row-center">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">茶仓明细</div>
+        <!--<div class="iconfont zui-header-icon icon-sousuo zui-header-right"></div>-->
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+    <div class="zui-row shop_nav">
+        <div class="zui-col nav fz12" v-for="item in navlist" :class="{'selected':navindex==item}" @click="navclick(item)">{{item}}</div>
+    </div>
+
+    <div class="zui-content">
+
+        <div class="zui-card myordercard" v-for="item in orderlist">
+            <div class="zui-card-main" @click="details(item)">
+                <div class="title zui-row zui-row-center">
+                    <div class="zui-col"style="font-size: 14px;">茶品选购</div>
+                    <span style="font-size: 14px;">{{item.Ftype}}</span>
+                </div>
+
+                <div class="productbox zui-row zui-row-center zui-row-stretch">
+                    <div class="touxiang" :style="getbgimg(item.FImageUrl)"></div>
+                    <div class="zui-col">
+                        <p class="title" style="font-size: 14px;">{{item.FName}}</p>
+                        <div class="" style="font-size: 12px;">买入价格：￥{{item.FTotal}} 买入数量：{{item.FNum}}</div>
+                        <div class="" style="font-size: 12px;">买入单价：￥{{item.FPrice}} 剩余数量：{{item.FSurplusNum}}</div>
+                        <div class="" style="font-size: 12px;">买入时间：{{item.FCreateDate | datatime}}</div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="zui-card-footer text-right">
+                <div class="z-btn z-btn-ms z-btn-inline z-btn-grey__plane" @click="details(item)" style="font-size: 12px; min-width: 50px; ">更多</div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../res/weui/jquery-weui.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function() {
+        jw.sb.fixStatusBar(".zui-header");
+
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                navindex: "", // 选项切换
+                navlist: ['退款','转卖','赠送','提货'],
+                orderlist: [],
+                FBusinessOrderId: "", // 选择的商品ID
+            },
+            created: function () {
+                var _this = this;
+                this.getorderlist(api.pageParam.name);
+            },
+            methods: {
+                // 列表点击
+                navclick: function(item){
+                    this.navindex=item;
+                    this.getorderlist(item);
+                },
+                // 获取订单
+                getorderlist: function (ftype) {
+                    var _this = this;
+                    var f = ftype;
+                    if (ftype == undefined) {
+                        f = _this.navlist[0];
+                    }
+
+                    jw.submit("app_茶仓明细",{
+                        FUserId: jw.data.get("userid"), //   用户id
+                        Ftype: ftype
+                    },function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            _this.orderlist = ret.ds1;
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                },
+                // 订单详情
+                details: function (item) {
+                    var _this = this;
+                    jw.openWin({
+                        name: "chacang_details",
+                        url: "chacang_details.html",
+                        pageParam: {
+                            Ftype: item.Ftype,
+                            Fid: item.Fid
+                        }
+                    });
+                },
+            }
+        });
+    }
+</script>
+</body>
+</html>

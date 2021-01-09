@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        html,
+        body {
+            width: auto;
+            height: auto;
+            overflow: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="app">
+        <div class="auction">
+            <div v-for="(item,index) in shoplist" v-cloak @click="goshop(item,1)" class="paimaiList">
+                <div class="auctionImg" style="margin-top:-6px;">
+                    <div class="tip"style="margin-top:5px; "><img :src="item.FIcon | url" alt="" style="border-top-left-radius:10px;"></div>
+                    <!-- <img class="auctionListImg" :src="item.FImg | url" alt="" style="  border-top-left-radius:10px;
+                        border-top-right-radius:10px; margin: 0 0; width: 100%;"> -->
+                    <img class="auctionListImg" :src="item.FImg | url" style="width: 100%;border-top-left-radius:10px;border-top-right-radius:10px;"  alt="">
+                </div>
+                <div  v-cloak :data-index="index" :data-status="item.FStatus" style="padding: 10px 5px;">
+                    <!-- <span>{{order.FDeposit}}{{order.FType==1?"积分":"元"}}</span> -->
+                    <div class="text-over" style="color: #717070; font-size: 12px;padding-left:4px">{{item.FTitle}}</div>
+                    <!-- {{order.FType==1?"积分":"元"}} -->
+                    <div style="color: red;" style="margin:5px 0;">
+                        <span v-html="item.subTitle1" style="font-size: 12px;padding-left:4px"></span>
+                        <!-- <span>{{item.FType == 1? "积分" : "元"}}</span> -->
+                    </div>
+                    <div style="color: #afafaf; font-size: 12px;padding-left:4px">
+                        <span>{{item.subTitle2}}</span>
+                        <span class="starttime" :data-time="item.subTitle2secondsum"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../js/jquery-2.1.1.min.js"></script>
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/vuefilter.js"></script>
+    <script src="../../js/jw.js"></script>
+    <script src="../../js/zui.js"></script>
+    <script>
+        apiready = function () {
+
+            //返回页面时监听回调函数
+            api.addEventListener({
+                name: 'viewappear'
+            }, function (ret, err) {
+                myapp.getshoplist(1);
+            });
+            /**
+             * 初始化页面监听事件
+             *
+             */
+            function fnInitEvent() {
+                /**上拉加载 */
+                api.addEventListener({
+                    name: 'scrolltobottom',
+                    extra: {
+                        threshold: 10
+                    }
+                }, function (ret, err) {
+                    //页码+1，继续请求数据
+                    myapp.getshoplist(2);
+                });
+                /** 下拉刷新 */
+                api.setRefreshHeaderInfo({
+                    bgColor: '#ccc',
+                    textColor: '#fff',
+                    textDown: '下拉刷新...',
+                    textUp: '松开刷新...'
+                }, function (ret, err) {
+                    //重置页码、页面数据，请求数据
+                    myapp.getshoplist(1);
+                });
+            };
+            fnInitEvent();
+
+            // 商品倒计时 剩余时间
+            setInterval(function () {
+                $(".paimaiList").each(function (i, item) {
+                    if (myapp.shoplist[i].FStatus == 2) {
+
+                    } else if (myapp.shoplist[i].FStatus == 3) {
+
+                    } else if (myapp.shoplist[i].FStatus == 4) {
+
+                    } else {
+                        var starttime = $(this).find(".starttime");
+                        var t1 = starttime.data("time");
+                        if (t1 > 0) {
+                            starttime.data("time", parseInt(t1 - 1))
+                        }
+                        var t1_s = zDate.expireTime(t1);
+                        $(this).find(".starttime").text(t1_s);
+                    }
+                })
+            }, 1000);
+
+            var sharedModule = api.require('shareAction');
+            var myapp = new Vue({
+                "el": "#app",
+                data: {
+                    page_index: 1,
+                    page_length: 8,
+                    page_TotalCount: 1,
+                    shoplist: [], // 商品列表 ds2数据
+                    openlist: [], // ds1数据
+                    subTitle2secondsum: '',
+                    FStatus: [], //商品状态
+                },
+                created: function () {
+                    this.init();
+                },
+                methods: {
+                    init: function () {
+                        var _this = this;
+                        _this.getshoplist(1);
+                    },
+                    btnshow: function (item, items) {
+                        if (item.btnstatu.indexOf(items.id) > -1) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    },
+                    // 获取 竞价列表
+                    getshoplist: function (ftype) {
+                        var _this = this;
+                        var l = _this.page_index;
+                        if (ftype == 1) {
+                            _this.page_index = 1;
+                        } else {
+                            if (this.page_index < _this.page_TotalCount) {
+                                _this.page_index++;
+                            } else {
+                                return;
+                            }
+                        }
+
+                        //api41794  竞价列表
+                        jw.submit("api41794", {
+                            page: _this.page_index, //页面page
+                        }, function (ret) {
+                            setTimeout(function () {
+                                api.refreshHeaderLoadDone();
+                            }, 500);
+                            //if (ret.ds != undefined && ret.ds != "" && ret.ds.length > 0) {
+                            if (ret.ds != undefined && ret.ds[0].status == "000000") {
+                                if (ret.ds3 != undefined && ret.ds3.length > 0) {
+                                    _this.page_TotalCount = Math.ceil(ret.ds3[0].TotalCount / _this.page_length);
+                                }
+                                if (ftype == 1) {
+                                    _this.shoplist = ret.ds2;
+                                } else {
+                                    _this.shoplist.push.apply(_this.shoplist, ret.ds2);
+                                }
+                                _this.openlist = ret.ds1;
+                                _this.$nextTick(function () {
+                                    // 列表图片大小重置
+                                    $(".paimai_list2").find(".paimaiimg").height($(
+                                            ".paimai_list2").find(".paimaiimg")
+                                        .width());
+                                });
+                            } else {
+                                jw.ts.toast(ret.ds[0].msg);
+                                _this.shoplist = [];
+                                _this.page_TotalCount = 1;
+                            }
+                        }, {
+                            log: true
+                        });
+                    },
+                    // 去抢购 打开 商品详情页
+                    goshop: function (item) {
+                        var option = {
+                            FOnekeyResaleId: item.FOnekeyResaleId,
+                            FBusinessId: item.FBusinessId,
+                            FId: item.FId, //活动id
+                            subTitle2secondsum: item.subTitle2secondsum
+                        };
+                        /* 普通商品*/
+                        jw.openWin({
+                            name: "paimai_details",
+                            url: "paimai_details2.html",
+                            progress: {
+                                type:'',
+                                title:'',
+                                text:'',
+                                height: 0,
+                                color: 'rgba(0,0,0,0)'
+                            },
+                            pageParam: option
+                        });
+                    },
+                    share: function (item, index) {
+                        var _this = this;
+                        var url = "http://www.yunpuer.com/app_chashidetails/" + item.FBusinessId + "-" +
+                            item.FOnekeyResaleId + "-" + jw.data.get("userid") + ".html";
+                        var text = ''
+                        if(item.oldPrice>item.FPrice){
+                            text = item.FBusinessName+ " 原价："+item.oldPrice +" 现价："+item.FPrice
+                        }else{
+                            text = item.FBusinessName+ " 现价："+item.FPrice
+                        }
+                        jw.openFrame({
+                            name: 'share',
+                            url: '../share.html',
+                            pageParam: {
+                                text: text,
+                                FType: '0',
+                                Fid: item.FBusinessId,
+                                path: url,
+                                thumb:item.FImageUrl
+                            }
+                        })
+
+                        /* sharedModule.share({
+                             text: item.FBusinessName,
+                             type: 'url',
+                             path: "http://www.yunpuer.com/app_chashidetails.html?FBusinessId="+item.FBusinessId+"&FOnekeyResaleId="+item.FOnekeyResaleId+"&userid="+jw.data.get("userid")
+                         });
+                         jw.submit("app_分享", {
+                             FType: "0", //    类型0：商品，1：新闻
+                             FShareType: "", //  分享、转发渠道 0微信好友 1朋友圈 2微博 3扣扣好友 4扣扣空间
+                             FUserId: jw.data.get("userid"), //   用户id
+                             Fid: item.FBusinessId, //    商品或新闻id
+                         }, function (ret) {
+                             if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                                 // jw.ts.toast(ret.ds[0].msg);
+                             } else {
+                                 // jw.ts.toast(ret.ds[0].msg);
+                             }
+                         }, {
+                             jz: false
+                         });*/
+                    },
+
+                }
+            });
+
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>个人中心</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="../../res/mobiscroll/mobiscroll.custom-2.5.0.min.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-header zui-row-center">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">账户信息</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+    <div class="zui-content">
+        <z-city :edit="edit" :fcountry="FCountry" :fprovince="FProvince" :fcity="FCity" v-on:rdata="text = $event"></z-city>
+        {{edit}}
+        <button @click="edit = !edit">改变</button>
+    </div>
+
+</div>
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../res/weui/jquery-weui.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script src="../../res/mobiscroll/mobiscroll.custom-2.5.0.min.js"></script>
+<script>
+
+    $(function () {
+
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                text: "",
+                FCountry: "",
+                FProvince: "",
+                FCity: "",
+                edit: false
+            },
+            created: function () {
+                var _this = this;
+                setTimeout(function () {
+                    _this.FCountry = "中国"
+                    _this.FProvince = "北京"
+                    _this.FCity = "西城"
+                },100)
+            },
+            methods: {
+            }
+        });
+
+    })
+
+</script>
+</body>
+</html>

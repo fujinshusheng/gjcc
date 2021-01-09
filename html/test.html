@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>个人中心</title>
+    <link rel="stylesheet" href="../css/zui.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../res/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="../res/mobiscroll/mobiscroll.custom-2.5.0.min.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-header zui-row-center">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">账户信息</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+    <div class="zui-content">
+
+        <jiaoyima v-show="isshow" v-on:rdata="number = $event" v-on:hide="isshow=false"></jiaoyima>
+
+        {{number}}
+
+        {{isshow}}
+
+        <button @click="isshow=true">显示隐藏</button>
+
+    </div>
+
+</div>
+
+<script src="../js/jquery-2.1.1.min.js"></script>
+<script src="../res/weui/jquery-weui.js"></script>
+<script src="../js/vue.js"></script>
+<script src="../js/vuefilter.js"></script>
+<script src="../js/jw.js"></script>
+<script src="../js/zui.js"></script>
+<script src="../res/mobiscroll/mobiscroll.custom-2.5.0.min.js"></script>
+<script>
+
+    $(function () {
+
+        /*
+         *  <jiaoyima v-show="isshow" v-on:rdata="number = $event" v-on:hide="isshow=false"></jiaoyima>
+         * */
+        Vue.component('jiaoyima', {
+            props: [],
+            data: function () {
+                return {
+                    number: "",
+                    length: 0,
+                }
+            },
+            computed: {
+
+            },
+            watch: {
+
+            },
+            template: '<div id="jiaoyipop" class="z-popup">\n' +
+                '            <div class="z-popup_modal zui-row zui-row-column" style="bottom: 0;top: auto;">\n' +
+                '                <div class="bg-red color-white zui-row zui-row-center" style="padding: 10px;">' +
+                '                    <div class="zui-col text-left">请输入交易码</div>  ' +
+                '                    <div class="z-btn z-btn-s" @click="qrbtn()" style="background: #a61f24">确定</div>' +
+                '                </div>\n' +
+                '                <div class="zui-col">\n' +
+                '                    <div id="jiaoyibox" class="mimabox clearfix">\n' +
+                '                        <div class="nimainput" v-for="i in length">*</div>\n' +
+                '                        <div class="nimainput" v-for="i in (6-length)"></div>\n' +
+                '                    </div>\n' +
+                '                </div>\n' +
+                '                <div class="z-keywords__password">\n' +
+                '                    <div class="z-numberkey onkey" @click="numberkey(1)">1</div>\n' +
+                '                    <div class="z-numberkey onkey" @click="numberkey(2)">2</div>\n' +
+                '                    <div class="z-numberkey onkey" @click="numberkey(3)">3</div>\n' +
+                '                    <div class="z-numberkey onkey" @click="numberkey(4)">4</div>\n' +
+                '                    <div class="z-numberkey onkey" @click="numberkey(5)">5</div>\n' +
+                '                    <div class="z-numberkey onkey" @click="numberkey(6)">6</div>\n' +
+                '                    <div class="z-numberkey onkey" @click="numberkey(7)">7</div>\n' +
+                '                    <div class="z-numberkey onkey" @click="numberkey(8)">8</div>\n' +
+                '                    <div class="z-numberkey onkey" @click="numberkey(9)">9</div>\n' +
+                '                    <div class="z-numberkey"></div>\n' +
+                '                    <div class="z-numberkey onkey" @click="numberkey(0)">0</div>\n' +
+                '                    <div class="z-numberkey iconfont icon-del ondel" @click="delkey()"></div>\n' +
+                '                </div>\n' +
+                '            </div>\n' +
+                '            <div class="z-popup_bg" @click="hide()"></div>\n' +
+                '        </div>',
+            created: function () {
+                var _this = this;
+
+            },
+            methods: {
+                numberkey: function(t){
+                    var l = this.number.length;
+                    if (l <6){
+                        this.number = this.number + t.toString();
+                        l = this.number.length;
+                        this.length = l;
+                    }
+                },
+                delkey: function(t){
+                    this.number=this.number.substring(0,this.number.length-1);
+                    var l = this.number.length;
+                    this.length = l;
+                },
+                qrbtn: function(){
+                    if (this.length <6){
+                        jw.ts.toast("请输入完整交易码")
+                        return false;
+                    }
+                    this.postdata();
+                },
+                hide: function(){
+                    var _this = this;
+                    _this.$emit("hide", 1);
+                    _this.number = "";
+                    _this.length = 0;
+                },
+                postdata: function () {
+                    var _this = this;
+                    _this.$emit("rdata", _this.number);
+                    this.hide();
+                }
+            }
+        });
+
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                number: "",
+                isshow: false
+            },
+            created: function () {
+                var _this = this;
+                setTimeout(function () {
+
+                },100)
+            },
+            methods: {
+            }
+        });
+
+    })
+
+</script>
+</body>
+</html>

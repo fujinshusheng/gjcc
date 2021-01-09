@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        html,
+        body {
+            width: auto;
+            height: auto;
+            overflow: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="app">
+
+        <div class="zui-list2 paimai_list" v-cloak>
+
+            <div class="item" v-for="(item,index) in shoplist" @click="goshop(item,1)" v-cloak>
+                <div class="img">
+                    <div class="tip"><img :src="item.FIcon | url" alt=""></div>
+                    <img :src="item.FImg | url" alt="" >
+                </div>
+                <div class="tmain" v-cloak :data-index="index" :data-status="item.FStatus">
+                    <p class="title" v-cloak>{{item.FTitle}}</p>
+
+                    <div class="jingdutiao">
+                        <div class="jindu" :style="{'width':item.FPercent+'%'}"></div>
+                    </div>
+                    <div class="zui-row zui-row-center">
+                        <span class="fz14 zui-col">{{item.FCost}}</span>
+                        <span class="">{{item.FPercent}}%</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!--<iframe id="oneifr" src="" style="width: 100%;height:100%;border: none;position:absolute;top:0;bottom: 0;z-index: 9999;display: none;"></iframe>-->
+
+
+    </div>
+
+    <script src="../../js/jquery-2.1.1.min.js"></script>
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/vuefilter.js"></script>
+    <script src="../../js/jw.js"></script>
+    <script src="../../js/zui.js"></script>
+    <script>
+
+        apiready = function () {
+
+            jw.sb.fixStatusBar(".zui-header");
+
+            /**
+             * 初始化页面监听事件
+             */
+            function fnInitEvent() {
+                /**上拉加载 */
+                api.addEventListener({
+                    name: 'scrolltobottom',
+                    extra: {
+                        threshold: 10
+                    }
+                }, function (ret, err) {
+                    //页码+1，继续请求数据
+                    myapp.getshoplist(2);
+                });
+                /** 下拉刷新 */
+                api.setRefreshHeaderInfo({
+                    bgColor: '#ccc',
+                    textColor: '#fff',
+                    textDown: '下拉刷新...',
+                    textUp: '松开刷新...'
+                }, function (ret, err) {
+                    //重置页码、页面数据，请求数据
+                    myapp.getshoplist(1);
+                });
+            };
+            fnInitEvent();
+
+            /* 打开列表 */
+            function openlist() {
+                var y = $(".zui-content").offset().top;
+                // jw.openFrame({
+                //     name: "zhongchou_list",
+                //     url: "zhongchou_list.html",
+                //     rect: {
+                //         x: 0,
+                //         y: y,
+                //         w: "auto",
+                //         h: "auto"
+                //     },
+                //     bounces: true,
+                //     pageParam: {
+                //         FBusinessBrandId: api.pageParam.FBusinessBrandId,
+                //         FYear:api.pageParam.FYear
+                //     },
+                // });
+            }
+
+            var sharedModule = api.require('shareAction');
+
+            //返回页面时监听回调函数
+            api.addEventListener({
+                name:'viewappear'
+            }, function(ret, err){
+                myapp.getshoplist(1);
+            });
+
+
+            var myapp = new Vue({
+                "el": "#app",
+                data: {
+                    FBusinessBrandId: api.pageParam.FBusinessBrandId, // 商品品牌ID
+                    FYear: api.pageParam.FYear,
+                    navindex2: 1, // 1:最新 2：销量 3：价格 4: 筛选
+                    page_index: 1,
+                    page_length: 20,
+                    page_TotalCount: 1,
+                    shoplist: [], // 商品列表
+                    Keywords: "", // 搜索词
+                    FPriceSort: 0, // 价格 0升 1 降
+                    FSalesSort: 0, //销量 0升 1 降
+                    FNewSort: 0, //最新 0升 1 降
+                    numSort: 0, // 数量 0,1
+                    FNetWeight: "", // 净含量
+                    FPricemin: "", //最小价格
+                    FPricemax: "", //最大价格
+                    FTypeId: "", // 分类ID
+                },
+                created: function () {
+                    this.init();
+                },
+                methods: {
+                    init: function () {
+                        var _this = this;
+                        _this.getshoplist(1);
+                    },
+                    // 获取产品
+                    getshoplist: function (ftype) {
+                        var _this = this;
+                        // 分类ID
+                        // var FTypeId = _this.FTypeId;
+                        //年份
+                        // var FYear = _this.FYear;
+                        // // 品牌id
+                        // var FBusinessBrandId = _this.FBusinessBrandId;
+                        // // >=净含量区间
+                        // var FNetWeight = _this.FNetWeight;
+                        // // <=净含量区间
+                        // var FNetWeight1 = "";
+                        // // >价格区间
+                        // var FPrice = _this.FPricemin;
+                        // // <价格区间
+                        // var FPrice1 = _this.FPricemax;
+                        var l = _this.page_index;
+                        if (ftype == 1) {
+                            _this.page_index = 1;
+                        } else {
+                            l = parseInt(_this.page_index) + 1;
+                            // console.log(l);
+                            // console.log(_this.page_TotalCount)
+                            if (l > _this.page_TotalCount) {
+                                return false;
+                            } else {
+                                _this.page_index = l;
+                            }
+                        }
+
+                        // api41793 活动列表
+                        jw.submit("api41793", {
+                            page: _this.page_index //分页
+                            // start: _this.page_index, //	开始页数
+                            // Length: _this.page_length, //		每页长度
+                            // FTypeId: FTypeId, //	分类id
+                            // FYear: FYear,//年份
+                            // FBusinessBrandId: FBusinessBrandId, //	品牌id
+                            // FNetWeight: FNetWeight, //		>=净含量区间
+                            // FNetWeight1: FNetWeight1, //	<=净含量区间
+                            // FPrice: FPrice, //		>价格区间
+                            // FPrice1: FPrice1, //		<价格区间
+                            // Keywords: _this.Keywords, //    关键词搜索
+                            // FPriceSort: _this.navindex2 == 3 ? _this.FPriceSort : '', //    价格 0升 1 降
+                            // // FSalesSort: _this.navindex2==2?_this.FSalesSort:'', //     销量 0升 1 降
+                            // FNewSort: _this.navindex2 == 1 ? _this.FNewSort : '', //     最新 0升 1 降
+                            // numSort: _this.navindex2 == 2 ? _this.numSort : "",
+                            // FUserId: jw.data.get("userid"),  //  用户id
+                        }, function (ret) {
+                            setTimeout(function () {
+                                api.refreshHeaderLoadDone();
+                            }, 500);
+                            if (ret.ds1 != undefined && ret.ds1 != "" && ret.ds1.length > 0) {
+                                if (ret.ds1[0].TotalCount == undefined || ret.ds1[0].TotalCount == "") {
+                                    _this.page_TotalCount = 1;
+                                } else {
+                                    _this.page_TotalCount = ret.ds1[0].TotalCount;
+                                }
+                                if (ftype == 1) {
+                                    _this.shoplist = ret.ds1;
+                                } else {
+                                    _this.shoplist.push.apply(_this.shoplist, ret.ds1);
+                                }
+                                _this.$nextTick(function () {
+                                    // 列表图片大小重置
+                                    $(".zui-list2").find(".img").height($(".zui-list2").find(".img").width());
+                                });
+                            } else {
+                                _this.shoplist = [];
+                                _this.page_TotalCount = 0;
+                            }
+                        }, {
+                            log: true
+                        });
+                    },
+                    // 传入下个页面数据
+                    goshop: function (item) {
+
+                        /* 普通商品*/
+                        jw.openWin({
+                            name: "zhouchou_details",
+                            url: "zhouchou_details3.html",
+                            pageParam: {
+                                FActiviteID: item.FActiviteID
+                            }
+                        });
+
+
+                    },
+                    share: function (item, index) {
+                        var _this = this;
+
+                        var url = "http://www.yunpuer.com/app_chashidetails/" + item.FBusinessId + "-" + item.FOnekeyResaleId + "-" + jw.data.get("userid") + ".html";
+                        var text = ''
+                        if(item.oldPrice>item.FPrice){
+                            text = item.FBusinessName+ " 原价："+item.oldPrice +" 现价："+item.FPrice
+                        }else{
+                            text = item.FBusinessName+ " 现价："+item.FPrice
+                        }
+                        jw.openFrame({
+                            name: 'share',
+                            url: '../share.html',
+                            pageParam: {
+                                text: text,//item.FBusinessName + " 原价：" + item.oldPrice + " 现价：" + item.FPrice,
+                                FType: '0',
+                                Fid: item.FBusinessId,
+                                path: url,
+                                thumb:item.FImageUrl
+                            }
+                        })
+
+                        /* sharedModule.share({
+                             text: item.FBusinessName,
+                             type: 'url',
+                             path: "http://www.yunpuer.com/app_chashidetails.html?FBusinessId="+item.FBusinessId+"&FOnekeyResaleId="+item.FOnekeyResaleId+"&userid="+jw.data.get("userid")
+                         });
+                         jw.submit("app_分享", {
+                             FType: "0", //    类型0：商品，1：新闻
+                             FShareType: "", //  分享、转发渠道 0微信好友 1朋友圈 2微博 3扣扣好友 4扣扣空间
+                             FUserId: jw.data.get("userid"), //   用户id
+                             Fid: item.FBusinessId, //    商品或新闻id
+                         }, function (ret) {
+                             if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                                 // jw.ts.toast(ret.ds[0].msg);
+                             } else {
+                                 // jw.ts.toast(ret.ds[0].msg);
+                             }
+                         }, {
+                             jz: false
+                         });*/
+                    },
+                    btncolse: function () {
+                        window.location.href = "../../index2.html";
+                        // jw.openWin({
+                        //     name: "index2",
+                        //     url: "../../index2.html",
+                        // });
+                    },
+                }
+            });
+
+        }
+    </script>
+</body>
+
+</html>

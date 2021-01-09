@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>个人中心</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-header zui-row-center myjifen_header">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">我要开票</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+    <div class="zui-content">
+        <!--
+
+                <div class="bg-white" style="padding: 15px;">
+                    &lt;!&ndash;<p>请选择开票名称</p>&ndash;&gt;
+                    <div class="zui-radiolist">
+                        <label class="zui-radiobox">
+                            <input type="radio" name="fuwu" v-model="option.FType" value="1">
+                            <i class="zui-checked"></i>
+                            <span class="zui-radiotxt">货物或应税劳务、服务</span>
+                        </label>
+                        <br>
+                        <label class="zui-radiobox">
+                            <input type="radio" name="fuwu" v-model="option.FType" value="2">
+                            <i class="zui-checked"></i>
+                            <span class="zui-radiotxt">增值税服务清单</span>
+                        </label>
+                        <br>
+                        <label class="zui-radiobox">
+                            <input type="radio" name="fuwu" v-model="option.FType" value="3">
+                            <i class="zui-checked"></i>
+                            <span class="zui-radiotxt">货物或应税劳务、服务名称</span>
+                        </label>
+                    </div>
+                </div>
+        -->
+
+        <div class="z-title bg-white" style="margin-top: 10px;">发票详情</div>
+
+        <div class="zui-list info_list">
+            <div class="zui-item zui-row zui-row-center" v-cloak>
+                <div class="title">名称</div>
+                <input type="text" class="text zui-col" v-model="option.FName" placeholder="抬头">
+            </div>
+            <div class="zui-item zui-row zui-row-center" v-cloak>
+                <div class="title">税号</div>
+                <input type="text" class="text zui-col" v-model="option.FNumber" placeholder="15~20位">
+            </div>
+            <div class="zui-item zui-row zui-row-center" v-cloak>
+                <div class="title">单位地址</div>
+                <input type="text" class="text zui-col" v-model="option.FAddress" placeholder="公司地址">
+            </div>
+            <div class="zui-item zui-row zui-row-center" v-cloak>
+                <div class="title">电话号码</div>
+                <input type="text" class="text zui-col" v-model="option.FPhone" placeholder="公司电话">
+            </div>
+            <div class="zui-item zui-row zui-row-center" v-cloak>
+                <div class="title">开户银行</div>
+                <input type="text" class="text zui-col" v-model="option.FBank" placeholder="开户银行">
+            </div>
+            <div class="zui-item zui-row zui-row-center" v-cloak>
+                <div class="title">银行账户</div>
+                <input type="text" class="text zui-col" v-model="option.FBankNo" placeholder="银行账户">
+            </div>
+        </div>
+
+        <!--<div class="zui-list kaipiaolist">
+            <div class="zui-item zui-row">
+                <span class="zui-col name">名称</span>
+                <span class="value">宁波极望信息科技有限公司</span>
+            </div>
+            <div class="zui-item zui-row">
+                <span class="zui-col name">税号</span>
+                <span class="value">330656894120191</span>
+            </div>
+            <div class="zui-item zui-row">
+                <span class="zui-col name">单位地址</span>
+                <span class="value">宁波高新区创苑路750号软件园一期D幢</span>
+            </div>
+            <div class="zui-item zui-row">
+                <span class="zui-col name">电话号码</span>
+                <span class="value">0574-81098110</span>
+            </div>
+            <div class="zui-item zui-row">
+                <span class="zui-col name">开户银行</span>
+                <span class="value">宁波银行高新支行</span>
+            </div>
+            <div class="zui-item zui-row">
+                <span class="zui-col name">银行账户</span>
+                <span class="value">622812054781106789</span>
+            </div>
+            <div class="zui-item zui-row">
+                <span class="zui-col name">金额</span>
+                <span class="value">100,000</span>
+            </div>
+        </div>-->
+
+        <div class="bg-white zui-row zui-row-center" style="padding: 15px;margin-top: 10px;" @click="choseplace()">
+            <div class="zui-col fz16">
+                <p>收件人：{{option.FShippingName}} {{option.FShippingPhone}}</p>
+                <p>收货地址：{{option.FShippingAddress}}</p>
+            </div>
+            <i class="iconfont icon-right"></i>
+        </div>
+
+        <div class="payyoufei" style="">
+            开票需支付邮费
+        </div>
+
+    </div>
+
+    <div class="zui-footer zui-row zui-row-stretch">
+        <div class="footer_btn zui-col bg-red color-white" @click="post()">提交</div>
+    </div>
+
+
+</div>
+
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function () {
+        jw.sb.fixStatusBar(".zui-header");
+
+        jw.data.jtget("addresschange", function (ret) {
+            myapp.getlist();
+        });
+
+
+        // 获取选择地址
+        jw.data.jtget("chose_address", function (ret) {
+            if (typeof (ret) == "string"){
+                ret = JSON.parse(ret);
+            }
+            myapp.$set(myapp.option, "FShippingAddressId", ret.FShippingAddressId);
+            myapp.$set(myapp.option, "FShippingName", ret.FUserName);
+            myapp.$set(myapp.option, "FShippingPhone", ret.FMobile);
+            myapp.$set(myapp.option, "FShippingAddress", ret.FShippingAddress);
+        });
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                option: {},
+                FUserId: jw.data.get("userid"),
+                BId: api.pageParam.BId,
+                FType: api.pageParam.FType
+            },
+            created: function () {
+                var _this = this;
+                //var orderdata = JSON.parse(api.pageParam.orderdata);
+                this.option.FOrderId = _this.BId;
+                this.option.FUserId = _this.FUserId;
+                this.option.FType = _this.FType;
+                _this.getkaipiao();
+            },
+            methods: {
+                addfapiao: function () {
+                    jw.openWin({
+                        name: "add_fapiao",
+                        url: "add_fapiao.html"
+                    })
+                },
+                getkaipiao: function () {
+                    var _this = this;
+                    jw.submit("app_发票记录", {
+                        FUserId: jw.data.get("userid"),//购物车id
+                    }, function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            _this.option = ret.ds1[0];
+                        } else {
+                            var address = jw.data.get("address");
+                            if (address != "") {
+                                address = JSON.parse(address);
+                            }
+
+                            _this.option.FShippingAddressId = address.FShippingAddressId;
+                            _this.option.FShippingName = address.FUserName;
+                            _this.option.FShippingPhone = address.FMobile;
+                            _this.option.FShippingAddress = address.FShippingAddress;
+                        }
+                    });
+                },
+                // 选择地址
+                choseplace: function () {
+                    jw.openWin({
+                        name: "chose_address",
+                        url: "../shangcheng/chose_address.html"
+                    })
+                },
+                post: function () {
+                    var _this = this;
+                    if (_this.option.FName == undefined || _this.option.FName == "") {
+                        jw.ts.toast("请填写公司名称")
+                        return false;
+                    }
+                    if (_this.option.FNumber == undefined || _this.option.FNumber == "") {
+                        jw.ts.toast("请填写税号")
+                        return false;
+                    }
+                    if (_this.option.FAddress == undefined || _this.option.FAddress == "") {
+                        jw.ts.toast("请填写公司地址")
+                        return false;
+                    }
+                    if (_this.option.FPhone == undefined || _this.option.FPhone == "") {
+                        jw.ts.toast("请填写公司电话")
+                        return false;
+                    }
+                    if (_this.option.FBank == undefined || _this.option.FBank == "") {
+                        jw.ts.toast("请填写开户行")
+                        return false;
+                    }
+                    if (_this.option.FBankNo == undefined || _this.option.FBankNo == "") {
+                        jw.ts.toast("请填写银行卡号")
+                        return false;
+                    }
+                    if (_this.option.FShippingAddress == undefined || _this.option.FShippingAddress == "") {
+                        jw.ts.toast("请填写收货地址")
+                        return false;
+                    }
+                    jw.submit("app_新增发票记录New", _this.option, function (ret) {
+                        if (ret.ds[0].status == "000000") {
+                            jw.ts.toast("成功");
+                            setTimeout(function () {
+                                jw.back();
+                            }, 1000);
+                        }
+                    });
+                }
+            }
+        })
+    }
+</script>
+</body>
+</html>

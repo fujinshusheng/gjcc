@@ -1,0 +1,32 @@
+//基准色
+@color-base: #3bafdA;
+//互补色
+@color-complement: spin(@color-base,180);
+//三原色
+@color-b1: spin(@color-base,(360/3));
+@color-b2: spin(@color-base,-(360/3));
+//混合色
+@color-primary: mix(@color-base,mediumvioletred);
+
+//red
+@red: #c23a4d;
+@red-hover: lighten(@red, 10%);
+@red-focus: darken(@red, 10%);
+//blue
+@blue: #38f;
+@blue-hover: lighten(@blue, 10%);
+@blue-focus: darken(@blue, 10%);
+//yellow
+@yellow: #e2d645;
+@yellow-hover: lighten(@yellow, 10%);
+@yellow-focus: darken(@yellow, 10%);
+//orange
+@orange: #ff7e17;
+@orange-hover: lighten(@orange, 10%);
+@orange-focus: darken(@orange, 10%);
+//green
+@green: #06bf04;
+@green-hover: lighten(@green, 10%);
+@green-focus: darken(@green, 10%);
+
+@grey: #a0a0a0;

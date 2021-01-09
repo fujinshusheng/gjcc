@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>Title</title>
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <style media="screen">
+    .touxiang
+  {
+            border-top-left-radius:10px;
+                border-top-right-radius:10px;
+    }
+    </style>
+</head>
+<body>
+
+<div class="zui-app">
+
+    <div class="zui-header zui-header-dark zui-row-center">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">茶友集市</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+        <!-- <div class="iconfont zui-header-icon zui-header-right zui-header_text" onclick="jw.openWin({'name':'shuoming','url':'shuoming.html'})">仓储说明</div> -->
+    </div>
+        <!--全部商品-->
+        <!-- <div class="zui-cboxlist chacang_list" style="margin-top:-10px;">
+            <div class="zui-cbox" v-for="item in list" @click="tolist(item)">
+                <div class="box">
+                    <div class="img touxiang" :style="getbgimg(item.FImageUrl)"></div>
+                    <div class="tmain">
+                        <p class="title fz12 text-over" @click="goshop(item,2)" v-cloak>{{item.FYear + " "+ item.FName}}</p>
+                        <div class="zui-row zui-row-center">
+                            <div class="zui-col fz12 color-red">最低价：<span style="color: red">{{item.minFPrice}}</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+    <div class="zui-content">
+
+        <div class="zui-cboxlist chacang_list">
+            <div class="zui-cbox" v-for="item in list" @click="tolist(item)" >
+                <div class="box" style="border-radius:10px; ">
+                    <div class="img touxiang" :style="getbgimg(item.FImageUrl)"></div>
+                    <div class="tmain" style="text-align: left;padding-left: 10px">
+                            <p class="title fz12 text-over" @click="goshop(item,2)" v-cloak>{{item.FYear + " "+ item.FName}}</p>
+                            <div class="zui-row zui-row-center" style="margin-top: 1px">
+                                <div class="zui-col fz12"  style="color: red">最低价：<span style="color: red">{{item.minFPrice}}</span></div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/zui.js"></script>
+<script src="../../res/weui/jquery-weui.min.js"></script>
+<script src="../../res/weui/swiper.min.js"></script>
+<script src="../../js/jw.js"></script>
+<script>
+    apiready = function () {
+        jw.sb.fixStatusBar(".zui-header");
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                list: [], // 茶仓列表
+            },
+            created: function () {
+                this.getlist();
+            },
+            methods: {
+                // 获取列表
+                getlist: function () {
+                    var _this = this;
+                    jw.submit("app_我的茶市列表", {
+                        FUserId: jw.data.get("userid")
+                    }, function (ret) {
+                        if (ret.ds != undefined && ret.ds[0].status == "000000") {
+                            _this.list = ret.ds1;
+                            _this.$nextTick(function () {
+                                $(".chacang_list").find(".img").height($(".chacang_list").find(".img").width());
+                            });
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    }, {
+                        jz: false
+                    });
+                },
+                tolist: function (item) {
+
+                    api.openDrawerLayout({
+                        name: 'chashi',
+                        url: 'chashi.html',
+                        animation: {
+                            type: 'none'
+                        },
+                        rightPane: {
+                            edge: 120,
+                            name: 'shangcheng_sled',
+                            url: 'shoping_slidPane.html'
+                        },
+                        delay: 300,
+                        pageParam: {
+                            FBusinessBrandId: item.FBusinessBrandId,
+                            FYear:item.FYear
+                        },
+                    });
+                }
+            }
+        })
+    }
+</script>
+</body>
+</html>

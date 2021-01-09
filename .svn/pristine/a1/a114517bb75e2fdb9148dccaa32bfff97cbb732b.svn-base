@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>添加银行卡</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        .form_list .form_item .z-title{
+            width: 120px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+
+<div class="zui-app">
+    <div class="zui-header zui-row-center myjifen_header">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">添加银行卡</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+
+    <div class="zui-content">
+
+
+        <div class="form_list">
+            <div class="form_item zui-row zui-row-center">
+                <div class="z-title text-nowrap">银行名称：</div>
+                <input type="text" class="zui-col" v-model="FBankName" />
+            </div>
+            <div class="form_item zui-row zui-row-center">
+                <div class="z-title text-nowrap">银行卡号：</div>
+                <input type="text" class="zui-col" v-model="FBankNum" />
+            </div>
+            <div class="form_item zui-row zui-row-center">
+                <div class="z-title text-nowrap">持卡人：</div>
+                <input type="text" class="zui-col" v-model="FUserName"  readonly v-bind:readonly="isalipay"/>
+            </div>
+        </div>
+
+        <div class="zui-uploader">
+            <div class="zui-upload" style="width: 100%;" @click="addpic()">
+                <div v-show="imgsrc==''" class="zui-upload-addbox"></div>
+                <img v-show="imgsrc!=''" style="width: 100%;display: block;" :src="imgsrcfilter(imgsrc)" alt="">
+            </div>
+        </div>
+        <div class="form_list">
+            <div class="form_item zui-row zui-row-center">
+                <div class="z-title text-nowrap" style="width: 100%;text-align: center;">请提供银行卡及身份证正面照</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="zui-footer zui-row zui-row-stretch">
+        <div class="footer_btn zui-col bg-red color-white" @click="addbank()">添加</div>
+    </div>
+
+</div>
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function() {
+        jw.sb.fixStatusBar(".zui-header");
+
+
+        $(".zui-upload-addbox").each(function () {
+            $(this).height($(this).width())
+        });
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                imgsrc: "",
+                FBankName: "",
+                FBankNum: "",
+                FBankName: "",
+                FUserName: api.pageParam.username,
+                isalipay: false, //
+            },
+            created: function () {
+              var _this = this;
+              if(_this.FUserName == ""){
+                  _this.isalipay = false;
+              }else{
+                  _this.isalipay = true;
+              }
+            },
+            methods: {
+                addpic: function () {
+                    jw.ts.jiazaiShow();
+                    api.getPicture({
+                        sourceType: 'camera',
+                        encodingType: 'jpg',
+                        mediaValue: 'pic',
+                        destinationType: 'url',
+                        allowEdit: false,
+                        quality: 100,
+                        saveToPhotoAlbum: false
+                    }, function(ret, err) {
+                        if (ret) {
+                            var imglist = {
+                                file1: ret.data
+                            };
+
+                            api.ajax({
+                                url: jw.config.ip+jw.config.ImgUrl,
+                                method: 'post',
+                                timeout: 30,
+                                dataType: 'json',
+                                returnAll: false,
+                                data: {
+                                    values: {},
+                                    files: imglist
+                                }
+                            }, function (ret, err) {
+                                jw.ts.jiazaiHide()
+                                if (ret.status == "200") {
+                                    myapp.imgsrc = ret.data[0];
+                                }else{
+                                    jw.ts.toast(ret.error);
+                                }
+                            });
+                        }
+                    });
+
+                },
+                //  app_银行卡信息新增修改
+                addbank: function () {
+                    var _this = this;
+                    if (_this.FBankName == ""){
+                        jw.ts.toast("请填写银行名称");
+                        return
+                    }
+                    if (_this.FBankNum == ""){
+                        jw.ts.toast("请填写银行卡号");
+                        return
+                    }
+                    if (_this.FUserName == ""){
+                        jw.ts.toast("请填写持卡人");
+                        return
+                    }
+                    if (_this.imgsrc == ""){
+                        jw.ts.toast("请上传图片");
+                        return
+                    }
+                    jw.submit("app_银行卡信息新增修改",{
+                        FUserId: jw.data.get("userid"),//用户id
+                        FBankName: _this.FBankName,//银行名称
+                        FBankNum: _this.FBankNum,//银行卡号
+                        FUserName: _this.FUserName, // 持卡人
+                        FImg: _this.imgsrc,//银行卡图片
+                        FBankId: "",//id 修改时传入新增时不传入
+                    },function (ret) {
+                        if (ret.ds[0].status == "000000"){
+                            jw.ts.toast(ret.ds[0].msg);
+                            jw.data.jtset("bankcard",1);
+                            api.closeWin();
+                        }else{
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    })
+                }
+            }
+        });
+
+    }
+</script>
+</body>
+</html>

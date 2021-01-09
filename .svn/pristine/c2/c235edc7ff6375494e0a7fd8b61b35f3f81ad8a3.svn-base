@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>个人中心</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        html,
+        body {
+            width: auto;
+            height: auto;
+            overflow: auto;
+        }
+
+        .showD {
+            display: inline-block;
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            -moz-border-radius: 50%;
+            -webkit-border-radius: 50%;
+            background-color: #c2384f;
+            margin-right: 8px;
+        }
+
+
+    </style>
+</head>
+
+<body>
+<div id="app" v-cloak>
+    <div class="bal_main" v-cloak>
+        <div class="zui-card myordercard" v-for="item in nav1list">
+            <div class="zui-card-main">
+                <div class="title zui-row zui-row-center">
+                    <div class="touxiang" :style="getbgimg(item.FImg)"></div>
+                    <!-- <img src="../../image/2/chaqixuangou_03.jpg" alt=""> -->
+                    <div class="zui-col">
+                        <i v-if="item.FIsRead == null || item.FIsRead == 0 ? true : false" class="showD"></i>
+                        {{item.FTypeName}}
+                    </div>
+                    <!-- <span :class="ordertipcolor(item)">{{ordertip(item)}}</span> -->
+                    <span>{{item.FStatusTxt}}</span>
+                </div>
+                <div class="card">
+                    <!-- 左边图片 -->
+                    <div style="display: flex;" @click="shoppingdetails(item)">
+                        <div class="imgBox">
+                                <div class="img touxiang" :style="getbgimg(item.FImageUrl)"></div>
+                        </div>
+                        <div class="chunBox">
+                            <div class="chunBox_son">
+                                <div class="chun">{{item.FName}}</div>
+                            </div>
+
+                            <div style="text-align: right; width: 100%;">{{item.FTotal}}</div>
+                            <p class="num" >X {{item.FBuyNum}}</p>
+                            <p class="zmoney">{{item.FTotalTxt}}</p>
+                        </div>
+                    </div>
+                    <!-- <div class="wuliu">
+                        <span class="dian">···</span>
+                        <button class="btn">查看物流</button>
+                        <button class="btn">提货</button>
+                    </div> -->
+                    <!-- 按钮 -->
+
+                </div>
+            </div>
+            <div class="zui-card-footer text-left">
+                <div v-for="(items,index) in btnlist" :class="items.divclass" v-show="btnshow(item,items)"
+                     @click="btnclick(item,items)" style="background-color: #c2384f;border:none ">{{items.divhtml}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../res/weui/jquery-weui.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function () {
+        jw.sb.fixStatusBar(".zui-header");
+
+        //打开页面，返回页面, 监听页面
+        api.addEventListener({
+            name: 'viewappear'
+        }, function (ret, err) {
+            // jw.data.jtget("keywords", function (ret) {
+            // myapp.keywords = ret;
+            myapp.getlist(1);
+            // });
+        });
+
+        /**
+         * 初始化页面监听事件
+         */
+        function fnInitEvent() {
+            /**上拉加载 */
+            api.addEventListener({
+                name: 'scrolltobottom',
+                extra: {
+                    threshold: 10
+                }
+            }, function (ret, err) {
+                //页码+1，继续请求数据
+                var nav = parseInt(myapp.navindex);
+                myapp.getlist(2);
+            }); /*  */
+            /** 下拉刷新 */
+            api.setRefreshHeaderInfo({
+                bgColor: '#ccc',
+                textColor: '#fff',
+                textDown: '下拉刷新...',
+                textUp: '松开刷新...'
+            }, function (ret, err) {
+                //重置页码、页面数据，请求数据
+                var nav = parseInt(myapp.navindex);
+                myapp.getlist(1);
+            });
+
+        };
+        fnInitEvent();
+        var userid = jw.data.get("userid")
+        jw.data.jtget("myordernav1", function (ret) {
+          console.log(ret);
+            myapp.navindex = ret;
+            var nav = parseInt(ret);
+            myapp.getlist(1);
+        });
+
+        var myapp = new Vue({
+            "el": "#app",
+            data: {
+                navindex: api.pageParam.navindex, // 选项切换
+                nav1list: [], // 商城列表
+                btnlist: [], // 众筹 按钮列表
+                btnlist2: [], // 兑换 按钮列表
+                page: 1, // 页码
+                pagelength: 8, // 每页8条
+                pagecount: 1, // 最大页数
+                keywords: "", // 搜索词
+                beforeAsk: this.beforeAsk, //按钮状态
+                asktitle: this.asktitle, //按钮提示信息
+            },
+            created: function () {
+                var _this = this;
+            },
+            methods: {
+                shop1_title: function (item) {
+                    if (item.BusinessOrTeaSet == 1) {
+                        if (item.FOrderType == 2) {
+                            return "茶友集市"
+                        } else {
+                            return "茶品选购"
+                        }
+                    } else {
+                        return "茶器选购";
+                    }
+                },
+                // /* 显示订单状态文字 */
+                // ordertip: function (item) {
+                //     switch (item.FOrderStatus) {
+                //         case 0:
+                //             return "未付款"
+                //         case 1:
+                //             return "买家已付款"
+                //         case 2:
+                //             return "申请退款中"
+                //         case 3:
+                //             return "退款成功"
+                //         case 4:
+                //             switch (item.FPickType) {
+                //                 case 0:
+                //                     return "已提货"
+                //                 case 1:
+                //                     return "卖家已发货"
+                //                 case 2:
+                //                     return "已转到茶仓"
+                //             }
+                //             case 5:
+                //                 return "买家已收货"
+                //             case 6:
+                //                 return "交易取消"
+                //     }
+                // },
+                // /* 显示订单状态文字 */
+                // ordertipcolor: function (item) {
+                //     switch (item.FOrderStatus) {
+                //         case 0:
+                //             return "color-orange"
+                //         case 1:
+                //             return "color-green"
+                //         case 2:
+                //             return "color-red"
+                //         case 3:
+                //             return "color-orange"
+                //         case 4:
+                //             return "color-green"
+                //         case 5:
+                //             return "color-green"
+                //         case 6:
+                //             return "color-gray9"
+                //     }
+                // },
+                btnshow: function (item, items) {
+                    if (item.btnstatu == undefined || item.btnstatu == null) {
+                        return false;
+                    }
+                    if (item.btnstatu.indexOf(items.id) == -1) {
+                        return false
+                    } else {
+                        return true
+                    }
+
+                },
+
+                //详情页按钮状态提示
+                btnclick: function (item, items) {
+                    var _this = this;
+                    // beforeAsk：是否要提示询问0不需要1需要
+                    if (item.beforeAsk == 0) {
+                        // jw.submit(item.interface, item, function () {});
+                        // // api42148 获取支付尾款金额
+                        // jw.submit("api42148", {
+                        //     FActivityMemberID: _this.FActivityMemberID, //订单id
+                        //     FUserId: jw.data.get("userid")
+                        // }, function (dataism) {
+                        //     jw.ts.toast(dataism.ds[0].msg);
+                        // })
+                    } else if (items.beforeAsk == 1) {
+                        jw.ts.confirm({ //弹出提示信息
+                            msg: items.asktitle,
+                        }, function (index) {
+                            if (index == 1) {
+                                if (items.id == 1) { //取消订单
+                                    // jw.submit(item.interface, item, function () {
+                                    // alert(item.FType);
+                                    // });
+                                    jw.submit("api48914", {
+                                        FUserId: jw.data.get("userid"),
+                                        FId: item.FId,
+                                        FType: item.FType,
+                                    }, function (resdata) {
+                                        if (resdata.ds != undefined && resdata.ds !=
+                                            "" && resdata.ds[0].status == "000000"
+                                        ) {
+                                            jw.ts.toast(resdata.ds[0].msg);
+                                            _this.getlist(1);
+                                        } else {
+                                            jw.ts.toast(resdata.ds[0].msg);
+                                        }
+                                    })
+                                } else if (items.id == 2) { // 删除订单
+                                    jw.submit("api48916", {
+                                        FUserId: jw.data.get("userid"),
+                                        FId: item.FId,
+                                        FType: item.FType,
+                                    }, function (datas) {
+                                        jw.ts.toast(datas.ds[0].msg);
+                                        _this.getlist(1);
+                                    })
+                                } else if (items.id == 3) { //查看物流
+                                    jw.submit("api50704", {
+                                        FUserId: jw.data.get("userid"),
+                                        FId: item.FId,
+                                        FType: item.FType,
+                                    }, function (resdata) {
+                                        if (resdata.ds != undefined && resdata.ds !=
+                                            "" && resdata.ds[0].status == "000000"
+                                        ) {
+                                            jw.ts.toast(resdata.ds[0].msg);
+                                        } else {
+                                            jw.ts.toast(resdata.ds[0].msg);
+                                        }
+                                    })
+                                } else if (items.id == 4) { //确认提货
+                                    jw.submit("api50782", {
+                                        FUserId: jw.data.get("userid"),
+                                        FId: item.FId,
+                                        FType: item.FType,
+                                    }, function (resdata) {
+                                        if (resdata.ds != undefined && resdata.ds !=
+                                            "" && resdata.ds[0].status == "000000"
+                                        ) {
+                                            jw.ts.toast(resdata.ds[0].msg);
+                                            window.history.go(0);
+                                        } else {
+                                            jw.ts.toast(resdata.ds[0].msg);
+                                        }
+                                    })
+                                } else { //确认收货
+                                    jw.submit("api50783", {
+                                        FUserId: jw.data.get("userid"),
+                                        FId: item.FId,
+                                        FType: item.FType,
+                                    }, function (resdata) {
+                                        if (resdata.ds != undefined && resdata.ds !=
+                                            "" && resdata.ds[0].status == "000000"
+                                        ) {
+                                            jw.ts.toast(resdata.ds[0].msg);
+                                        } else {
+                                            jw.ts.toast(resdata.ds[0].msg);
+                                        }
+                                    })
+                                }
+                            } else {
+                                return false;
+                            }
+                        });
+                    }
+                },
+                /* 统一订单列表 */
+                getlist: function (index) {
+                    var _this = this;
+                    var start;
+                    if (index == 1) {
+                        start = 1;
+                        _this.page = 1
+                    } else if (index == 2) {
+                        if (_this.page >= _this.pagecount) {
+                            setTimeout(function () {
+                                api.refreshHeaderLoadDone();
+                            }, 500);
+                            return false;
+                        }
+                        start = _this.page + 1;
+                        _this.page = start;
+                    }
+                    jw.submit("统一订单列表", { //移动端sql > 二期 > 订单 > 统一订单列表
+                        FUserId: userid,
+                        page: start,
+                        FOrderStatus: _this.navindex,
+                        keywords: _this.keywords, //    关键词搜索
+                    }, function (ret) {
+                        setTimeout(function () {
+                            api.refreshHeaderLoadDone();
+                        }, 500);
+                        if (ret.ds[0].status == "000000") {
+
+                            if (ret.ds1 != undefined && ret.ds1.length > 0) {
+                                _this.btnlist = ret.ds1;
+                                if (index == 1) {
+                                    _this.nav1list = ret.ds2;
+                                } else {
+                                    _this.nav1list.push.apply(_this.nav1list, ret.ds2);
+                                }
+                            } else {
+                                _this.nav1list = [];
+                                _this.pagecount = 1;
+                            }
+                            if (ret.ds2 != undefined && ret.ds2.page_length > 0) {
+                                _this.pagecount = Math.ceil(ret.ds2[0]["@TotalCount"] / _this.pagelength);
+                            }
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                },
+                //商城 详情
+                shoppingdetails: function (item) { //判断商品类型
+                    try {
+                        jw.submit("api41101", { //查看记录
+                            FId: item.FId,
+                            FType: item.FType,
+                            FUserId: jw.data.get("userid"), //登录id
+                        }, function (ret) {
+
+                        });
+                    } catch (e) {
+                    }
+
+                    if (item.FType == 1) { // 茶叶
+                        jw.openWin({
+                            name: "my_order_detailscopy",
+                            url: "../myself/my_order_detailscopy.html",
+                            pageParam: {
+                                FBusinessOrderId: item.FId
+                            }
+                        });
+                    }
+                    if (item.FType == 2) { //茶器
+                        jw.openWin({
+                            name: "my_order_details_cq",
+                            url: "../myself/my_order_details_cq.html",
+                            pageParam: {
+                                FId: item.FId,
+                                // FOrderNum: item.FOrderNum
+                            }
+                        });
+                    }
+                    if (item.FType == 3) { // 众筹详情
+                        jw.openWin({
+                            name: "zhongchou_order_details",
+                            url: "../myself/zhongchou_order_details.html",
+                            pageParam: {
+                                FId: item.FId,
+                            }
+                        });
+                    }
+                    if (item.FType == 4) { // 竞价详情
+                        jw.openWin({
+                            name: "paimaidet",
+                            url: "../myself/paimaidet.html",
+                            pageParam: {
+                                FId: item.FId,
+                            }
+                        })
+                    }
+                    if (item.FType == 5) { // 积分商城
+                        jw.openWin({
+                            name: "duihuanxq",
+                            url: "../myself/duihuanxq.html",
+                            pageParam: {
+                                FId: item.FId,
+                            }
+                        });
+                    }
+
+                    if (item.FType == 6) { // 积分种树
+                        //console.error(JSON.stringify(item));
+                        var url = '';
+                        if (item.FStatusTxt == '已提货') {
+                            url = 'zhongshu_details.html';
+                        } else {
+                            url = 'zhongshu_tihuoaddress.html';
+                        }
+
+                        jw.openWin({
+                            name: "zhongshu_details",
+                            url: url,
+                            pageParam: {
+                                FId: item.FId,
+                                FPickType: item.FPickType
+                            }
+                        });
+                    }
+
+                },
+
+                //退款按钮  点击取消订单
+                duihuanbtnclick: function (item) {
+                    // var _this=this;
+
+                    //点击支付
+                    if (item.id == 2) {
+                        jw.openWin({
+                            name: 'duihuanxq',
+                            url: "duihuanxq.html",
+                            pageParam: {
+                                btnstatu: item.btnstatu,
+                                FId: item.FId, //订单id
+                                FPrice: item.FPrice, //价格
+                            }
+                        })
+                    }
+                    //退款按钮  点击取消订单
+                    else if (item.id == 0) {
+
+                        jw.submit("api41933", {
+                            FId: item.FId, //列表id
+                            FUserId: jw.data.get("userid"), //登录id
+                        }, function (ret) {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0]
+                                    .status ==
+                                "000000") {
+                                jw.ts.toast(ret.ds[0].msg);
+                            } else {
+                                jw.ts.toast(ret.ds[0].msg);
+                            }
+                        });
+                    }
+                },
+                //兑换已支付订单
+                duihuandetails: function (item) {
+                    var _this = this;
+                    jw.openWin({
+                        name: 'duihuanxq',
+                        url: "duihuanxq.html",
+                        pageParam: {
+                            btnstatu: item.btnstatu,
+                            FId: item.FId, //订单id
+                            index: _this.index //传入变量
+                        }
+                    })
+                },
+                getnav5list: function (index) {
+                    var _this = this;
+                    var start;
+                    if (index == 1) {
+                        start = 1;
+                        _this.page = 1
+                    } else if (index == 2) {
+                        if (_this.page >= _this.pagecount) {
+                            setTimeout(function () {
+                                api.refreshHeaderLoadDone();
+                            }, 500);
+                            return false;
+                        }
+                        start = _this.page + 1;
+                        _this.page = start;
+                    }
+
+                    jw.submit("api44235", {
+                        FUserId: userid,
+                        page: start,
+                    }, function (ret) {
+                        setTimeout(function () {
+                            api.refreshHeaderLoadDone();
+                        }, 500);
+                        if (ret.ds[0].status == "000000") {
+                            if (ret.ds1 != undefined && ret.ds1.length > 0) {
+                                if (index == 1) {
+                                    _this.nav5list = ret.ds1;
+                                } else {
+                                    _this.nav5list.push.apply(_this.nav5list, ret
+                                        .ds1);
+                                }
+                            } else {
+                                _this.nav5list = [];
+                                _this.pagecount = 1;
+                            }
+                            if (ret.ds2 != undefined && ret.ds2.page_length > 0) {
+                                _this.pagecount = Math.ceil(ret.ds2[0][
+                                        "@TotalCount"
+                                        ] /
+                                    _this.pagelength);
+                            }
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                },
+                // 种树详情
+                zhongshudetails: function (item) {
+                    var _this = this;
+                    jw.openWin({
+                        name: 'zhongshu_details',
+                        url: "zhongshu_details.html",
+                        pageParam: {
+                            FId: item.FId, //订单id
+                        }
+                    })
+                },
+            }
+        });
+        jw.data.jtget("keywords", function (ret) {
+            myapp.keywords = ret;
+            myapp.getlist(1);
+        });
+    }
+</script>
+</body>
+
+</html>

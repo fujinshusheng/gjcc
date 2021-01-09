@@ -1,0 +1,42 @@
+.zui-item {
+  background-color: #ffffff;
+  padding: 5px 15px;
+  line-height: 1.5;
+  font-size: 14px;
+  color: #333333;
+}
+.zui-list {
+  background-color: #ffffff;
+  padding: 0 15px;
+}
+.zui-list .zui-item {
+  padding: 5px 0;
+}
+.zui-list .zui-item + .zui-item {
+  border-top: solid 1px #eeeeee;
+}
+.zui-imagelist {
+  padding: 5px;
+}
+.zui-imagelist:after,
+.zui-imagelist:before {
+  content: "";
+  display: block;
+  clear: both;
+}
+.zui-imagelist .item {
+  width: 33.3333%;
+  padding: 5px;
+  float: left;
+}
+.zui-imagelist .item img {
+  display: block;
+  width: 100%;
+}
+.zui-imagelist .item .zui-imgbox {
+  width: 100%;
+  display: block;
+  background-size: cover;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+}

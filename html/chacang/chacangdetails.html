@@ -1,0 +1,794 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+<style media="screen">
+
+.touxiang {
+          border-radius: 10px;
+}
+</style>
+</head>
+
+<body>
+
+
+    <div class="zui-app">
+        <div class="zui-header zui-header-dark zui-row-center">
+            <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+            <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">我的茶仓</div>
+             <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="right: 55px;font-size:30px"
+            onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+            <div class="iconfont zui-header-icon zui-header-right zui-header_text"
+            onclick="jw.openWin({'name':'shuoming','url':'shuoming.html'})">仓储说明
+            </div>
+        </div>
+        <div class="weui-form-preview">
+
+            <!-- <div class="weui-form-preview__hd">
+            <label class="weui-form-preview__label">茶企名字/茶友转卖</label>
+            <em class="weui-form-preview__value"></em>
+        </div> -->
+
+            <div class="order_imgbox zui-row zui-row-center zui-row-stretch" v-cloak>
+                <div class="touxiang" :style="getbgimg(Warehousedetail.FImg)" ></div>
+                <div class="zui-col zui-row zui-row-column">
+                    <div class="title">{{Warehousedetail.FName}}</div>
+                    <div class="zui-col"></div>
+                    <div class="zui-row text"><span class="zui-col">买入价格：￥{{Warehousedetail.FTotal}}</span>
+                        <span>买入数量：{{Warehousedetail.FNum}}</span>
+                    </div>
+                    <div class="zui-row text"><span class="zui-col">剩余数量：{{Warehousedetail.FSurplusNum}}</span>
+                        <span v-if="Warehousedetail.FReturnIntegral>0">单个返回积分：{{Warehousedetail.FReturnIntegral}}</span>
+                    </div>
+                    <div class="zui-row text"><span class="zui-col">来源：{{Warehousedetail.FFType}}</span>
+
+                    </div>
+                    <div class="zui-row text">
+                        <span class="zui-col">仓储费：{{getWarehousePoundage(Warehousedetail.FWarehouseId,Warehousedetail.FSurplusNum)}}</span>
+                            <button @click="chacangxq()">仓储费详情</button>
+                    </div>
+
+                    <div class="zui-row text">
+                        {{Warehousedetail.mfq}}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="chacangnav zui-row zui-row-center" v-if="Warehousedetail.FStatus==0">
+            <div class="nav zui-col selected" @click="shuaxin()">转卖</div>
+            <div class="nav zui-col" @click="shuaxin()">提货</div>
+            <div class="nav zui-col" @click="shuaxin()">退款</div>
+            <div class="nav zui-col" @click="shuaxin()">转赠</div>
+        </div>
+
+        <div class="zui-content">
+
+            <div class="chacangmain" v-if="Warehousedetail.FStatus==0">
+                <!--转卖记录-->
+                <div class="main" style="display: block;">
+                    <div class="zui-row zui-row-center cc_tbox">
+                        <div class="zui-col-25">时间</div>
+                        <div class="zui-col-20">数量</div>
+                        <div class="zui-col-20">单价</div>
+                        <div class="zui-col-20">状态</div>
+                        <div style="min-width: 55px"></div>
+                    </div>
+                    <div class="cc_tabbox" v-for="(item,i) in zhuanmaiList" v-cloak>
+                        <div class="zui-row zui-row-center cc_nav" v-cloak>
+                            <div class="zui-col-25">{{item.FCreateDate}}</div>
+                            <div class="zui-col-20">{{item.FNum}}</div>
+                            <div class="zui-col-20">{{item.FPrice}}</div>
+                            <div class="zui-col-20 color-green">{{item.FFStatus}}</div>
+                            <div style="min-width: 55px">
+                                <div class="z-btn z-btn-s z-btn-red iconfont icon-down" @click="item.show = !item.show">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cc_main clearfix" v-show="item.show">
+                            <div class="box50">数量：{{item.FNum}}</div>
+                            <div class="box50">剩余数量：{{item.FSurplusNum}}</div>
+                            <div class="box50">单价：{{item.FPrice}}</div>
+                            <div class="box50">手续费：{{item.FPoundage}}</div>
+                            <div class="box50">状态：{{item.FFStatus}}</div>
+                            <!-- <div v-if="CCFlist.length>0 && CCFlist[i]!='' && CCFlist[i]!=undefined"> -->
+
+                                <!-- <div class="box100" v-if="CCFlist[i][0].indexOf('||||||') !=-1">
+                                    <div v-for="(item_1,i) in CCFlist[i].split('||||||')">{{item_1}}</div>
+                                </div>
+                                <div class="box100" v-else-if="CCFlist[i]!=''">
+                                        <div>{{CCFlist[i]}}</div>
+                                </div> -->
+                                <div class="box100">{{Warehousedetail.mfq}}</div>
+                                <div v-if="CCFlist[i]!=undefined && item.FFStatus=='售空'"  >
+                                    <div v-if="CCFlist[i][0].indexOf('|||') !=-1">
+                                        <div class="box50" v-for="item_1 in CCFlist[i][0].split('|||')">{{item_1}}</div>
+                                    </div>
+                                    <div class="box50" v-else>{{CCFlist[i][0]}}</div>
+                                </div>
+                                <div v-if="CCFlist[i]!=undefined && (item.FFStatus=='转卖中' || item.FFStatus=='取消' )"  >
+                                    <div v-if="CCFlist[i][0].indexOf('|||') !=-1">
+                                        <div class="box50" v-for="item_1 in CCFlist[i][0].split('|||')">{{item_1}}</div>
+                                        <div class="box50" v-for="item_2 in CCFlist[i][1].split('|||')">{{item_2}}</div>
+                                    </div>
+                                    <div class="box50" v-else>{{CCFlist[i][0]}}</div>
+                                </div>
+                            <div class="box100">创建时间：{{item.FCreateDate}}</div>
+                            <div class="z-btn z-btn-s z-btn-red iconfont color-white"
+                                v-if="item.FStatus==0 && item.FSurplusNum>0" @click="quxiaozhuanmai(item)">取消转卖
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--提货记录-->
+                <div class="main" style="display: none;">
+                    <div class="zui-row zui-row-center cc_tbox">
+                        <div class="zui-col-25">时间</div>
+                        <div class="zui-col-20">数量</div>
+                        <div class="zui-col-20">提货方式</div>
+                        <div class="zui-col-20">状态</div>
+                        <div style="min-width: 55px"></div>
+                    </div>
+                    <div class="cc_tabbox" v-for="item in tihuoList" v-cloak>
+                        <div class="zui-row zui-row-center cc_nav" v-cloak>
+                            <div class="zui-col-25">{{item.FCreateDate}}</div>
+                            <div class="zui-col-20">{{item.FNum}}</div>
+                            <div class="zui-col-20">{{item.FFType}}</div>
+                            <div class="zui-col-20 color-green">{{item.FStatus}}</div>
+                            <div style="min-width: 55px">
+                                <div class="z-btn z-btn-s z-btn-red iconfont icon-down" @click="gettihuoDetail(item)">
+                                </div>
+                            </div>
+                        </div>
+                        <!--快递提货-->
+                        <div class="cc_main clearfix" v-show="item.FType==1 && item.show">
+                            <div class="box50">数量：{{Detail.FNum}}</div>
+                            <div class="box50">是否包邮：{{Detail.FIsPostage}}</div>
+                            <div class="box50">收货人姓名：{{Detail.FShippingName}}</div>
+                            <div class="box50">电话：{{Detail.FShippingPhone}}</div>
+                            <div class="box100">收货地址：{{Detail.FShippingAddress}}</div>
+                            <div class="box50">状态：{{Detail.FFStatus}}</div>
+                            <div class="box50" v-if="Detail.FStatus==1">快递公司：{{Detail.FTitle}}</div>
+                            <div class="box100" v-if="Detail.FStatus==1">运单号：{{Detail.FExpressNo}}</div>
+                            <div class="box100">创建时间：{{Detail.FCreateDate}}</div>
+                            <div class="box100" v-if="Detail.FStatus==1">发货时间：{{Detail.FUpdateDate}}</div>
+                            <div class="box100" v-if="Detail.FStatus==2">收货时间：{{Detail.FEndDate}}</div>
+                            <div class="z-btn z-btn-s z-btn-red iconfont color-white" v-if="Detail.FStatus==1"
+                                @click="look_wuliu(Detail)">查看物流
+                            </div>
+                            <div class="z-btn z-btn-s z-btn-red iconfont color-white" v-if="Detail.FStatus==1"
+                                @click="querenshouhuo(Detail.FWarehouseExpressRecordId)">确认收货
+                            </div>
+                        </div>
+                        <!--自提-->
+                        <div class="cc_main clearfix" v-show="item.FType==2 &&item.show">
+                            <div class="box50">数量：{{Detail.FNum}}</div>
+                            <div class="box50">提货码：{{Detail.FPickCode}}</div>
+                            <div class="box100">预计提货时间：{{Detail.FPickDate}}</div>
+                            <div class="box100">提货地址：{{Detail.FPickAddress}}</div>
+                            <div class="box50">联系人姓名：{{Detail.FPickName}}</div>
+                            <div class="box50">电话：{{Detail.FPickPhone}}</div>
+                            <div class="box50">状态：{{Detail.FFStatus}}</div>
+                            <div class="box50" v-if="Detail.FStatus==1">确认方：{{Detail.FMemberType}}</div>
+                            <div class="box100">创建时间：{{Detail.FCreateDate}}</div>
+                            <div class="box100" v-if="Detail.FStatus==1">提货时间：{{Detail.FUpdateDate}}</div>
+                            <!-- <div class="z-btn z-btn-s z-btn-red iconfont color-white" v-if="Detail.FStatus==0" @click="querentihuo(Detail.id)">确认提货</div> -->
+                        </div>
+                    </div>
+                </div>
+                <!--退货记录-->
+                <div class="main" style="display: none;">
+                    <div class="zui-row zui-row-center cc_tbox">
+                        <div class="zui-col-25">时间</div>
+                        <div class="zui-col-20">数量</div>
+                        <div class="zui-col-20">金额</div>
+                        <div class="zui-col-20">状态</div>
+                        <div style="min-width: 55px"></div>
+                    </div>
+                    <div class="cc_tabbox" v-for="(item,i) in tuikuanList" v-cloak>
+                        <div class="zui-row zui-row-center cc_nav" v-cloak>
+                            <div class="zui-col-25">{{item.FCreateDate}}</div>
+                            <div class="zui-col-20">{{item.FRefundNum}}</div>
+                            <div class="zui-col-20">{{item.FRefundPrice}}</div>
+                            <div class="zui-col-20 color-green">{{item.FFStatus}}</div>
+                            <div style="min-width: 55px">
+                                <div class="z-btn z-btn-s z-btn-red iconfont icon-up" @click="item.show = !item.show">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cc_main clearfix" v-show="item.show">
+                            <div class="box50">数量：{{item.FRefundNum}}</div>
+                            <div class="box50">金额：{{item.FRefundPrice}}</div>
+                            <div class="box100">退款原因：{{item.FRefundReson}}</div>
+                            <div class="box50">状态：{{item.FFStatus}}</div>
+                            <div class="box100">创建时间：{{item.FCreateDate}}</div>
+                            <div class="box100" v-if="item.FStatus>0">确认时间：{{item.FUpdateDate}}</div>
+                            <div class="box100" v-if="item.FStatus==2">失败原因：{{item.FailReason}}</div>
+                            <div class="z-btn z-btn-s z-btn-red iconfont color-white" v-if="Detail.FStatus==0"
+                                @click="quxiaotuikuan(item)">取消退款
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--赠送记录-->
+                <div class="main" style="display: none;">
+                    <div class="zui-row zui-row-center cc_tbox">
+                        <div class="zui-col-25">时间</div>
+                        <div class="zui-col-10">数量</div>
+                        <div class="zui-col-20">昵称</div>
+                        <div class="zui-col-20">手机号</div>
+                        <div class="zui-col-20">状态</div>
+                    </div>
+                    <div class="cc_tabbox" v-for="item in zengsongList" v-cloak>
+                        <div class="zui-row zui-row-center cc_nav" v-cloak>
+                            <div class="zui-col-25">{{item.FCreateDate}}</div>
+                            <div class="zui-col-10">{{item.FNum}}</div>
+                            <div class="zui-col-20">{{item.FName}}</div>
+                            <div class="zui-col-20">{{item.FMobile}}</div>
+                            <div class="zui-col-20">{{item.FStatus}}</div>
+                            <!-- <div style="min-width: 55px">
+                            <div class="z-btn z-btn-s z-btn-red iconfont icon-down" @click="item.show = !item.show"></div>
+                        </div> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!--茶仓已确认-->
+        <div class="zui-footer zui-row zui-row-center bg-red color-white"
+            v-if="Warehousedetail.FSurplusNum>0 && Warehousedetail.FStatus==0">
+            <div class="footer_btn zui-col" v-show="zm" @click="toResale()">转卖</div>
+            <div class="footer_btn zui-col" v-show="th" @click="tihuo()">提货</div>
+            <div class="footer_btn zui-col" v-if="Warehousedetail.ifRefund==0" @click="tuikuan()">退款</div>
+            <div class="footer_btn zui-col" v-show="zz" @click="zhuanzeng()">转赠</div>
+        </div>
+        <!--茶仓未确认-->
+        <div class="zui-footer zui-row zui-row-center bg-red color-white" v-if="Warehousedetail.FStatus==1">
+            <div class="footer_btn zui-col" @click="jieshou()">接受</div>
+            <div class="footer_btn zui-col" @click="jujue()">拒绝</div>
+        </div>
+        <!--茶仓已退回-->
+        <div class="zui-footer zui-row zui-row-center bg-red color-white" v-if="Warehousedetail.FStatus==2">
+            <div class="footer_btn zui-col">已退回</div>
+        </div>
+    </div>
+
+    <script src="../../js/jquery-2.1.1.min.js"></script>
+    <script src="../../res/weui/jquery-weui.min.js"></script>
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/vuefilter.js"></script>
+    <script src="../../js/jw.js"></script>
+    <script src="../../js/zui.js"></script>
+    <script>
+        $(function () {
+            $(document).on("touchend", ".chacangnav .nav", function () {
+                var index = $(this).index();
+                $(".chacangnav .nav").removeClass("selected");
+                $(this).addClass("selected");
+                $(".chacangmain").find(".main").hide();
+                $(".chacangmain").find(".main").eq(index).show();
+            })
+        });
+        apiready = function () {
+            jw.sb.fixStatusBar(".zui-header");
+
+
+
+            api.addEventListener({
+                name: 'viewappear'
+            }, function (ret, err) {
+                // myapp.shuaxin();
+            });
+
+
+            var myapp = new Vue({
+                "el": ".zui-app",
+                data: {
+                    FWarehouseId: api.pageParam.FWarehouseId, // 茶仓ID
+                    Warehousedetail: "", // 茶仓详情
+                    zhuanmaiList: [], //转卖列表
+                    tihuoList: [], //提货列表
+                    zengsongList: [], //赠送列表
+                    tuikuanList: [], //退款列表
+                    Detail: "", //提货详情
+                    CCF: "", //仓储费
+                    CCFlist: [], //仓储费
+                    th: false,
+                    zm: false,
+                    zz: false,
+                    WarehousePoundage:0
+                },
+                created: function () {
+                    var _this = this;
+                    _this.shuaxin();
+                },
+                methods: {
+                    shuaxin: function () {
+                        this.getdetails();
+                        this.getzhuanmaiList();
+                        this.gettihuoList();
+                        this.getzengsongList();
+                        this.gettuikuanList();
+                    },
+                    // 获取茶仓详情
+                    getdetails: function () {
+                        var _this = this;
+                        jw.submit("api46873", {
+                            "FWarehouseId": _this.FWarehouseId,
+                        }, function (ret) {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status ==
+                                "000000") {
+                                _this.Warehousedetail = ret.ds1[0];
+                                if (_this.Warehousedetail.FPickType.indexOf("快递") != -1 || _this
+                                    .Warehousedetail.FPickType.indexOf("自提") != -1) {
+                                    _this.th = true;
+                                }
+                                if (_this.Warehousedetail.FGoaway.indexOf("转卖") != -1) {
+                                    _this.zm = true;
+                                }
+                                if (_this.Warehousedetail.FGoaway.indexOf("转赠") != -1) {
+                                    _this.zz = true;
+                                }
+                            } else {
+                                jw.ts.toast(ret.ds[0].msg);
+                            }
+                        });
+                    },
+                    // 获取转卖记录
+                    getzhuanmaiList: function () {
+                        var _this = this;
+                        jw.submit("app_转卖列表", {
+                            "FWarehouseId": _this.FWarehouseId
+                        }, function (ret) {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status ==
+                                "000000") {
+                                var list = ret.ds1;
+                                for (var i = 0; i < list.length; i++) {
+                                    list[i].show = false;
+                                }
+                                _this.zhuanmaiList = list;
+
+                                $.ajaxSettings.async = false;//开启同步
+                                for(var i = 0;i < list.length;i++){
+                                    if(list[i].FFStatus=='售空'){
+                                        //console.log('----------------------------------11111111')
+                                        jw.submit("app_仓储费计算20201217", {
+                                        "FWarehouseId":list[i].FWarehouseId,
+                                        "number" : list[i].FNum
+                                        }, function (ret) {
+                                            //ret.ds1[j].CCDate价格
+                                            //ret.ds1[j].CCcount数量
+                                            //ret.ds1[j].MONTHCount月份
+                                            //ret.ds1[j].CCDate日期阶段内容
+                                            //console.log('----------------------------------12222')
+                                                var JL=''//消息记录的
+                                                try {
+                                                        for(var j = 0;j<ret.ds1.length;j++){
+                                                        //console.log('----------------------------------12222')
+                                                        try {
+                                                            if(ret.ds1[j].CCDate.indexOf('总计')!=-1){
+                                                                if(ret.ds1[j].Price!=0){
+                                                                    JL+=ret.ds1[j].CCDate+'：'+ret.ds1[j].Price
+                                                                }
+                                                            }else{
+                                                                if(ret.ds1[j].Price!=0){
+                                                                    JL+=ret.ds1[j].CCDate+'X'+ret.ds1[j].CCcount+'X'+ret.ds1[j].MONTHCount+'月  阶段价格：'+ret.ds1[j].Price+'|||'
+                                                                }
+                                                            }
+                                                        } catch (error) {
+                                                            _this.CCFlist[i] = ['还在一年免费期，无需费用。']
+                                                        }
+                                                    }
+                                                    _this.CCFlist[i] = [JL]
+                                                } catch (error) {
+                                                    _this.CCFlist[i] = ['还在一年免费期，无需费用。']
+                                                }
+
+                                        }, {
+                                            jz: false
+                                        });
+                                    }
+                                    //////////////////////////////////////
+                                        //$.ajaxSettings.async = false;
+                                        if(list[i].FFStatus=='转卖中'||list[i].FFStatus=='取消'){
+                                        jw.submit("app_仓储费计算20201217", {
+                                        "FWarehouseId": list[i].FWarehouseId,
+                                        "number" : list[i].FNum
+                                        }, function (ret) {
+                                            //ret.ds1[j].CCDate价格
+                                            //ret.ds1[j].CCcount数量
+                                            //ret.ds1[j].MONTHCount月份数量
+                                            //ret.ds1[j].CCDate日期阶段内容
+                                            var JL=''//消息记录的
+                                            var JL_1=''//消息记录的
+                                            try {
+                                                for(var j = 0;j<ret.ds1.length;j++){
+                                                    try {
+                                                         if(ret.ds1[j].CCDate.indexOf('总计')!=-1){
+                                                            
+                                                            if((ret.ds1[j].Price*(list[i].FSurplusNum/list[i].FNum))!=0){
+                                                                JL+=ret.ds1[j].CCDate+'：'+(ret.ds1[j].Price*(list[i].FSurplusNum/list[i].FNum))//已支付总计
+                                                            }
+                                                            if((ret.ds1[j].Price*((list[i].FNum-list[i].FSurplusNum)/list[i].FNum))!=0){
+                                                                JL_1+=ret.ds1[j].CCDate+'：'+(ret.ds1[j].Price*((list[i].FNum-list[i].FSurplusNum)/list[i].FNum))//未支付总计
+                                                            }
+                                                            }else{
+                                                            if(((ret.ds1[j].Price)*(list[i].FSurplusNum/list[i].FNum)).toFixed(2)!=0){
+                                                                JL+=ret.ds1[j].CCDate+'X'+list[i].FSurplusNum+'X'+ret.ds1[j].MONTHCount+'(月)  未支付阶段价格：'+((ret.ds1[j].Price)*(list[i].FSurplusNum/list[i].FNum)).toFixed(2)+'|||'
+                                                            }
+                                                            if((ret.ds1[j].Price*((list[i].FNum-list[i].FSurplusNum)/list[i].FNum)).toFixed(2)!=0){
+                                                                JL_1+=ret.ds1[j].CCDate+'X'+(list[i].FNum-list[i].FSurplusNum)+'X'+ret.ds1[j].MONTHCount+'(月)  已支付阶段价格：'+(ret.ds1[j].Price*((list[i].FNum-list[i].FSurplusNum)/list[i].FNum)).toFixed(2)+'|||'
+                                                            }
+                                                         }
+                                                        // if(ret.ds1[j].CCDate.indexOf('总计')!=-1){
+                                                        //     JL+=ret.ds1[j].CCDate+'：'+((ret.ds1[j].Price)*(list[i].FSurplusNum/list[i].FNum)).toFixed(2)
+                                                        //     _this.CCFlist[i]='未支付'+JL+'||||||'
+                                                        //     JL = ''
+                                                        //     JL+=ret.ds1[j].CCDate+'：'+(ret.ds1[j].Price*((list[i].FNum-list[i].FSurplusNum)/list[i].FNum)).toFixed(2)
+                                                        //     _this.CCFlist[i]+='已支付'+JL
+                                                        // }
+                                                    } catch (error) {
+                                                        _this.CCFlist[i] = ['还在一年免费期，无需费用。']
+                                                    }
+                                                }
+                                                _this.CCFlist[i] = [JL]
+                                                _this.CCFlist[i][1] = JL_1
+                                                console.log(_this.CCFlist[i][1])
+                                            } catch (error) {
+                                                _this.CCFlist[i] = ['还在一年免费期，无需费用。']
+                                            }
+                                        }, {
+                                            jz: false
+                                        });
+                                    }
+
+                                        //$.ajaxSettings.async = true;//开启异步
+                                }
+                                console.log(_this.CCFlist[0][0]+'---------------------------------------')
+                                $.ajaxSettings.async = true;//开启异步
+                            } else {
+                                //  jw.ts.toast(ret.ds[0].msg);
+                            }
+                        }, {
+                            jz: false
+                        });
+                    },
+                    // 获取提货记录
+                    gettihuoList: function () {
+                        var _this = this;
+                        jw.submit("app_提货列表", {
+                            "FWarehouseId": _this.FWarehouseId
+                        }, function (ret) {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status ==
+                                "000000") {
+                                var list = ret.ds1;
+                                for (var i = 0; i < list.length; i++) {
+                                    list[i].show = false;
+                                }
+                                _this.tihuoList = list;
+
+                            } else {
+                                //  jw.ts.toast(ret.ds[0].msg);
+                            }
+                        }, {
+                            jz: false
+                        });
+                    },
+                    // 获取赠送记录
+                    getzengsongList: function () {
+                        var _this = this;
+                        jw.submit("app_赠送列表", {
+                            "FWarehouseId": _this.FWarehouseId
+                        }, function (ret) {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status ==
+                                "000000") {
+                                _this.zengsongList = ret.ds1;
+                            } else {
+                                //jw.ts.toast(ret.ds[0].msg);
+                            }
+                        }, {
+                            jz: false
+                        });
+                    },
+                    // 获取退款记录
+                    gettuikuanList: function () {
+                        var _this = this;
+                        jw.submit("app_退款列表", {
+                            "FWarehouseId": _this.FWarehouseId
+                        }, function (ret) {
+                            if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status ==
+                                "000000") {
+                                var list = ret.ds1;
+                                for (var i = 0; i < list.length; i++) {
+                                    list[i].show = false;
+                                }
+                                _this.tuikuanList = list;
+                            } else {
+                                //jw.ts.toast(ret.ds[0].msg);
+                            }
+                        }, {
+                            jz: false
+                        });
+                    },
+                    // 获取提货详情
+                    gettihuoDetail: function (item) {
+                        var _this = this;
+                        if (!item.show) {
+                            for (var i = 0; i < _this.tihuoList.length; i++) {
+                                _this.tihuoList[i].show = false;
+                            }
+                            item.show = !item.show;
+                            jw.submit("app_提货详情", {
+                                "id": item.id,
+                                "FType": item.FType
+                            }, function (ret) {
+                                if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status ==
+                                    "000000") {
+                                    _this.Detail = ret.ds1[0];
+                                } else {
+                                    jw.ts.toast(ret.ds[0].msg);
+                                }
+                            });
+                        } else {
+                            item.show = false;
+                        }
+
+                    },
+                    // 取消退款申请
+                    quxiaotuikuan: function (item) {
+                        var _this = this;
+                        jw.ts.confirm({
+                            msg: "是否确定取消退款申请？"
+                        }, function (index) {
+                            if (index == 1) {
+                                jw.submit("app_茶仓取消退款", {
+                                    "FWarehouseRefundId": item.FWarehouseRefundId
+                                }, function (ret) {
+                                    if (ret.ds != undefined && ret.ds != "" && ret.ds[0]
+                                        .status == "000000") {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                        _this.gettuikuanList();
+                                    } else {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                    }
+                                });
+                            }
+                        });
+
+                    },
+                    // 确认提货
+                    querentihuo: function (id) {
+                        var _this = this;
+                        jw.ts.confirm({
+                            msg: "是否确认提货？"
+                        }, function (index) {
+                            if (index == 1) {
+                                jw.submit("app_茶仓确认提货", {
+                                    "id": id,
+                                    "FMemberType": 0
+                                }, function (ret) {
+                                    if (ret.ds != undefined && ret.ds != "" && ret.ds[0]
+                                        .status == "000000") {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                        _this.gettihuoList();
+                                    } else {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                    }
+                                });
+                            }
+                        });
+
+                    },
+                    // 确认收货
+                    querenshouhuo: function (id) {
+                        var _this = this;
+                        jw.ts.confirm({
+                            msg: "是否确认收货？"
+                        }, function (index) {
+                            if (index == 1) {
+                                jw.submit("app_茶仓确认收货", {
+                                    "id": id
+                                }, function (ret) {
+                                    if (ret.ds != undefined && ret.ds != "" && ret.ds[0]
+                                        .status == "000000") {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                        _this.gettihuoList();
+                                    } else {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                    }
+                                });
+                            }
+                        });
+                    },
+                    //取消转卖
+                    quxiaozhuanmai: function (item) {
+                        var _this = this;
+                        jw.ts.confirm({
+                            msg: "是否确定取消转卖？"
+                        }, function (index) {
+                            if (index == 1) {
+                                jw.submit("app_取消转卖", {
+                                    "FOnekeyResaleId": item.FOnekeyResaleId
+                                }, function (ret) {
+                                    if (ret.ds != undefined && ret.ds != "" && ret.ds[0]
+                                        .status == "000000") {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                        _this.getzhuanmaiList();
+                                    } else {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                    }
+                                });
+                            }
+                        })
+                    },
+                    // 一键转卖配置
+                    toResale: function () {
+                        var _this = this;
+                        jw.openWin({
+                            name: "firm_order",
+                            url: "firm_order.html",
+                            pageParam: {
+                                FWarehouseId: _this.FWarehouseId
+                            }
+                        })
+                    },
+                    //转赠
+                    zhuanzeng: function () {
+                        var _this = this;
+                        jw.openWin({
+                            name: "firm_order2",
+                            url: "firm_order2.html",
+                            pageParam: {
+                                FWarehouseId: _this.FWarehouseId
+                            }
+                        })
+                    },
+                    //退款
+                    tuikuan: function () {
+                        var _this = this;
+                        jw.openWin({
+                            name: "firm_order3",
+                            url: "firm_order3.html",
+                            pageParam: {
+                                FWarehouseId: _this.FWarehouseId
+                            }
+                        });
+                    },
+                    //提货
+                    tihuo: function () {
+                        var _this = this;
+                        jw.openWin({
+                            name: "firm_order4",
+                            url: "firm_order4.html",
+                            pageParam: {
+                                FWarehouseId: _this.FWarehouseId,
+                                FPickType: _this.Warehousedetail.FPickType
+                            }
+                        });
+                    },
+                    /* 查看物流*/
+                    look_wuliu: function (Detail) {
+                        var _this = this;
+                        jw.openWin({
+                            name: "look_wuliu",
+                            url: "look_wuliu.html",
+                            pageParam: {
+                                order2: Detail, // 订单ID
+                                order: _this.Warehousedetail //茶仓详情
+                            }
+                        })
+                    },
+                    //茶仓详情
+                    chacangxq:function(){
+                        var _this = this
+                        var y = $(".zui-content").offset().top;
+                        var x = $(".zui-content").offset().left;
+                        jw.openFrame({
+                            'name': 'chacangxq',
+                            'url': 'chacangxq.html',
+                            pageParam: {
+                                FWarehouseId: _this.FWarehouseId,
+                                FSurplusNum: _this.Warehousedetail.FSurplusNum,
+                                FCreateDate: _this.Warehousedetail.FCreateDate
+                            },
+                        })
+                    },
+                    //接受赠送
+                    jieshou: function () {
+                        var _this = this;
+                        jw.ts.confirm({
+                            msg: "是否确认接受赠送？"
+                        }, function (index) {
+                            if (index == 1) {
+                                jw.submit("app_确认接收", {
+                                    "FWarehouseId": _this.FWarehouseId
+                                }, function (ret) {
+                                    if (ret.ds != undefined && ret.ds != "" && ret.ds[0]
+                                        .status == "000000") {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                        _this.getdetails();
+                                    } else {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                    }
+                                });
+                            }
+                        });
+                    },
+                    //拒绝赠送
+                    jujue: function () {
+                        var _this = this;
+                        jw.ts.confirm({
+                            msg: "是否确认拒绝赠送？"
+                        }, function (index) {
+                            if (index == 1) {
+                                jw.submit("app_退回赠送", {
+                                    "FWarehouseId": _this.FWarehouseId
+                                }, function (ret) {
+                                    if (ret.ds != undefined && ret.ds != "" && ret.ds[0]
+                                        .status == "000000") {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                        _this.getdetails();
+                                    } else {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                    }
+                                });
+                            }
+                        });
+                    },
+                    //仓储费计算
+                    getWarehousePoundage: function (id,ccnumber) {
+                        var _this = this;
+                        jw.submit("app_仓储费计算20201217", {
+                            "FWarehouseId": id,
+                            "number":ccnumber
+                        }, function (ret) {
+                            _this.WarehousePoundage = ret.ds[0].WarehousePoundage;
+                        });
+                        return _this.WarehousePoundage
+                    },
+                    //时间戳转换
+                    formatDate: function (value,number) {
+                        let date = new Date(value.replace(/\-/g,"/"));
+                        let y = 0;
+                        let MM = 0;
+                            if(number == 0){
+                                y = date.getFullYear();
+                                MM = date.getMonth();
+                            }else{
+                                y = date.getFullYear()+1;
+                                MM = date.getMonth()-1;
+                            }
+                            MM = MM < 10 ? ('0' + MM) : MM;
+                            let d = date.getDate();
+                            d = d < 10 ? ('0' + d) : d;
+                            let h = date.getHours();
+                            h = h < 10 ? ('0' + h) : h;
+                            let m = date.getMinutes();
+                            m = m < 10 ? ('0' + m) : m;
+                            let s = date.getSeconds();
+                            s = s < 10 ? ('0' + s) : s;
+                            if(MM=='0' || MM=='00'){
+                                MM = '01'
+                            }
+                            return y + '-' + MM;
+                        }
+                    }
+            });
+        }
+    </script>
+</body>
+
+</html>

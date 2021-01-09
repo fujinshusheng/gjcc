@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>个人中心</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        .showD {
+            display: inline-block;
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: -0.51rem;
+            left: 3.55rem;
+            border-radius: 50%;
+            -moz-border-radius: 50%;
+            -webkit-border-radius: 50%;
+            background-color: red;
+            color: #FFFFFF;
+            font-size: 14px;
+            text-align: center;
+            line-height: 20px;
+            font-weight: bolder;
+        }
+        .zui-header .icon-shezhi {
+          right: 15px;
+          bottom: -25px;
+        }
+        .txiang {
+              background-size: cover;
+        }
+
+    </style>
+</head>
+
+<body>
+<div class="zui-app">
+    <div class="zui-header zui-header-dark zui-row-center">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">个人中心</div>
+        <div class="iconfont zui-header-icon zui-header-right icon-shezhi"
+             onclick="jw.openWin({'name':'Account_Info','url':'../myself/Account_Info.html'})"
+             style="color: #fff;top:25px">
+        </div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="right: 65px;font-size:30px;"
+            onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+        <!-- <div class="zui-header-right">
+            <i class="iconfont icon-fangzi" style="font-size:30px;margin-right:10px"  onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></i>
+            <i class="iconfont icon-shezhi" style="font-size:20px;margin-right:20px"  onclick="jw.openWin({'name':'Account_Info','url':'../myself/Account_Info.html'})"></i>
+        </div> -->
+    </div>
+    <div class="zui-content">
+        <div class="myself_header2">
+            <div class="touxiang_box zui-row zui-row-center" style="position: relative;">
+                <div class="txiang" :style="getbgimg(logininfo.FHanderImg)"></div>
+                <div class="name username zui-col">
+                    <div>{{logininfo.FName}}</div>
+                    <div class="yue">可用余额： {{logininfo.FRemainingSum}}</div>
+                </div>
+                <!--                <div onclick="jw.openWin({'name':'Account_Info','url':'../myself/Account_Info.html'})"-->
+                <!--                     style="color: #fff; position: absolute; top: 30px; right: 48px;" class="iconfont icon-shezhi">-->
+                <!--                </div>-->
+                <div class="look_username" onclick="jw.openWin({'name':'chose_address','url':'my_wallet.html'})">查看
+                    >>
+                </div>
+            </div>
+        </div>
+        <div class="gezhongxinBgc"></div>
+        <div class="myself_box">
+            <div class="myself_nav1 marB">
+                <!-- 全部订单 -->
+                <div class="titlebox dingdan"
+                     onclick="jw.openWin({'name':'feedback','url':'my_order3.html',pageParam:{'navindex':''}})">
+                    查看全部订单 >>
+                </div>
+                <div class="zui-row zui-row-center">
+                    <div class="zui-col" style="position: relative;"
+                         onclick="jw.openWin({'name':'feedback','url':'my_order3.html',pageParam:{'navindex':'0'}})">
+                        <img class="ddImg" src="../../image/my_self/dd1.png">
+                        <i class="showD" v-if="dfkNum != null && dfkNum != ''" v-text="dfkNum" style="width: 16px; height: 16px; line-height: 18px; text-align: center; border-radius: 50%; font-size: 12px; position: absolute;top: -0.51rem;left: 2rem; background-color: #c2384f;"></i>
+                        <span style="font-size: 12px;">待付款</span>
+                    </div>
+                    <div class="zui-col" style="position: relative;"
+                         onclick="jw.openWin({'name':'feedback','url':'my_order3.html',pageParam:{'navindex':'1'}})">
+                        <img src="../../image/my_self/dd2.png">
+                        <i class="showD" v-if="dfhNum != null && dfhNum != ''" v-text="dfhNum"  style="width: 16px; height: 16px; border-radius: 50%;line-height: 18px; text-align: center; font-size: 12px; position: absolute;top: -0.51rem;left: 2rem;background-color: #c2384f;"></i>
+                        <span style="font-size: 12px;">待发货</span>
+                    </div>
+                    <div class="zui-col" style="position: relative;"
+                         onclick="jw.openWin({'name':'feedback','url':'my_order3.html',pageParam:{'navindex':'2'}})">
+                        <img src="../../image/my_self/dd2.png">
+                        <i class="showD" v-if="dshNum != null && dshNum != ''" v-text="dshNum" style="width: 16px; height: 16px; border-radius: 50%;line-height: 18px; text-align: center; font-size: 12px; position: absolute;top: -0.51rem;left: 2rem;background-color: #c2384f;"></i>
+                        <span style="font-size: 12px;">待收货</span>
+                    </div>
+                    <div class="zui-col" style="position: relative;"
+                         onclick="jw.openWin({'name':'feedback','url':'my_order3.html',pageParam:{'navindex':'3'}})">
+                        <img src="../../image/my_self/dd3.png">
+                        <i class="showD" v-if="dpjNum != null && dpjNum != ''" v-text="dpjNum"  style="width: 16px; height: 16px; border-radius: 50%; line-height: 18px; text-align: center;font-size: 12px; position: absolute;top: -0.51rem;left: 2rem;background-color: #c2384f;"></i>
+                        <span style="font-size: 12px;">待评价</span>
+                    </div>
+                    <div class="zui-col" style="position: relative;"
+                         onclick="jw.openWin({'name':'feedback','url':'my_order3.html',pageParam:{'navindex':'4'}})">
+                        <img src="../../image/my_self/chacang5.png">
+                        <i class="showD" v-if="tkNum != null && tkNum != ''" v-text="tkNum"  style="width: 16px; height: 16px; border-radius: 50%; line-height: 18px; text-align: center;font-size: 12px; position: absolute;top: -0.51rem;left: 2rem;background-color: #c2384f;"></i>
+                        <span style="font-size: 12px;">退款</span>
+                    </div>
+                    <!-- <div class="zui-col" style="margin-top: -5px;" @click="">
+                        <img src="../../image/my_self/chacang5.png" style="margin-top: 0;">
+                        <span style="font-size: 12px;">退款</span>
+                    </div> -->
+                </div>
+            </div>
+            <!-- 茶仓 -->
+            <div class="myself_nav2 marB">
+                <div class="zui-row zui-row-center">
+                    <div class="zui-col chacang"
+                         onclick="jw.openWin({'name':'my_chacang_list_first','url':'../chacang/my_chacang_list_first.html'})">
+                        <img src="../../image/my_self/chacang2.png" alt="" class="imgAuto">
+                        <span style="font-size: 12px;">茶仓</span>
+                    </div>
+                    <div class="zui-col"
+                         onclick="jw.openWin({'name':'chacangmx','url':'../myself/chacangmx.html',pageParam:{'name':'转卖'}})">
+                        <img src="../../image/my_self/chacang1.png" alt="" class="imgAuto">
+                        <span style="font-size: 12px;">转卖</span>
+                    </div>
+                    <div class="zui-col"
+                         onclick="jw.openWin({'name':'chacangmx','url':'../myself/chacangmx.html',pageParam:{'name':'赠送'}})">
+                        <img src="../../image/my_self/chacang3.png" alt="" class="imgAuto">
+                        <span style="font-size: 12px;">转赠</span>
+                    </div>
+                    <div class="zui-col" style="margin-top: 2px;"
+                         onclick="jw.openWin({'name':'chacangmx','url':'../myself/chacangmx.html',pageParam:{'name':'提货'}})">
+                        <img src="../../image/my_self/chacang4.png" alt="" class="imgAuto">
+                        <span style="font-size: 12px;">提货</span>
+                    </div>
+                    <div class="zui-col" style="margin-top:2px;"
+                         onclick="jw.openWin({'name':'chacangmx','url':'../myself/chacangmx.html',pageParam:{'name':'退款'}})">
+                        <img src="../../image/my_self/chacang5.png" alt="" class="imgAuto">
+                        <span style="font-size: 12px;">退款</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 积分 -->
+            <div class="myself_nav2 marB">
+                <div class="zui-row zui-row-center">
+                    <div class="zui-col"
+                         onclick="jw.openWin({'name':'my_jifen2','url':'../../html/jifen/my_jifen2.html'})">
+                        <img src="../../image/my_self/jf1.png" alt="" class="imgAuto">
+                        <span style="font-size: 12px;">我的积分</span>
+                    </div>
+                    <div class="zui-col"
+                         onclick="jw.openWin({'name':'jifenrenwu','url':'../../html/jifen/jifenrenwu.html'})">
+                        <img src="../../image/my_self/jf2.png" alt="" class="imgAuto">
+                        <span style="font-size: 12px;">积分任务</span>
+                    </div>
+                    <div class="zui-col"
+                         onclick="jw.openWin({'name':'jifen_shop','url':'../../html/jifen/jifen_shop.html'})">
+                        <img src="../../image/my_self/jf3.png" alt="" class="imgAuto">
+                        <span style="font-size: 12px;">兑换商城</span>
+                    </div>
+                    <div class="zui-col" style="margin-top: 2px;"
+                         onclick="jw.openWin({'name':'jifenshu','url':'../../html/jifenshu/jifenshu.html'})">
+                        <img src="../../image/my_self/jf4.png" alt="" class="imgAuto">
+                        <span style="font-size: 12px;">积分种树</span>
+                    </div>
+                </div>
+            </div>
+
+            <!--意见反馈-->
+            <div class="myself_nav2 marB">
+                <div class="zui-row zui-row-center">
+                    <div class="zui-col"
+                         onclick="jw.openWin({'name':'feedback','url':'feedback.html'})">
+                        <img src="../../image/my_self/yj1.png" alt="" class="imgAuto">
+                        <span style="font-size: 12px;">意见反馈</span>
+                    </div>
+                    <div class="zui-col"
+                        style="margin-top: -5px;" @click="lxkf()">
+                        <img src="../../image/my_self/dd4.png" alt="" class="imgAuto">
+                        <span style="font-size: 12px;">客服</span>
+                    </div>
+                    <div class="zui-col"
+                         onclick="jw.openWin({'name':'aboutus','url':'about_us.html'})">
+                        <img src="../../image/my_self/yj2.png" alt="" class="imgAuto">
+                        <span style="font-size: 12px;">关于我们</span>
+                    </div>
+                    <!-- <div class="zui-col"
+                         @click="updata()">
+                        <img src="../../image/my_self/yj3.png" alt="" class="imgAuto">
+                        <span style="font-size: 12px;">版本更新</span>
+                    </div> -->
+                </div>
+            </div>
+
+            <!--                <div class="marB">-->
+            <!--                    <div class="myself_nav1 borderR0" id="jifenImg">-->
+            <!--                        <div class="zui-row zui-row-center">-->
+            <!--                            <div class="zui-col"-->
+            <!--                                onclick="jw.openWin({'name':'my_jifen2','url':'../../html/jifen/my_jifen2.html'})">-->
+            <!--                                <img src="../../image/my_self/jf1.png" alt="">-->
+            <!--                                <span>我的积分</span>-->
+            <!--                            </div>-->
+            <!--                            <div class="zui-col"-->
+            <!--                                onclick="jw.openWin({'name':'jifenrenwu','url':'../../html/jifen/jifenrenwu.html'})">-->
+            <!--                                <img src="../../image/my_self/jf2.png" alt="">-->
+            <!--                                <span>积分任务</span>-->
+            <!--                            </div>-->
+            <!--                            <div class="zui-col"-->
+            <!--                                onclick="jw.openWin({'name':'jifen_shop','url':'../../html/jifen/jifen_shop.html'})">-->
+            <!--                                <img src="../../image/my_self/jf3.png" alt="">-->
+            <!--                                <span>兑换商城</span>-->
+            <!--                            </div>-->
+            <!--                            <div class="zui-col"-->
+            <!--                                onclick="jw.openWin({'name':'jifenshu','url':'../../html/jifenshu/jifenshu.html'})">-->
+            <!--                                <img src="../../image/my_self/jf4.png" alt="">-->
+            <!--                                <span>积分种树</span>-->
+            <!--                            </div>-->
+            <!--                        </div>-->
+            <!--                    </div>-->
+            <!--                </div>-->
+
+            <!--            <div class="marB">-->
+            <!--                <div class="myself_nav1 borderR0">-->
+            <!--                    <div class="zui-row zui-row-center">-->
+            <!--                        <div class="zui-col"-->
+            <!--                             onclick="jw.openWin({'name':'feedback','url':'feedback.html'})">-->
+            <!--                            <img src="../../image/my_self/yj1.png" alt="">-->
+            <!--                            <span>意见反馈</span>-->
+            <!--                        </div>-->
+            <!--                        <div class="zui-col"-->
+            <!--                             onclick="jw.openWin({'name':'aboutus','url':'about_us.html'})">-->
+            <!--                            <img src="../../image/my_self/yj2.png" alt="">-->
+            <!--                            <span>关于我们</span>-->
+            <!--                        </div>-->
+            <!--                        <div class="zui-col"-->
+            <!--                             onclick="updata()">-->
+            <!--                            <img src="../../image/my_self/yj3.png" alt="">-->
+            <!--                            <span>版本更新</span>-->
+            <!--                        </div>-->
+            <!--                    </div>-->
+            <!--                </div>-->
+            <!--            </div>-->
+
+            <!-- 意见反馈 -->
+            <!--                <div class="marB">-->
+            <!--                    <div class="myself_nav1 borderR0 yijianfankui">-->
+            <!--                        <div class="zui-row zui-row-center">-->
+            <!--                            <div class="zui-col" onclick="jw.openWin({'name':'feedback','url':'feedback.html'})">-->
+            <!--                                <img src="../../image/my_self/yj1.png" alt="" style="width: 50px; height:auto;">-->
+            <!--                                <span>意见反馈</span>-->
+            <!--                            </div>-->
+            <!--                            <div class="zui-col" onclick="jw.openWin({'name':'aboutus','url':'about_us.html'})">-->
+            <!--                                <img src="../../image/my_self/yj2.png" alt="" style="width: 50px; height:auto;">-->
+            <!--                                <span>关于我们</span>-->
+            <!--                            </div>-->
+            <!--                            <div class="zui-col" @click="updata()">-->
+            <!--                                <img src="../../image/my_self/yj3.png" alt="" style="width: 50px; height:auto;">-->
+            <!--                                <span>版本更新</span>-->
+            <!--                            </div>-->
+            <!--                        </div>-->
+            <!--                    </div>-->
+            <!--                </div>-->
+
+            <div class="btnBox">
+                <!-- <button class="btn">切换登录</button> -->
+                <button class="btn marb" @click="loginout()">退出登录</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function () {
+
+        jw.sb.fixStatusBar("", function (ret) {
+            $(".zui-header").css({
+                "padding-top": ret + 0 + "px"
+            })
+        });
+        jw.data.jtget("infochange", function (ret) {
+            myapp.logininfo = JSON.parse(jw.data.get("logininfo"));
+        });
+
+        // 返回页面监听
+        api.addEventListener({
+            name: 'viewappear'
+        }, function (ret, err) {
+            try {
+                myapp.getSxList();
+            } catch (e) {
+
+            }
+        });
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                logininfo: "",
+                appVersion: api.appVersion,
+                dfkNum: null,
+                dfhNum: null,
+                dshNum: null,
+                dpjNum: null,
+                tkNum:  null
+            },
+            created: function () {
+                this.logininfo = JSON.parse(jw.data.get("logininfo"));
+                console.log(jw.data.get("logininfo"))
+                this.getinfo();
+                this.getSxList();
+            },
+            methods: {
+                // 获取我的信息
+                getinfo: function () {
+                    var _this = this;
+                    jw.submit("app_我的信息", {
+                        FUserId: jw.data.get("userid"), //  用户id
+                    }, function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status ==
+                            "000000") {
+                            _this.logininfo = ret.ds1[0];
+                            jw.data.set("logininfo", JSON.stringify(ret.ds1[0]));
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                },
+                // 获取app_获取未完成事项列表
+                getSxList: function () {
+                    var _this = this;
+                    jw.submit("api43076", {
+                        FUserId: jw.data.get("userid"), //  用户id
+                    }, function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds.length > 0) {
+                            _this.dfkNum = ret.ds[0].dfk;
+                            _this.dpjNum = ret.ds[0].dpj;
+                            _this.dfhNum = ret.ds[0].dfh;
+                            _this.dshNum = ret.ds[0].dsh;
+                            _this.tkNum  = ret.ds[0].tk;
+                        }
+                    });
+                },
+                //检查版本更新
+                updata: function (type) {
+                    console.log(jw.compare(mybanben, ret.V))
+                    var _this = this;
+                    if (api.systemType == "ios") {
+                        jw.ts.toast("请打开App Store更新")
+                    } else {
+                        var mybanben = api.appVersion;
+                        var urls =
+                            'http://erp.jiwanginfo.com:11984/PCodeClient/api.ashx?cmdapi=getapkInfo';
+                        console.log(jw.compare(mybanben, ret.V))
+                        // $.getJSON(urls, {}, function (ret) {
+                        //     if (ret != undefined && ret != null && ret.status == '200') {
+                        //         //检查版本更新
+                        //         if (mybanben == ret.V || jw.compare(mybanben, ret.V)) {
+                        //             if (type == undefined) {
+                        //                 jw.ts.toast("当前版本号与服务器版本号一致,无需更新");
+                        //             }
+                        //         } else {
+                        //             jw.openFrame({
+                        //                 name: "banben",
+                        //                 url: "../banben.html",
+                        //                 pageParam: {
+                        //                     banben: ret.V,
+                        //                     url: "http://erp.jiwanginfo.com:11984/" +
+                        //                         ret.path,
+                        //                     GXNR: ""
+                        //                 }
+                        //             });
+                        //         }
+                        //     }
+                        // });
+                    }
+                }, // 退出当前账号
+                loginout: function () {
+                    jw.data.remove("logininfo");
+                    jw.data.remove("userid");
+                    jw.data.jtset("loginout", 1);
+                    api.closeToWin({
+                        name: 'root',
+                    });
+                },
+                // self: function () {
+                //     jw.openWin({
+                //         'name': 'Account_Info',
+                //         'url': '../myself/Account_Info.html'
+                //     });
+                // }
+                //联系客服
+                lxkf: function () {
+                    window.location.href = 'tel:' + 15867203999;
+                },
+            }
+        });
+    }
+
+    // function windowHerf(index) {
+    //     switch (index) {
+    //         case 1:
+    //             // window.location.href = 'my_order3.html?' + 'flag=2'
+    //             jw.openWin({
+    //                 name: "chose_address",
+    //                 url: "my_order3.html?" + 'flag=1'
+    //             });
+    //         case 2:
+    //             jw.openWin({
+    //                 name: "chose_address",
+    //                 url: "my_order3.html?" + 'flag=2'
+    //             });
+    //         case 3:
+    //             jw.openWin({
+    //                 name: "chose_address",
+    //                 url: "my_order3.html?" + 'flag=3'
+    //             });
+    //         case 4:
+    //             jw.openWin({
+    //                 name: "chose_address",
+    //                 url: "my_order3.html?" + 'flag=4'
+    //             });
+    //         case 5:
+    //             jw.openWin({
+    //                 name: "chose_address",
+    //                 url: "my_order3.html?" + 'flag=5'
+    //             });
+    //     }
+    // }
+</script>
+
+</html>

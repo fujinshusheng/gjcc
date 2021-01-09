@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>Title</title>
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+
+<body>
+
+<div class="zui-app">
+
+    <div class="zui-header zui-header-dark zui-row-center">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">我的茶仓</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="right: 55px;font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+        <div class="iconfont zui-header-icon zui-header-right zui-header_text"
+             onclick="jw.openWin({'name':'shuoming','url':'shuoming.html'})">仓储说明
+        </div>
+    </div>
+
+    <!--<div class="zui-row shop_nav2">-->
+    <!-- <div class="zui-col nav" :class="{'selected':navindex==1}" @click="navclick(1)">茶品</div>-->
+    <!-- <div class="zui-col nav" :class="{'selected':navindex==2}" @click="navclick(2)">茶器</div>-->
+    <!--</div>-->
+
+    <div class="zui-content">
+
+    </div>
+
+</div>
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/zui.js"></script>
+<script src="../../res/weui/jquery-weui.min.js"></script>
+<script src="../../res/weui/swiper.min.js"></script>
+<script src="../../js/jw.js"></script>
+<script>
+    apiready = function () {
+        jw.sb.fixStatusBar(".zui-header");
+
+        /* 打开列表 */
+        function openlist(navindex) {
+            var y = $(".zui-content").offset().top;
+            jw.openFrame({
+                name: "my_chacang_List",
+                url: "my_chacang_List.html",
+                rect: {
+                    x: 0,
+                    y: y,
+                    w: "auto",
+                    h: "auto"
+                },
+                bounces: true,
+                pageParam: {
+                    type2: navindex,
+                    FBusinessId:api.pageParam.FBusinessId,
+                },
+            });
+        }
+
+        function setlist() {
+            var y = $(".zui-content").offset().top;
+            api.setFrameAttr({
+                name: 'my_chacang_List',
+                rect: {
+                    x: 0,
+                    y: y,
+                    w: "auto",
+                    h: "auto"
+                },
+            });
+        }
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                navindex: 1,
+                list: [], // 茶仓列表
+            },
+            created: function () {
+                openlist(this.navindex);
+                setTimeout(function () {
+                    setlist();
+                }, 500)
+            },
+            methods: {
+                navclick: function (t) {
+                    this.navindex = t;
+                    jw.data.jtset("navtab", t)
+                },
+                tolist: function (item) {
+                    jw.openWin({
+                        name: "my_chacang2",
+                        url: "my_chacang2.html",
+                        pageParam: {
+                            FYear: item.FYear,
+                            BrandFName: item.BrandFName
+                        }
+                    })
+                },
+            },
+            mounted() {
+            }
+        })
+    }
+</script>
+</body>
+
+</html>

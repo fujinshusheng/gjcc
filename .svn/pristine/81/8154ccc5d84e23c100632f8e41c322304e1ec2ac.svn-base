@@ -1,0 +1,127 @@
+<widget id="A6032145856192" version="0.0.1">
+
+    <name>观今茶仓</name>
+
+    <description>
+
+        Example For APICloud.
+
+    </description>
+
+    <author email="developer@apicloud.com" href="http://www.apicloud.com">
+
+        Developer
+
+    </author>
+
+<!--    <content src="index3.html"/>-->
+    <content src="index3.html"/>
+    <!--<content src="html/jifenshu/jifenshu.html"/>-->
+
+    <access origin="*"/>
+
+    <preference name="useWKWebView" value="true" />
+
+    <preference name="pageBounce" value="false"/>
+
+    <preference name="appBackground" value="rgba(0,0,0,0.0)"/>
+
+    <preference name="windowBackground" value="rgba(0,0,0,0.0)"/>
+
+    <preference name="frameBackgroundColor" value="rgba(0,0,0,0.0)"/>
+
+    <preference name="hScrollBarEnabled" value="false"/>
+
+    <preference name="vScrollBarEnabled" value="false"/>
+
+    <preference name="autoLaunch" value="true"/>
+
+    <preference name="fullScreen" value="false"/>
+
+    <preference name="autoUpdate" value="true"/>
+
+    <preference name="smartUpdate" value="false"/>
+
+    <preference name="debug" value="false"/>
+
+    <preference name="statusBarAppearance" value="true"/>
+
+    <permission name="readPhoneState"/>
+
+    <permission name="camera"/>
+
+    <permission name="record"/>
+
+    <permission name="location"/>
+
+    <permission name="fileSystem"/>
+
+    <permission name="internet"/>
+
+    <permission name="bootCompleted"/>
+
+    <permission name="hardware"/>
+
+    <preference name="softInputMode" value="auto"/>
+
+    <preference name="urlScheme" value="guanjinchacang" />
+
+
+    <permission name="imageFilter"/>
+
+
+<!--    <feature name="wxPay">
+      <param name="urlScheme" value="wx7f1cca191b9b3caf"/>
+      <param name="apiKey" value="wx7f1cca191b9b3caf"/>
+      <param name="apiSecret" value="e32cc0c1864e89076cc98e364184a9ed"/>
+    </feature>
+
+    <feature name="wxPayPlus">
+        <param name="urlScheme" value="wx7f1cca191b9b3caf"/>
+        <param name="apiKey" value="wx7f1cca191b9b3caf"/>
+        <param name="apiSecret" value="e32cc0c1864e89076cc98e364184a9ed"/>
+        <param name="universalLink" value="https://gjccwx.jiwanginfo.com"/>
+    </feature>-->
+<!--    {
+    "applinks": {
+    "apps": [], #为必写且固定为[]
+    "details": [{
+    "appID": "LBH383BD52.com.apicloud.gjcc", #TeamID + '.' + BundleID
+    "paths": ["/*"] #路径可以随意设置，但必须符合微信要求
+    }]
+    }
+    }-->
+<!--    <feature name="wx">
+        <param name="urlScheme" value="wx7f1cca191b9b3caf"/>
+        <param name="apiKey" value="wx7f1cca191b9b3caf"/>
+        <param name="apiSecret" value="e32cc0c1864e89076cc98e364184a9ed"/>
+    </feature>-->
+    <feature name="aliPayPlus">
+        <param name="urlScheme" value="AliPayPlusA6073549262693" />
+    </feature>
+    <feature name="wxPlus">
+        <param name="urlScheme" value="wx7f1cca191b9b3caf"/>
+        <param name="apiKey" value="wx7f1cca191b9b3caf"/>
+        <param name="apiSecret" value="e32cc0c1864e89076cc98e364184a9ed"/>
+        <param name="universalLink" value="https://gjccwx.jiwanginfo.com"/>
+    </feature>
+    <feature name="wxPayPlus">
+        <param name="urlScheme" value="wx7f1cca191b9b3caf"/>
+        <param name="apiKey" value="wx7f1cca191b9b3caf"/>
+        <param name="apiSecret" value="e32cc0c1864e89076cc98e364184a9ed"/>
+        <param name="universalLink" value="https://gjccwx.jiwanginfo.com"/>
+    </feature>
+<!--    <feature name="wxPlus">
+        <param name="urlScheme" value="wx7f1cca191b9b3caf"/>
+        <param name="apiKey" value="wx7f1cca191b9b3caf"/>
+        <param name="apiSecret" value="e32cc0c1864e89076cc98e364184a9ed"/>
+        <param name="universalLink" value="https://gjccwx.jiwanginfo.com"/>
+    </feature>-->
+
+    <feature name="QQPlus">
+        <param name="urlScheme" value="tencent1107029460"/>
+        <param name="apiKey" value="1107029460"/>
+    </feature>
+
+
+</widget>

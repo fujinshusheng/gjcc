@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>个人中心</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+
+<div class="zui-app main_jf">
+    <div class="zui-header zui-row-center myjifen_header">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">积分记录</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+
+    <div class="zui-content jifen_bg">
+        <div class="nowjifen zui-row zui-row-center" v-for="items in jflist">
+            <div class="zui-col">
+                <span class="tip">当前积分：</span><span class="number">{{items.FIntegral}}</span>
+            </div>
+        </div>
+
+        <div class="renwu_card zui-row zui-row-column">
+
+            <div class="zui-list my_jifenlist" v-for="item in jifenlist" v-cloak>
+                <div id="huoqu" class="zui-item">
+                    <div class="zui-row zui-row-center">
+                        <div class="fz16 zui-col">{{item.FTitle}}</div>
+                        <span class="fz16">{{item.FIntegral}}</span>
+                    </div>
+                    <div class="zui-row zui-row-center">
+                        <p class="fz12 zui-col">{{item.FCreateDate | data}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!--<p class="fz12 color-gray9 text-center" style="margin-top: 30px;">没有更多数据了</p>-->
+
+    </div>
+</div>
+
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function() {
+        jw.sb.fixStatusBar(".zui-header");
+
+        function fnInitEvent() {
+            /**上拉加载 */
+            api.addEventListener({
+                name: 'scrolltobottom',
+                extra: {
+                    threshold: 10
+                }
+            }, function (ret, err) {
+                //页码+1，继续请求数据
+                myapp.getshoplist(2);
+            });
+            /** 下拉刷新 */
+            // api.setRefreshHeaderInfo({
+            //     bgColor: '#ccc',
+            //     textColor: '#fff',
+            //     textDown: '下拉刷新...',
+            //     textUp: '松开刷新...'
+            // }, function (ret, err) {
+            //     //重置页码、页面数据，请求数据
+            //     myapp.getshoplist(1);
+            // });
+        };
+        fnInitEvent();
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                navindex: 1,
+                page_index: 1,
+                page_TotalCount: 1,
+                logininfo: "",
+                jifenlist: [], // 积分获取列表
+                jflist:[],//积分
+               // duihuanlist: [], // 兑换记录列表
+            },
+            created: function () {
+                //this.logininfo = JSON.parse(jw.data.get("logininfo"));
+
+                this.getjifenlist();
+                this.init();
+                this.zjfdata();
+
+                // this.getduihuanlist();
+            },
+            methods: {
+
+                init: function () {
+                    var _this = this;
+                    _this.getshoplist(1);
+                },
+                getshoplist:function(ftype){
+                     var _this = this;
+                     //分页
+                     var l = _this.page_index;
+                    if (ftype == 1) {
+                        _this.page_index = 1;
+                    } else {
+                        l = parseInt(_this.page_index) + 1;
+                        
+                        if (l > _this.page_TotalCount) {
+                            return false;
+                        } else {
+                            _this.page_index = l;
+                        }
+                    }
+                },
+                // 获取积分记录 api41721 积分记录
+                getjifenlist: function () {
+                    var _this = this;
+
+                    jw.submit("api41721",{
+                        FUserId: jw.data.get("userid"),
+                        page:_this.page_index ,//当前分页
+                    },function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            _this.jifenlist = ret.ds1;
+                            _this.logininfo=ret.ds2[0];
+                        } else {
+                          $("#huoqu").html(ret.ds[0].msg);
+                            _this.jifenlist = [];
+                            _this.logininfo=ret.ds1[0];
+                        };
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds.length > 0) {
+                            if (ret.ds2[0].TotalCount == undefined || ret.ds2[0].TotalCount == "") {
+                                _this.page_TotalCount = 1;
+                            } else {
+                                _this.page_TotalCount = ret.ds2[0].TotalCount;
+                            }
+                            if (ftype == 1) {
+                                _this.shoplist = ret.ds;
+                            } else {
+                                _this.shoplist.push.apply(_this.shoplist, ret.ds);
+                            }
+                        } else {
+                            _this.shoplist = [];
+                            _this.page_TotalCount = 0;
+                        }
+                    });
+                },
+                //积分接口
+                zjfdata:function(){
+                    var _this=this;
+                    //api42959 获取用户信息
+                    jw.submit("api42959",{
+                        FUserId:jw.data.get("userid") //登录id
+                    },function(data){
+                        if(data.ds[0].status=="000000"){
+                            _this.jflist=data.ds1
+                        }else if(data.ds[0].status=="999999"){
+                            jw.ts.toast(data.ds[0].msg);
+                        }
+                    })
+                },
+                // 获取积分兑换记录
+                // getduihuanlist: function () {
+                //     var _this = this;
+                //     jw.submit("app_积分兑换记录",{
+                //         FUserId: jw.data.get("userid")
+                //     },function (ret) {
+                //         if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                //             _this.duihuanlist = ret.ds1;
+                //         } else {
+                //             $("#duihuan").html(ret.ds[0].msg);
+                //             _this.duihuanlist = [];
+                //         }
+                //     });
+                // }
+            }
+        })
+
+    }
+</script>
+</body>
+</html>

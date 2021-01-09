@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>众筹详情</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        [v-cloak] {
+			display: none !important;
+		}
+    </style>
+
+</head>
+<body>
+
+
+<div class="zui-app" v-cloak>
+    <div class="zui-header zui-header-dark zui-row-center">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">众筹详情</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+    <div class="zui-content" >
+
+        <div class="paimai_details_header">
+            <div class="bannerimg">
+                 <img :src="order.FImg | url"/>
+                <!--<img src="../../image/paimai_img.png" alt="">-->
+                <!--<div class="fenxiang"><i class="iconfont icon-share-fill"></i>分享</div>-->
+            </div>
+            <div class="title">
+                {{order.FTitle}}
+                <!-- 茶品竞价·2019春 曼撒精选古树熟茶老茶头100g -->
+                <p><b class="fr color-red fz16">{{order.FCost}}</b></p>
+                <div class="clearfix"></div>
+                <p class="fz12 color-gray9" style="line-height: 2;">{{order.time1}}</p>
+                <p class="fz12 color-gray9" style="line-height: 2;">{{order.time2}}</p>
+            </div>
+            <hr>
+            <div class="title">
+                <p>{{order.FMember}}</p>
+                <div class="jingdutiao" style="margin-top: 5px;">
+                    <div class="jindu" :style="{'width':order.FPercent+'%'}"></div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="paimai_title">活动须知</div>
+        <div class="paimai_html">
+            <div class="title" v-html="order.FContent"></div>
+        </div>
+
+        <div class="zcpaimai_box">
+            <div class="zui-row zui-row-center titlebox">
+                <div class="zui-col title">已报名({{order.ActivityMember}})：</div>
+                <span class="more" @click="ybmryfun()">更多>></span>
+            </div>
+            <div class="txlist">
+                <div class="box" v-for="(items,index) in ybmrimag" style="display: inline-block;margin: 1px;">
+                    <img width="50"  :src="items.FHanderImg | url"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="paimaichujia_list zcpaimai_box" v-for="(items,index) in stardata">
+                <div class="zui-row zui-row-center titlebox">
+                        <div class="zui-col title">留言({{index+1}})：</div>
+                    </div>
+            <div class="item zui-row zui-row-center">
+                 <div  class="txbox">
+                     <img width="40" :src="items.FHanderImg"/>
+                     <!-- <img width="40" src="../../image/tx01.jpg" alt=""> -->
+                </div>
+                <div class="zui-col">
+                    <p class="fz14">{{items.FName}}</p>
+                    <b class="fz16 ">{{items.FLeavemsg}}</b>
+                </div>
+                <div class="rbox">
+<!--                    <img width="45" src="../../image/lingxian.png" alt="">-->
+                    <p class="fz14">{{items.FCreateDate}}</p>
+                </div>
+            </div>
+            <!-- <div class="item zui-row zui-row-center">
+                <div class="zui-col">
+                    <p class="fz14">y***g</p>
+                    <b class="fz16 color-orange">500积分</b>
+                </div>
+                <div class="rbox">
+                   <img width="45" src="../../image/chuju.png" alt="">
+                    <p class="fz14">19-03-15 21:50:36</p>
+                </div>
+
+            </div>
+            <div class="item zui-row zui-row-center">
+                <div class="zui-col">
+                    <p class="fz14">y***g</p>
+                    <b class="fz16 color-orange">500积分</b>
+                </div>
+                <div class="rbox">
+                   <img width="45" src="../../image/chuju.png" alt="">
+                    <p class="fz14">19-03-15 21:50:36</p>
+                </div>
+
+            </div> -->
+        </div>
+
+    </div>
+
+    <!-- 商品详情 底部 -->
+    <div class="zui-footer zui-row zui-row-center">
+        <div class="paimai_btn">
+            <i class="iconfont icon-kefu"></i>
+            <span class="fz16 color-blue" @click="lxkf()">联系客服>></span>
+        </div>
+        <div class="footer_btn zui-col color-white" :class="{'bg-red':order.btnStatu}" @click="justbuy()">{{order.btnTitle}}</div>
+    </div>
+    <!-- 商品详情 底部 end -->
+
+
+</div>
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+
+<script>
+    apiready = function () {
+        jw.sb.fixStatusBar(".zui-header");
+
+        //返回页面时监听回调函数
+        api.addEventListener({
+            name:'viewappear'
+        }, function(ret, err){
+            myapp.getshoplist();
+        });
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                kefushow: false,
+                bmrsval:false,//显示隐藏的报名
+                order:[], //ds1
+                stardata:[], //ds3
+                ybmrimag:[], //已报名图
+                cjryl:[],//已报名人员
+                openbtn:false,//显示隐藏的按钮状态
+            },
+            created: function () {
+
+            },
+            methods: {
+                getshoplist: function () {
+                    var _this = this;
+                    //api41936 活动详情页面
+                    jw.submit("api41936", {
+                        FActiviteID: api.pageParam.FActiviteID ,//活动id || api.pageParam.FActiviteID
+                        FUserId:jw.data.get('userid') //唯一id
+
+                    }, function (ret) {
+                        if(ret.ds[0].status=="000000"){
+                            _this.order=ret.ds1[0];
+                            _this.ybmrimag=ret.ds2;
+                            _this.stardata=ret.ds3;
+                        }else if(ret.ds[0].status=="999999"){
+                            jw.ts.toast(data.ds[0].msg);
+                        }
+                    });
+                },
+                //已报名人员
+                ybmryfun:function(){
+                    var option = {
+                        FActiviteID: api.pageParam.FActiviteID
+                    };
+                    jw.openWin({
+                        name: "zhouchou_cyhdry",
+                        url: "zhouchou_cyhdry.html",
+                        pageParam: option
+                    })
+                },
+                //出个价
+                justbuy:function(){
+                    var _this=this;
+                    if(_this.order.btnStatu){
+                        jw.openWin({
+                            name: "zhouchou_num",
+                            url: "zhouchou_num.html",
+                            pageParam: {
+                                FNumdata: _this.order.FNum,
+                                FPickAddres: _this.FPickAddres,
+                                FPickType: _this.order.FPickType,
+                                FActiviteID: api.pageParam.FActiviteID,//活动id
+                            }
+                        })
+                    }
+                },
+                //联系客服
+                lxkf:function(){
+                    window.location.href = 'tel:' + 15867203999;
+                },
+            }
+        })
+    }
+    
+</script>
+</body>
+</html>

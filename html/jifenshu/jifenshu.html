@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <!--<meta name="viewport" content="width=750,target-densitydpi=375, user-scalable=no">-->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>积分树</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="../../css/zui/font/iconfont.css">
+    <script src="../../js/jquery-2.1.1.min.js"></script>
+    <script src="../../js/jw.js"></script>
+    <script src="../../js/jquery.rotate.js"></script>
+    <link rel="stylesheet" href="../../res/swiper/swiper.min.css">
+    <script src="../../res/swiper/swiper-3.4.0.jquery.min.js"></script>
+</head>
+
+<body style="background-image: linear-gradient(#6cb0de, #8dc77d);">
+    <div class="iconfont icon-back" id="jifenBack" onclick="jw.back()"></div>
+    <div class="treebox">
+        <div class="treebg"></div>
+        <div class="txbox" style="display: none;">
+            <div class="img">
+                <img src="" alt="">
+            </div>
+            <p class="name"></p>
+        </div>
+
+        <div class="topshow">
+            <marquee behavior="scroll" direction="left" style="width: 100%; height: 30px;"></marquee>
+        </div>
+
+        <div class="jifenzhuanqu" onclick="jw.openWin({name:'jifenrenwu',url:'../jifen/jifenrenwu.html'})">赚取积分>></div>
+
+        <div class="navbox_left">
+            <div id="lingshuidi" class="nav">
+                <img src="img/ls.png" alt="">
+            </div>
+            <!--<div id="dongtai" class="nav">-->
+            <!--<img src="img/dt.png" alt="">-->
+            <!--</div>-->
+        </div>
+
+        <div class="navbox">
+            <div id="jiaoshui" class="nav">
+                <i class="nums">1</i>
+                <img src="img/nav1.png" alt="">
+                <p class="text">浇水</p>
+                <p class="num">100ml</p>
+            </div>
+            <!--<div id="shifeinav" class="nav">-->
+            <!--<i class="nums">1</i>-->
+            <!--<img src="img/nav2.png" alt="">-->
+            <!--<p class="text">施肥</p>-->
+            <!--</div>-->
+            <div id="chucaonav" class="nav">
+                <i class="nums">1</i>
+                <img src="img/nav4.png" alt="">
+                <p class="text">除草</p>
+            </div>
+            <div id="shangdian" class="nav">
+                <img src="img/nav3.png" alt="">
+                <p class="text">树仓</p>
+            </div>
+        </div>
+
+        <!-- 树图片 -->
+        <div class="treeimg" style="width:50%;">
+       <div class="shu">
+        <img id="treeimg" src="img/tree1.png" alt="" >
+       </div>
+            <img src="img/yuan.png" alt="">
+            <div id="yun" class="yun img" style="display: none;"><img src="img/yun.gif" alt=""></div>
+            <div class="caizhai img" style="display: none;"><img src="img/shou.png" alt=""></div>
+            <div class="cao1 img"><img src="img/chucao1.png" alt=""></div>
+            <div class="cao2 img"><img src="img/chucao2.png" alt=""></div>
+        </div>
+
+        <!-- 水壶 -->
+        <div class="jiaoshui_am img" id="jiaoshui_am"><img src="img/treeshuihu.png" alt=""></div>
+        <!-- 水滴 -->
+        <div id="shui" class="img"><img src="img/shui.png" alt=""></div>
+
+        <!-- 施肥 -->
+        <div class="shifei img"><img src="img/shifei.png" alt=""></div>
+        <!-- 肥料 -->
+        <div class="feiliao img"><img src="img/feiliao.png" alt=""></div>
+
+        <!-- 锄头 -->
+        <div class="chutou img"><img src="img/chu.png" alt=""></div>
+
+        <!-- 育苗时期 -->
+<!--        <div class="ymsqtext" style="bottom: 127px;">XXX</div>-->
+
+        <!-- 进度条 -->
+        <div class="jindutext">0%</div>
+        <div class="jindutiao">
+            <div class="jindutiao_box">
+                <div class="jindutiao_jd"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 动画进行时 遮罩 -->
+    <div class="amintabg"></div>
+
+    <!-- 仓库 / 商店 弹出框 -->
+    <div id="shopbox" class="modelbox" style="display: none;">
+        <div class="shopbox">
+            <div class="prev img"><img src="img/prev.png" alt=""></div>
+            <div class="next img"><img src="img/next.png" alt=""></div>
+            <div class="shopbox_title">
+                树仓
+            </div>
+            <!--<div class="shopbox_nav clearfix">-->
+            <!--<div class="nav active">仓库</div>-->
+            <!--<div class="nav">商店</div>-->
+            <!--</div>-->
+            <div class="shopbox_main clearfix">
+            </div>
+        </div>
+        <div class="model_bg"></div>
+    </div>
+
+    <!-- 选择树 -->
+    <!--<div class="chosetree">-->
+    <div class="chosetree" style="display: none;">
+        <div class="chosetreebox">
+
+            <div class="chosetreebox_title">栽一颗茶树，收获后茶叶包邮送到家</div>
+            <div class="chosetreelist2 swiper-container">
+                <div class="swiper-wrapper">
+                </div>
+            </div>
+
+            <div class="btn" id="startbtn">开始种植茶树</div>
+            <p class="btn_title">请选择茶树</p>
+
+        </div>
+        <div class="model_bg"></div>
+    </div>
+
+    <div id="chosetree_qr" class="chosetree_qr" style="display: none;">
+        <div class="chosetreebox">
+            <div class="btn">确认</div>
+            <div class="btn_title">
+                <img src="img/qr.png" alt="">
+                我已查看种树规则 <a href="javascript:;" onclick="jw.openWin({'name':'guizeshuoming','url':'guizeshuoming.html'})">查看规则</a>
+            </div>
+        </div>
+        <div class="model_bg"></div>
+    </div>
+
+    <script>
+        apiready = function () {
+
+            var userid = jw.data.get("userid");
+            var logininfo = JSON.parse(jw.data.get("logininfo"));
+
+            // 姓名
+            $(".txbox").find(".name").html(logininfo.FName);
+
+            var FHanderImg = logininfo.FHanderImg;
+            if (FHanderImg.indexOf("http") == -1) {
+                FHanderImg = jw.config.ip + FHanderImg;
+            }
+            $(".txbox").find("img").attr("src", FHanderImg);
+            $(".txbox").find("img").height($(".txbox").find("img").width());
+            /* 仓库/ 商店*/
+            var sd = 1;
+            //返回页面时监听回调函数
+            api.addEventListener({
+                name: 'viewappear'
+            }, function (ret, err) {
+                if (sd == 1) {
+                    /* 初始化仓库 */
+                    getcangku();
+                } else {
+                    /* 获取商店 */
+                    getshangdian();
+                }
+            });
+
+            /*$("#treeimg").on("click",function () {
+                treedata.FSort++;
+
+                /!* 执行动画 *!/
+                if(lastFSort != 0 && lastFSort != treedata.FSort){
+                    $("#yun").width(api.winWidth);
+                    $("#yun").height(api.winWidth);
+                    $("#yun").show().find("img").attr("src","img/yun.gif");
+                    setTimeout(function () {
+                        $("#yun").hide().find("img").attr("src","");
+                    },2200);
+                    setTimeout(function () {
+
+                        /!* 根据返回状态显示树苗 *!/
+                        switch (treedata.FSort) {
+                            case 1:
+                                $("#treeimg").attr("src","img/tree1.png");
+                                break;
+                            case 2:
+                                $("#treeimg").attr("src","img/tree2.png");
+                                break;
+                            case 3:
+                                $("#treeimg").attr("src","img/tree3.png");
+                                break;
+                            case 4:
+                                $("#treeimg").attr("src","img/tree4.png");
+                                break;
+                        }
+                    },1100);
+                }else {
+                    /!* 根据返回状态显示树苗 *!/
+                    switch (treedata.FSort) {
+                        case 1:
+                            $("#treeimg").attr("src","img/tree1.png");
+                            break;
+                        case 2:
+                            $("#treeimg").attr("src","img/tree2.png");
+                            break;
+                        case 3:
+                            $("#treeimg").attr("src","img/tree3.png");
+                            break;
+                        case 4:
+                            $("#treeimg").attr("src","img/tree4.png");
+                            break;
+                    }
+                }
+            })*/
+
+            var newtreeactive = 0;
+            var newtreelist = [];
+
+
+            var treelist = [];
+            var treeindex = 0;
+            var treedata = {
+                FPercent: 0,
+            };
+
+            /* 上一次树苗状态 */
+            var lastFSort = 0;
+
+            /* 初始化数据 */
+            function datainit(callback) {
+                // 头像
+                // $(".txbox").find("img").attr("src",treedata.FHanderImg);
+                if (callback != undefined) {
+                    /* 进度条动画 */
+                    $(".jindutiao_jd").animate({
+                        left: -(100 - treedata.FPercent) + "%"
+                    }, 300);
+                } else {
+                    // 进度条
+                    $(".jindutiao_jd").css("left", -(100 - treedata.FPercent) + "%");
+                }
+                // $(".jindutext").text(treedata.FPercent + "%");
+                $(".jindutext").html('<span>'+ treedata.FName + '&nbsp;&nbsp;</span>' + treedata.FPercent + "%");
+                // $(".ymsqtext").text(treedata.FName);
+
+                // 顶部说明
+                $(".topshow marquee").html('<p>' + treedata.TopShow + '</p>');
+
+                /* 执行动画 */
+                if (lastFSort != 0 && lastFSort != treedata.FSort) {
+                    $("#yun").width(api.winWidth);
+                    $("#yun").height(api.winWidth);
+                    $("#yun").show().find("img").attr("src", "img/yun.gif");
+                    setTimeout(function () {
+                        $("#yun").hide().find("img").attr("src", "");
+                    }, 2200);
+                    setTimeout(function () {
+
+                        /* 根据返回状态显示树苗 */
+                        switch (treedata.FSort) {
+                            case 1:
+                                $("#treeimg").attr("src", "img/tree1.png");
+                                break;
+                            case 2:
+                                $("#treeimg").attr("src", "img/tree2.png");
+                                break;
+                            case 3:
+                                $("#treeimg").attr("src", "img/tree3.png");
+                                break;
+                            case 4:
+                                $("#treeimg").attr("src", "img/tree4.png");
+                                break;
+                        }
+                    }, 1100);
+                } else {
+                    /* 根据返回状态显示树苗 */
+                    switch (treedata.FSort) {
+                        case 1:
+                            $("#treeimg").attr("src", "img/tree1.png");
+                            break;
+                        case 2:
+                            $("#treeimg").attr("src", "img/tree2.png");
+                            break;
+                        case 3:
+                            $("#treeimg").attr("src", "img/tree3.png");
+                            break;
+                        case 4:
+                            $("#treeimg").attr("src", "img/tree4.png");
+                            break;
+                    }
+                }
+
+                lastFSort = treedata.FSort;
+
+
+                if (treedata.FIfPick == 1) {
+                    $(".caizhai").show();
+                } else {
+                    $(".caizhai").hide();
+                }
+
+                // 剩余浇水次数
+                if (treedata.FResidueWater != undefined && treedata.FResidueWater != null && treedata
+                    .FResidueWater > 0) {
+                    $("#jiaoshui").find(".nums").html(treedata.FResidueWater).show();
+                } else {
+                    $("#jiaoshui").find(".nums").hide();
+                }
+                // 剩余除草次数
+                if (treedata.FResidueFertilizer != undefined && treedata.FResidueFertilizer != null && treedata
+                    .FResidueFertilizer > 0) {
+                    $("#chucaonav").find(".nums").html(treedata.FResidueFertilizer).show();
+                } else {
+                    $("#chucaonav").find(".nums").hide();
+                }
+
+            }
+
+            var mySwiper = new Swiper('.swiper-container', {
+                autoplay: 5000, //可选选项，自动滑动
+                slidesPerView: 2,
+                slidesPerGroup: 2,
+                slidesPerColumn: 2,
+            })
+
+            function chosetreeam(list) {
+                var html = "";
+                list.forEach(function (item, index) {
+                    var data = escape(JSON.stringify(item));
+                    html = `<div class="swiper-slide" data-d="` + data + `">
+                                        <img src="` + jw.config.imagesUrl + item.FImg + `" alt="">
+                                        <span class="title">` + item.FTreeName + `</span>
+                                        <span class="title2">` + item.FCost + `</span>
+                                    </div>`;
+
+                    mySwiper.appendSlide(html);
+                })
+                // $(".chosetreelist2").html(html);
+            }
+
+            $(document).on("click",".swiper-slide",function () {
+                newtreeactive = $(this).index();
+                var data = newtreelist[newtreeactive];
+                $("#startbtn").html("开始种植" + data.FTreeName);
+                $(".chosetree").find(".btn_title").html(data.FContent);
+            })
+
+            /* 获取初始化信息 */
+            function gettreedata(callback) {
+                jw.submit("api42330", {
+                    FUserId: userid
+                }, function (ret) {
+                    if (ret.ds[0].status == "000000") {
+                        if (ret.ds1 != undefined && ret.ds1.length > 0) {
+                            treelist = ret.ds1;
+                            treedata = ret.ds1[treeindex];
+
+                            /* 初始化数据 */
+                            datainit(callback);
+
+                            /* 执行完毕回调 */
+                            if (callback != undefined) {
+                                callback();
+                            }
+                        }
+                    } else if (ret.ds[0].status == "111111") {
+                        jw.ts.toast(ret.ds[0].msg);
+
+
+                        if (ret.ds1 != undefined && ret.ds1.length > 0) {
+                            var html = '';
+
+                            $(".chosetreelist").html("");
+                            $(".chosetree").show();
+
+                            newtreelist = ret.ds1;
+                            chosetreeam(ret.ds1);
+
+                            // ret.ds1.forEach(function (item, index) {
+                            //     html += ' <div class="chosetreeitem" data-fid="'+item.FId+'" data-fcost="'+item.FCost+'">\n' +
+                            //         '                    <div class="box">\n' +
+                            //         '                        <img src="'+jw.config.ip + item.FImg+'" alt="">' +
+                            //         // '                        <p class="text">'+item.FTreeName+'</p>\n' +
+                            //         // '                        <p class="text2">'+item.FContent+'</p>\n' +
+                            //         // '                        <p class="text2">'+item.FCost+'</p>\n' +
+                            //         '                    </div>\n' +
+                            //         '                </div>'
+                            // });
+                            // $(".chosetreelist").html(html);
+                        }
+
+                        // $(".chosetree").show();
+                    } else {
+                        jw.ts.toast(ret.ds[0].msg);
+                    }
+                })
+            }
+
+            gettreedata();
+
+            /* 向左轻扫  查看下一棵树 */
+            api.addEventListener({
+                name: 'swipeleft'
+            }, function (ret, err) {
+
+                if (treeindex < treelist.length) {
+                    treeindex++;
+                    treedata = treelist[treeindex];
+
+                    /* 初始化数据 */
+                    datainit();
+                } else {
+                    jw.ts.toast("没有了！")
+                }
+
+            });
+
+            /* 向右轻扫 查看上一棵树 */
+            api.addEventListener({
+                name: 'swiperight'
+            }, function (ret, err) {
+                if (treeindex > 0) {
+                    treeindex--;
+                    treedata = treelist[treeindex];
+
+                    /* 初始化数据 */
+                    datainit();
+                } else {
+                    jw.ts.toast("没有了！")
+                }
+            });
+
+            /* 获取仓库 */
+            function getcangku() {
+                jw.submit("api42334", {
+                    FUserId: userid
+                }, function (ret) {
+                    if (ret.ds[0].status == "000000") {
+
+                        if (ret.ds1 != undefined && ret.ds1.length > 0) {
+                            var html = "";
+                            var imgsrc = 'img/chayetree.png'
+
+                            for (var i = 0; i < ret.ds1.length; i++) {
+                                var img = ret.ds1[i].FImg;
+                                if (img == undefined || img == null || img == "") {
+                                    img = imgsrc
+                                }
+                                html += '<div class="shopbox_box ' + (ret.ds1[i].FStatus == 1 ? '' :
+                                        'active1') + '" data-fid="' + ret.ds1[i].FId + '" data-fid="' + ret
+                                    .ds1[i].FId + '">\n' +
+                                    '                    <div class="box">\n' +
+                                    '                        <img src="' + img + '" alt="">\n' +
+                                    '                        <div class="title">' + ret.ds1[i].FTreeName +
+                                    '</div>\n' +
+                                    '                    </div>\n' +
+                                    '                </div>'
+                            }
+                            if (ret.ds1.length < 16) {
+                                for (var a = ret.ds1.length; a < 16; a++) {
+                                    html += '<div class="shopbox_box"><div class="box"></div></div>'
+                                }
+                            }
+                            $(".shopbox_main").html(html);
+
+                            /* 商店格子高度初始化 */
+                            $(".shopbox_main").each(function () {
+                                $(this).find(".shopbox_box").height($(this).find(".shopbox_box")
+                                    .width());
+                            });
+                        } else {
+                            var html = "";
+                            for (var a = 0; a < 16; a++) {
+                                html += '<div class="shopbox_box"><div class="box"></div></div>'
+                            }
+                            $(".shopbox_main").html(html);
+                            /* 商店格子高度初始化 */
+                            $(".shopbox_main").each(function () {
+                                $(this).find(".shopbox_box").height($(this).find(".shopbox_box")
+                                    .width());
+                            });
+                        }
+
+                    } else {
+                        jw.ts.toast(ret.ds[0].msg);
+
+                        var html = "";
+                        for (var a = 0; a < 16; a++) {
+                            html += '<div class="shopbox_box"><div class="box"></div></div>'
+                        }
+                        $(".shopbox_main").html(html);
+                        /* 商店格子高度初始化 */
+                        $(".shopbox_main").each(function () {
+                            $(this).find(".shopbox_box").height($(this).find(".shopbox_box")
+                                .width());
+                        });
+                    }
+                })
+            }
+
+            /* 商店 仓库切换 */
+            $(".shopbox_nav").on("click", ".nav", function () {
+                $(".shopbox_nav").find(".nav").removeClass("active");
+                $(this).addClass("active");
+                var index = $(this).index();
+                if (index == 0) {
+                    sd = 1;
+                    /* 重新获取仓库 */
+                    getcangku();
+                } else {
+                    sd = 2;
+                    /* 获取商店 */
+                    // getshangdian();
+                }
+            });
+            /* 仓库 / 商店内容点击 */
+            $(".shopbox_main").on("click", ".shopbox_box", function () {
+                var fid = $(this).data("fid");
+                if (fid == undefined || fid == null || fid == ""){
+                    return;
+                }
+                if (sd == 1) {
+                    /* 仓库 */
+                    jw.submit("api42409", {
+                        FUserId: userid,
+                        FId: fid,
+                    }, function (ret) {
+                        if (ret.ds[0].status == "000000") {
+                            /* 隐藏仓库 */
+                            $("#shopbox").hide();
+
+                            jw.openWin({
+                                name: "tihuoaddress",
+                                url: "tihuoaddress.html",
+                                pageParam: {
+                                    fid: fid,
+                                    FPickType: ret.ds1[0].FPickType,
+                                    FPickAddress: ret.ds1[0].FPickAddress,
+                                }
+                            })
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    })
+                } else {
+                    /* 商店 点击种树 */
+                    jw.submit("api42333", {
+                        FUserId: userid,
+                        FId: fid,
+                    }, function (ret) {
+                        if (ret.ds[0].status == "000000") {
+                            gettreedata();
+                            /* 隐藏商店 */
+                            $("#shopbox").hide();
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    })
+                }
+            });
+
+            // 领水滴
+            $("#lingshuidi").on("click", function () {
+
+                jw.submit("领取水滴", {
+                    FUserId: userid,
+                    FId:''
+                }, function (ret) {
+                    if (ret.ds[0].status == "000000") {
+                        // alert(ret.ds[0])
+
+                        jw.ts.toast(ret.ds[0].msg);
+                        // 重新初始化
+                        gettreedata();
+                    } else {
+                        jw.ts.toast(ret.ds[0].msg);
+                    }
+                })
+            });
+
+
+            // 获取商店接口
+            function getshangdian() {
+                jw.submit("api44105", {
+                    FUserId: userid
+                }, function (ret) {
+                    if (ret.ds[0].status == "000000") {
+
+                        if (ret.ds1 != undefined && ret.ds1.length > 0) {
+                            var html = "";
+                            var imgsrc = 'img/chayetree.png'
+
+                            for (var i = 0; i < ret.ds1.length; i++) {
+                                var img = ret.ds1[i].FImg;
+                                if (img == undefined || img == null || img == "") {
+                                    img = imgsrc
+                                }
+                                html += '<div class="shopbox_box ' + (ret.ds1[i].FStatus == 1 ? '' :
+                                        'active1') + '" data-fid="' + ret.ds1[i].FId + '" data-fid="' + ret
+                                    .ds1[i].FId + '">\n' +
+                                    '                    <div class="box">\n' +
+                                    '                        <img src="' + img + '" alt="">\n' +
+                                    '                        <div class="title">' + ret.ds1[i].FTreeName +
+                                    '</div>\n' +
+                                    '                    </div>\n' +
+                                    '                </div>'
+                            }
+                            if (ret.ds1.length < 16) {
+                                for (var a = ret.ds1.length; a < 16; a++) {
+                                    html += '<div class="shopbox_box"><div class="box"></div></div>'
+                                }
+                            }
+                            $(".shopbox_main").html(html);
+
+                            /* 商店格子高度初始化 */
+                            $(".shopbox_main").each(function () {
+                                $(this).find(".shopbox_box").height($(this).find(".shopbox_box")
+                                    .width());
+                            });
+                        }
+
+                    } else {
+                        jw.ts.toast(ret.ds[0].msg);
+                    }
+                })
+            }
+
+            /* 采摘 */
+            $(".caizhai").on("click", function () {
+                var $this = $(this);
+                $this.rotate({
+                    animateTo: -45,
+                    duration: 500
+                });
+                setTimeout(function () {
+                    $this.rotate({
+                        animateTo: 10,
+                        duration: 500
+                    });
+                    setTimeout(function () {
+                        $this.rotate({
+                            animateTo: 0,
+                            duration: 500
+                        });
+                        setTimeout(function () {
+
+                            $("#yun").width(api.winWidth);
+                            $("#yun").height(api.winWidth);
+                            $("#yun").show().find("img").attr("src", "img/yun.gif");
+                            setTimeout(function () {
+                                $("#yun").hide().find("img").attr("src",
+                                    "");
+                            }, 2200);
+                            setTimeout(function () {
+                                $("#treeimg").attr("src", "img/tree1.png");
+                                $this.hide();
+                            }, 1100);
+                            $(".jindutiao_jd").css("left", "-100%");
+
+                            $(".jindutext").text("100%");
+
+                            setTimeout(function () {
+                                jw.submit("api42335", {
+                                    FUserId: userid,
+                                    FId: treedata.FId,
+                                }, function (ret) {
+                                    if (ret.ds[0].status ==
+                                        "000000") {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                        /* 刷新数据 */
+                                        gettreedata();
+                                        /* 刷新仓库 */
+                                        getcangku();
+                                    } else {
+                                        jw.ts.toast(ret.ds[0].msg);
+                                        /* 刷新数据 */
+                                        gettreedata();
+                                        /* 刷新仓库 */
+                                        getcangku();
+                                    }
+                                })
+                            }, 2200)
+                        }, 500);
+                    }, 500);
+
+                }, 500);
+
+            })
+
+            /* 选择树苗 */
+            $("#startbtn").on("click", function () {
+                var data = newtreelist[newtreeactive];
+                var fid = data.FId; // 数ID
+                var fcost = data.FCost; // 兑换所需积分
+
+                jw.submit("api42333", {
+                    FUserId: userid,
+                    FId: fid,
+                }, function (ret) {
+                    if (ret.ds[0].status == "000000") {
+                        $(".chosetree").hide();
+                        // 显示确认弹出框
+                        $("#chosetree_qr").show();
+                    } else {
+                        jw.ts.toast(ret.ds[0].msg);
+                    }
+                })
+            });
+
+            // 确认页面按钮点击
+            $("#chosetree_qr").on("click", ".btn", function () {
+                $("#chosetree_qr").hide();
+                // 刷新页面
+                gettreedata();
+            });
+
+            // $(".chosetreelist").on("click",".chosetreeitem",function () {
+            //     var fid = $(this).data("fid"); // 数ID
+            //     var fcost = $(this).data("fcost"); // 兑换所需积分
+            //
+            //     jw.submit("api42333",{
+            //         FUserId: userid,
+            //         FId: fid,
+            //     },function (ret) {
+            //         if (ret.ds[0].status == "000000"){
+            //             $(".chosetree").hide();
+            //             gettreedata();
+            //         } else {
+            //             jw.ts.toast(ret.ds[0].msg);
+            //         }
+            //     })
+            // })
+
+            /* 选择树苗 点击黑色背景隐藏 */
+            $(".model_bg").on("click", function () {
+                $(".chosetree").hide();
+            })
+
+            /* 商店格子高度初始化 */
+            $(".shopbox_main").each(function () {
+                $(this).find(".shopbox_box").height($(this).find(".shopbox_box").width());
+            });
+
+
+            /* 点击黑色遮罩隐藏商店 */
+            $("#shopbox").on("click", ".model_bg", function () {
+                $("#shopbox").hide();
+            });
+
+            /* 浇水动画 */
+            function jiaoshui(callback) {
+                /* 显示遮罩 */
+                $(".amintabg").show();
+
+                /* 初始化 */
+                $("#jiaoshui_am").css({
+                    opacity: 0,
+                    display: "block",
+                    "-webkit-transform": "rotate(0)",
+                    "-moz-transform": "rotate(0)",
+                    "-ms-transform": "rotate(0)",
+                    "-o-transform": "rotate(0)",
+                    "transform": "rotate(0)",
+                }).animate({
+                    opacity: 1,
+                }, 300)
+
+                $("#shui").css({
+                    opacity: 0,
+                    display: "none",
+                    right: "122px",
+                    "margin-top": "25px",
+                })
+
+                /* 开始执行动画 */
+                setTimeout(function () {
+
+                    $("#jiaoshui_am").rotate({
+                        animateTo: -45,
+                        duration: 1000
+                    });
+                    setTimeout(function () {
+                        $("#shui").css({
+                            opacity: 0,
+                            display: "block"
+                        }).animate({
+                            opacity: 1
+                        }, 300).animate({
+                            right: "177px",
+                            "margin-top": "180px",
+                            opacity: 0.5,
+                        }, 2000).animate({
+                            opacity: 0,
+                            display: "none"
+                        }, 300);
+
+                        $("#jiaoshui_am").animate({
+                            opacity: 0,
+                            display: "none"
+                        }, 500)
+
+                        /* 遮罩隐藏 */
+                        setTimeout(function () {
+                            $(".amintabg").hide();
+                            callback();
+                        }, 2600);
+
+                    }, 500);
+
+                }, 300);
+            }
+
+            /* 施肥动画 */
+            function shifei() {
+                /* 显示遮罩 */
+                $(".amintabg").show();
+
+                /* 初始化 */
+                $(".shifei").css({
+                    opacity: 0,
+                    display: "block",
+                    "-webkit-transform": "rotate(0)",
+                    "-moz-transform": "rotate(0)",
+                    "-ms-transform": "rotate(0)",
+                    "-o-transform": "rotate(0)",
+                    "transform": "rotate(0)",
+                }).animate({
+                    opacity: 1,
+                }, 300)
+
+                $(".feiliao").css({
+                    opacity: 0,
+                    display: "none",
+                    right: "269px",
+                    "margin-top": "64px",
+                })
+
+                /* 开始执行动画 */
+
+                setTimeout(function () {
+
+                    $(".shifei").rotate({
+                        animateTo: -45,
+                        duration: 1000
+                    });
+
+                    $(".shifei").animate({
+                        right: "130px",
+                        "margin-top": "20px",
+                    }, 200).animate({
+                        right: "170px",
+                        "margin-top": "-20px",
+                    }, 200).animate({
+                        right: "150px",
+                        "margin-top": "0",
+                    }, 200).animate({
+                        opacity: 0,
+                        display: "none"
+                    }, 500)
+
+                    $(".feiliao").css({
+                        opacity: 0,
+                        display: "block"
+                    }).animate({
+                        opacity: 1
+                    }, 300).animate({
+                        right: "354px",
+                        "margin-top": "359px",
+                        opacity: 0.5,
+                    }, 2000).animate({
+                        opacity: 0,
+                        display: "none"
+                    }, 300);
+
+                    /* 遮罩隐藏 */
+                    setTimeout(function () {
+                        $(".amintabg").hide();
+                    }, 2600);
+                }, 300);
+            }
+
+            /* 除草动画 */
+            function chucao(pcallback) {
+
+                /* 显示遮罩 */
+                $(".amintabg").show();
+
+                var right = 120;
+                var mt = 110;
+
+                /* 初始化 */
+                $(".chutou").css({
+                    opacity: 0,
+                    display: "block",
+                    "-webkit-transform": "rotate(0)",
+                    "-moz-transform": "rotate(0)",
+                    "-ms-transform": "rotate(0)",
+                    "-o-transform": "rotate(0)",
+                    "transform": "rotate(0)",
+                    right: right + "px",
+                    "margin-top": mt + "px"
+                }).animate({
+                    opacity: 1,
+                }, 300)
+
+                /* 开始执行动画 */
+
+                function chucaoone(callback) {
+                    setTimeout(function () {
+
+                        $(".chutou").rotate({
+                            animateTo: -45,
+                            duration: 500
+                        });
+
+                        $(".chutou").animate({
+                            right: (right + 55) + "px",
+                            "margin-top": (mt + 65) + "px"
+                        }, 500)
+                        setTimeout(function () {
+
+                            $(".chutou").rotate({
+                                animateTo: -90,
+                                duration: 500
+                            });
+
+                            $(".chutou").animate({
+                                right: (right - 26) + "px",
+                                "margin-top": (mt + 30) + "px"
+                            }, 500)
+
+                            setTimeout(function () {
+
+                                $(".chutou").rotate({
+                                    animateTo: 0,
+                                    duration: 500
+                                });
+
+                                $(".chutou").animate({
+                                    right: (right) + "px",
+                                    "margin-top": (mt) + "px"
+                                }, 500)
+
+                                setTimeout(function () {
+                                    callback();
+                                }, 300);
+                            }, 500)
+                        }, 500)
+
+                    }, 300);
+                }
+                chucaoone(function () {
+                    chucaoone(function () {
+
+                        /* 动画执行完毕 */
+                        $(".chutou").animate({
+                            opacity: 0,
+                        }, 300).css({
+                            display: "none",
+                        })
+
+                        $(".treeimg").find(".cao1").hide();
+                        $(".treeimg").find(".cao2").hide();
+
+                        /* 遮罩隐藏 */
+                        setTimeout(function () {
+                            $(".amintabg").hide();
+                            pcallback();
+                        }, 500);
+                    })
+                })
+
+            }
+
+            /* 浇水按钮点击 */
+            $("#jiaoshui").on("click", function () {
+
+                /* 浇水提交方法 */
+                function jiaoshuitiao(FIfIntegral) {
+
+                    /* 浇水提交 */
+                    jw.submit("api42331", {
+                        FUserId: userid,
+                        FId: treedata.FId,
+                        FIfIntegral: FIfIntegral, // 不使用积分
+                    }, function (ret) {
+                        if (ret.ds[0].status == "000000") {
+                            jw.ts.toast(ret.ds[0].msg);
+                            /* 浇水动画 */
+                            jiaoshui(function () {
+                                /* 动画执行完毕回调 */
+                                /* 刷新数据 */
+                                gettreedata(function () {
+                                    //进度条
+                                });
+                            });
+                        } else if (ret.ds[0].status == "666666") {
+
+                            jw.ts.confirm({
+                                msg: ret.ds[0].msg
+                            }, function (index) {
+                                if (index == 1) {
+                                    jiaoshuitiao(1);
+                                }
+                            })
+
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    })
+                }
+                var num = $(this).find(".nums").text();
+                if (num > 0) {
+                    jiaoshuitiao(0);
+                } else {
+                    jw.ts.confirm({
+                        msg: "剩余浇水次数不足，是否用积分抵扣？"
+                    }, function (index) {
+                        if (index == 1) {
+                            jiaoshuitiao(1);
+                        }
+                    })
+                }
+            });
+
+            /* 施肥 */
+            $("#shifeinav").on("click", function () {
+                shifei();
+            });
+
+            /* 除草 */
+            $("#chucaonav").on("click", function () {
+
+                /* 除草提交方法 */
+                function chucaotijiao(FIfIntegral) {
+                    jw.submit("api42332", {
+                        FUserId: userid,
+                        FId: treedata.FId,
+                        FIfIntegral: FIfIntegral,
+                    }, function (ret) {
+                        if (ret.ds[0].status == "000000") {
+                            jw.ts.toast(ret.ds[0].msg);
+                            /* 刷新数据 */
+                            chucao(function () {
+                                gettreedata();
+                            });
+                        } else if (ret.ds[0].status == "666666") {
+
+                            jw.ts.confirm({
+                                msg: ret.ds[0].msg
+                            }, function (index) {
+                                if (index == 1) {
+                                    chucaotijiao(1);
+                                }
+                            })
+
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    })
+                }
+
+                var num = $(this).find(".nums").text();
+                if (num > 0) {
+                    chucaotijiao(0)
+                } else {
+                    jw.ts.confirm({
+                        msg: "剩余除草次数不足，是否用积分抵扣？"
+                    }, function (index) {
+                        if (index == 1) {
+                            chucaotijiao(1);
+                        }
+                    })
+                }
+            });
+
+            /* 商店 */
+            $("#shangdian").on("click", function () {
+                $("#shopbox").show();
+                $(".shopbox_main").each(function () {
+                    $(this).find(".shopbox_box").height($(this).find(".shopbox_box").width());
+                });
+            });
+        }
+    </script>
+</body>
+
+</html>

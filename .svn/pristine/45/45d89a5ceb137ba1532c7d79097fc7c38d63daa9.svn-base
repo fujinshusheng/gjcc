@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        html,body{
+            width: auto;
+            height: auto;
+            overflow: auto;
+            background-color: transparent;
+        }
+        .seachbox .zui-col{
+            color: #333333;
+            font-size: 16px;
+            height: 35px;
+            line-height: 35px;
+            text-align: center;
+        }
+        .seachbox .zui-col.selected{
+            background: #0bb20c;
+            color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <div class="zui-app">
+
+        <div class="zui-alert historyalert">
+
+            <div class="zui-alert_box">
+                <div class="seachbox zui-alert_header zui-row zui-row-center">
+                    <div class="zui-col" >仓储费详情</div>
+                </div>
+                <!-- <div class="zui-list" style="max-height: 60%" v-cloak  v-if="CCFList.length === 0">
+                    <div class="zui-item" >
+                        <p style="text-align: center">一年免费期：{{formatDate(FCreateDate,0)}}到{{formatDate(FCreateDate,1)}}</p>
+                    </div>
+                </div> -->
+                <div class="zui-list" style="max-height: 60%" v-cloak>
+                        <div class="zui-item">
+                            <div v-for="item in CCFList">
+                                <p style="text-align: center">{{item.JD}}</p>
+                            </div>
+                        </div>
+                        <p style="text-align: center">{{ZJ}}</p>
+                </div>
+            </div>
+            <div class="zui-alert_bg" @click="close()"></div>
+        </div>
+    </div>
+
+    <script src="../../js/jquery-2.1.1.min.js"></script>
+    <script src="../../res/weui/jquery-weui.min.js"></script>
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/vuefilter.js"></script>
+    <script src="../../js/jw.js"></script>
+    <script src="../../js/zui.js"></script>
+    <script>
+        $(function () {
+            $(document).on("touchend", ".chacangnav .nav", function () {
+                var index = $(this).index();
+                $(".chacangnav .nav").removeClass("selected");
+                $(this).addClass("selected");
+                $(".chacangmain").find(".main").hide();
+                $(".chacangmain").find(".main").eq(index).show();
+            })
+        });
+        apiready = function () {
+            jw.sb.fixStatusBar(".zui-header");
+            api.addEventListener({
+                name: 'viewappear'
+            }, function (ret, err) {
+                // myapp.shuaxin();
+            });
+
+
+            var myapp = new Vue({
+                "el": ".zui-app",
+                data: {
+                    FWarehouseId: api.pageParam.FWarehouseId, // 茶仓ID
+                    CCFList: [],//仓储费计算
+                    FCreateDate: api.pageParam.FCreateDate,//仓储费计算
+                    ZJ: ''//总价
+                },
+                created: function () {
+                  var _this = this;
+                  _this.getzhuanmaiList();
+                  //alert(api.pageParam.FWarehouseId)
+                },
+                methods: {
+                  close: function(){
+                    api.closeFrame({
+                        name: 'chacangxq'
+                    });
+                  },
+                  getzhuanmaiList: function () {
+                        var _this = this;
+                        jw.submit("app_仓储费计算20201217", {
+                            // "FWarehouseId": api.pageParam.FWarehouseId,
+                            // "number" : api.pageParam.FSurplusNum
+                            "FWarehouseId":  api.pageParam.FWarehouseId,
+                            "number" : api.pageParam.FSurplusNum
+                        }, function (ret) {
+                                _this.CCFList = ret.ds1;
+                                _this.ZJ = ret.ds2[0].ZJ;
+                        }, {
+                            jz: false
+                        });
+                    },
+                    // formatDate: function (value,number) {
+                    //     let date = new Date(value.replace(/\-/g,"/"));
+                    //     console.log(number+'----------------')
+                    //     let y = 0;
+                    //     let MM = 0;
+                    //     if(number == 0){
+                    //         y = date.getFullYear();
+                    //         MM = date.getMonth();
+                    //     }else{
+                    //         y = date.getFullYear()+1;
+                    //         MM = date.getMonth();
+                    //     }
+                    //     MM = MM < 10 ? ('0' + MM) : MM;
+                    //     let d = date.getDate();
+                    //     d = d < 10 ? ('0' + d) : d;
+                    //     let h = date.getHours();
+                    //     h = h < 10 ? ('0' + h) : h;
+                    //     let m = date.getMinutes();
+                    //     m = m < 10 ? ('0' + m) : m;
+                    //     let s = date.getSeconds();
+                    //     s = s < 10 ? ('0' + s) : s;
+                    //     if(MM=='0' || MM=='00'){
+                    //             MM = '01'
+                    //         }
+                    //                // return y + '-' + MM + '-' + d + ' ' + h + ':' + m + ':' + s;
+                    //     return y + '-' + MM + '-' + d;
+                    // }
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

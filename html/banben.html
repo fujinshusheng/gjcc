@@ -1,0 +1,205 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" href="../css/zui.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        html,body{
+            background: transparent;
+        }
+
+        /* 模拟弹出框 */
+        .myalert{
+            /*display: none;*/
+        }
+        .alert_bg{
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.45);
+            z-index: 1;
+        }
+        .alert_box{
+            position: fixed;
+            width: 96%;
+            top: 50%;
+            left: 50%;
+            -webkit-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+            background-color: #ffffff;
+            z-index: 10;
+            border-radius: 5px;
+        }
+        .alert_header{
+            height: 40px;
+            line-height: 40px;
+            font-size: 18px;
+            color: #3667d7;
+            font-weight: bold;
+            border-bottom: solid 1px #d2d2d2;
+            text-align: center;
+        }
+        .alert_main{
+            padding: 20px;
+        }
+        .alert_main .title{
+            text-align: center;
+            font-size: 18px;
+            color: #161616;
+            margin-bottom: 15px;
+        }
+        .alert_main .text{
+            text-align: center;
+            font-size: 14px;
+            color: #686868;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .alert_main .text hr{
+            border-top: solid 1px #eeeeee;
+            margin: 5px 0;
+        }
+        .bb{
+            padding-bottom: 5px;
+            margin-bottom: 5px;
+            border-bottom: dashed 1px #333;
+        }
+        .alert_bttom{
+            border-top: solid 1px #d2d2d2;
+            padding: 5px 0;
+            display: flex;
+            display: -webkit-flex;
+        }
+        .alert_bttom a{
+            line-height: 40px;
+            text-align: center;
+            font-size: 16px;
+            color: #191919;
+            flex: 1;
+            -webkit-flex: 1;
+        }
+        .alert_bttom a + a{
+            border-left: solid 1px #d2d2d2;
+        }
+
+        .fz16{
+            font-size: 16px;
+        }
+        .jingdu{
+            position: fixed;
+            width: 80%;
+            padding: 20px;
+            top: 50%;
+            left: 50%;
+            -webkit-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.6);
+            -webkit-border-radius: 10px;
+            -moz-border-radius: 10px;
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 16px;
+            line-height: 2;
+        }
+        .jingdubox{
+            width: 100%;
+            height: 0.5rem;
+            background-color: #e7e7e7;
+            border-radius: 10rem;
+            overflow: hidden;
+            margin-bottom: 0.3rem;
+        }
+        .jingdubox .bg{
+            background-color: #d71935;
+            height: 100%;
+        }
+
+
+    </style>
+</head>
+<body>
+<div id="wrap" v-cloak="">
+    <!--版本更新-->
+    <div class="myalert" v-show="banbenshow">
+        <div class="alert_box banbenbox" style="width: 95%;">
+            <div class="alert_header">版本更新</div>
+            <div class="alert_main">
+                <div class="text fz16">
+                    <p class="text-left">当前版本：{{appVersion}}</p>
+                    <p class="text-left">最新版本：{{banben}}</p>
+                    <p class="text-left">更新内容：{{GXNR}}</p>
+                </div>
+            </div>
+            <div class="alert_bttom">
+                <a @click="qrbtn()" class="zui-col al_queren" href="javascript:;">立即更新</a>
+                <a @click="cancel()" class="zui-col al_quxiao" href="javascript:;">取消更新</a>
+            </div>
+        </div>
+        <div class="alert_bg"></div>
+    </div>
+    <div class="jingdu" v-if="jingdushow" v-cloak="">
+        <div class="jingdubox"><div class="bg" :style="'width: '+percent+'%;'"></div></div>
+        <p>下载进度： {{percent}}%</p>
+    </div>
+</div>
+
+
+</body>
+<script src="../js/jquery-2.1.1.min.js"></script>
+<script src="../js/jw.js"></script>
+<script src="../js/vue.js"></script>
+<script type="text/javascript">
+    apiready = function () {
+        var myVue = new Vue({
+            el: "#wrap",
+            data: {
+                banbenshow: true, //更新版本显示框
+                banben: api.pageParam.banben, //版本号
+                url: api.pageParam.url,  //下载地址
+                GXNR: api.pageParam.GXNR,//更新内容
+                percent: 0, //下载进度
+                jingdushow: false,
+                appVersion: api.appVersion
+            },
+            methods: {
+                qrbtn: function () {
+                    var _this = this;
+                    _this.banbenshow = false;
+                    var savepaths = 'fs://gjcc_APP_' + api.pageParam.banben + '.apk';
+                    api.download({
+                        url: _this.url,
+                        savePath: '' + savepaths,
+                        report: true,
+                        cache: false,
+                        allowResume: true
+                    }, function(ret, err) {
+                        if (ret.state == 0){
+                            _this.jingdushow = true;
+                            //进度条
+                            _this.percent = ret.percent;
+                        }
+                        if (ret.state == 1) {
+                            _this.jingdushow = false;
+                            //下载成功  安装app
+                            api.installApp({
+                                appUri: '' + savepaths
+                            });
+                        }
+                    });
+                },
+                //取消
+                cancel: function () {
+                    api.closeFrame();
+                }
+            }
+        });
+    };
+</script>
+</html>

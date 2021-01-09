@@ -1,0 +1,116 @@
+
+@import "../../base/fn";
+.z-btn{
+  background-color: #eeeeee;
+  border: solid 1px #dddddd;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  height: 45px;
+  line-height: 45px;
+  font-size: 18px;
+  padding: 0 15px;
+  text-align: center;
+  white-space: nowrap;
+}
+.z-btn-inline{
+  display: inline-block;
+}
+.z-btn.z-btn-s{
+  height: 30px;
+  line-height: 28px;
+  font-size: 16px;
+  padding: 0 10px;
+}
+.z-btn.z-btn-ms{
+  height: 25px;
+  line-height: 25px;
+  font-size: 14px;
+  padding: 0 5px;
+}
+.z-btn.z-btn-bolck{
+  width: 100%;
+  display: block;
+}
+.z-btn-radius50{
+  -webkit-border-radius: 50px;
+  -moz-border-radius: 50px;
+  border-radius: 50px;
+}
+.z-btn-noradius{
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+}
+.z-btn-red{
+  background-color: @red;
+  color: #ffffff;
+  border-color: @red;
+}
+.z-btn-red__plane{
+  color: @red;
+  border: solid 1px @red;
+  background-color: transparent;
+}
+.z-btn-greed{
+  background-color: @green;
+  color: #ffffff;
+  border-color: @green;
+}
+.z-btn-greed__plane{
+  color: @green;
+  border: solid 1px @green;
+  background-color: transparent;
+}
+.z-btn-blue{
+  background-color: @blue;
+  color: #ffffff;
+  border-color: @blue;
+}
+.z-btn-blue__plane{
+  color: @blue;
+  border: solid 1px @blue;
+  background-color: transparent;
+}
+.z-btn-orange{
+  background-color: @orange;
+  color: #ffffff;
+  border-color: @orange;
+}
+.z-btn-orange__plane{
+  color: @orange;
+  border: solid 1px @orange;
+  background-color: transparent;
+}
+
+
+
+.z-btn-cancel{
+  background-color: #d2d2d2;
+  color: #0a0a0a;
+  border: none;
+}
+
+.z-btn-grey__plane{
+  color: @grey;
+  border: solid 1px @grey;
+  background-color: transparent;
+}
+
+
+.z-btn-white__plane{
+  color: #6b6b6b;
+  border: solid 1px #e5e5e5;
+  background-color: #ffffff;
+}
+
+.z-btn-gray {
+  background-color: #999;
+  color: #ffffff;
+  border-color: #999;
+}
+.z-btn-gray5 {
+  background-color: #555555;
+  color: #ffffff;
+  border-color: #555555;
+}

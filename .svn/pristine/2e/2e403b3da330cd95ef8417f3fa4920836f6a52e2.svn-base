@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+
+<body>
+    <div class="zui-app">
+        <form class="zui-header zui-header-dark zui-row-center" style="height: 55px;" onsubmit="return post()">
+            <div class="iconfont icon-back" style="padding: 0 10px;" onclick="jw.back()"></div>
+            <div class="shop_header_seach zui-col zui-row zui-row-center">
+                <div class="seachtxt zui-row zui-col zui-row-center" style="border-radius: 30px;">
+                    <i class="iconfont icon-sousuo1"></i>
+                    <input id="seach" type="text" class="zui-col" style="border-radius: 30px;"  onclick="goYm()">
+                    <i class="iconfont icon-del" style="margin-right: 0;"></i>
+                </div>
+                <span class="cancelbtn" onclick="post()" style="font-size: 12px;">搜索</span>
+            </div>
+        </form>
+        <div class="zui-content">
+
+        </div>
+    </div>
+    <script src="../../js/jquery-2.1.1.min.js"></script>
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/vuefilter.js"></script>
+    <script src="../../js/jw.js"></script>
+    <script src="../../js/zui.js"></script>
+    <script>
+
+
+    var goYm = function() {
+      jw.openFrame({
+          name: "shopsearch",
+          url: "shopsearch.html",
+      })
+    }
+        var post = function() {}
+        apiready = function() {
+            jw.sb.fixStatusBar(".zui-header");
+            /* 打开列表 */
+            function openlist(year) {
+                  var y = $(".zui-content").offset().top;
+                  jw.openFrame({
+                      name: "shoping_list2",
+                      url: "shoping_list2.html",
+                      rect: {
+                          x: 0,
+                          y: y,
+                          w: "auto",
+                          h: "auto"
+                      },
+                      pageParam: {
+                          FYear: year
+                      },
+                  })
+
+            }
+            // post = function() {
+            //     var keyword = $("#seach").val();
+            //     myapp.savedata(keyword);
+            //     return false;
+            // }
+
+
+            var myapp = new Vue({
+                "el": ".zui-app",
+                data: {
+                    Keywords: "",
+                    list: [],
+                    search:null
+                },
+                created: function() {
+
+                    //jw.data.jtset("keywords","")
+                    openlist();
+                    //$("#seach").val("");
+                },
+                // watch: {
+                //     Keywords: function (newval, oldval) {
+                //         openlist();
+                //         $("#seach").val(newval);
+                //         console.log(1111)
+                //
+                //     }
+                // },
+                methods: {
+
+                }
+            });
+            jw.data.jtget("keywords", function (ret) {
+                $("#seach").val(ret);
+                console.log(222222)
+                console.log(JSON.stringify($("#seach")))
+                console.log(222222)
+                openlist();
+            });
+
+        }
+    </script>
+</body>
+
+</html>

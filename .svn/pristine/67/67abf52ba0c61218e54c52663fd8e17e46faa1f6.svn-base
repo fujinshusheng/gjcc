@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>个人中心</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+
+<div class="zui-app">
+    <div class="zui-header zui-row-center myjifen_header">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">消息管理</div>
+        <div class="zui-header-icon zui-header-right zui-header_text" @click="delmessages()">清空消息</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="right: 45px;font-size:30px"
+            onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+    </div>
+    <div class="zui-content">
+        <div class="zui-list newslist">
+            <div class="zui-item" v-for="item in messages" v-cloak>
+                <div class="zui-row zui-row-center">
+                    <div class="title fz18 zui-col">{{item.FType==1?'商家回复':'系统消息'}}</div>
+                    <p class="fz14 color-gray6 text-right">时间：{{item.FCreateDate}}</p>
+                </div>
+                <p class="fz16" style="margin: 10px 0;">{{item.FType==1?'评论内容：'+item.FContent1:item.FContent1}}</p>
+                <div class="huifubox" v-show="item.FType==1">
+                    商家回复：{{item.FContent2}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function () {
+        jw.sb.fixStatusBar(".zui-header");
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                messages: []//消息列表
+            },
+            created: function () {
+                this.getmessages();
+            },
+            methods: {
+                getmessages: function () {
+                    var _this = this;
+                    jw.submit("app_消息管理", {
+                        FUserId: jw.data.get("userid")
+                    }, function (ret) {
+                        if (ret.ds != undefined && ret.ds != "" && ret.ds[0].status == "000000") {
+                            _this.messages = ret.ds1;
+                        } else {
+                            jw.ts.toast(ret.ds[0].msg);
+                        }
+                    });
+                },
+                delmessages: function () {
+                    var _this = this;
+                    jw.ts.confirm({msg: "确认清空消息？"}, function (index) {
+                        if (index == 1) {
+                            jw.submit("app_清除消息", {
+                                FUserId: jw.data.get("userid")
+                            }, function (ret) {
+                                jw.ts.toast(ret.ds[0].msg);
+                                _this.getmessages();
+                            });
+                        }
+
+                    })
+                },
+            }
+        })
+    }
+</script>
+</body>
+</html>

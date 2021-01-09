@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Title</title>
+    <link rel="stylesheet" href="../../res/weui/weui.min.css">
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../res/weui/jquery-weui.min.css">
+    <style>
+        html,
+        body {
+            width: auto;
+            height: auto;
+            overflow: auto;
+        }
+.img img{
+    border-top-left-radius:10px;
+        border-top-right-radius:10px;
+}
+.text1 {
+    overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        box-shadow:  0 0 0;
+        text-align: left;
+        padding: 0 10px;
+
+}
+        .text {
+            display: flex;
+
+        }
+        .text span {
+            flex:1;
+
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="app" v-cloak>
+        <div class="zui-content" style="margin-top: -10px;">
+            <div class="zui-cboxlist chacang_list">
+                <div class="zui-cbox" v-for="item in list" @click="tolist(item)" v-if="">
+                    <div class="box"  style=" border-radius:  10px;">
+                    <!-- <div class="box" style=" height:230px;border-radius:  10px;"> -->
+                        <div class="img touxiang">
+                                <div class="img touxiang" :style="getbgimg(item.FImg)"></div>
+                        </div>
+                        <div class="text1" style="font-size: 12px;margin-top:10px;">{{item.FName}}</div>
+                        <div class="text" style="margin-top: -5px;">
+                            <span class="color-red" style="font-size: 12px;">总数：{{item.FNum}}</span>
+                            <span class="color-red" style="font-size: 12px;">库存数：{{item.FSurplusNum}}</span>
+                        </div>
+                        <!-- <div class="text"><span class="color-red"></span></div> -->
+                        <div class="text" style="margin-top: -15px;">
+                            <span class="color-red"  style="font-size: 12px;"  >转卖中：{{item.zmzFSurplusNum}}</span>
+                            <span class="color-red"  style="font-size: 12px;"  >转赠中：{{item.zzzFSurplusNum}}</span>
+                        </div>
+                        <!-- <div class="text"><span class="color-red" v-if="item.zzzFSurplusNum!=0"></span></div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+    <script src="../../js/jquery-2.1.1.min.js"></script>
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/vuefilter.js"></script>
+    <script src="../../js/jw.js"></script>
+    <script src="../../js/zui.js"></script>
+    <script>
+        apiready = function () {
+
+            jw.sb.fixStatusBar(".zui-header");
+
+            /**
+             * 初始化页面监听事件
+             */
+            function fnInitEvent() {
+                /**上拉加载 */
+                api.addEventListener({
+                    name: 'scrolltobottom',
+                    extra: {
+                        threshold: 10
+                    }
+                }, function (ret, err) {
+                    //页码+1，继续请求数据
+                    myapp.getshoplist(2);
+                });
+                /** 下拉刷新 */
+                api.setRefreshHeaderInfo({
+                    bgColor: '#ccc',
+                    textColor: '#fff',
+                    textDown: '下拉刷新...',
+                    textUp: '松开刷新...'
+                }, function (ret, err) {
+                    //重置页码、页面数据，请求数据
+                    myapp.getshoplist(1);
+                });
+            };
+            fnInitEvent();
+
+            /* 打开列表 */
+            function openlist() {
+                var y = $(".zui-content").offset().top;
+                jw.openFrame({
+                    name: "my_chacang_List",
+                    url: "my_chacang_List.html",
+                    rect: {
+                        x: 0,
+                        y: y,
+                        w: "auto",
+                        h: "auto"
+                    },
+                    bounces: true,
+                    pageParam: {
+                        FBusinessBrandId: api.pageParam.FBusinessBrandId,
+                        FYear: api.pageParam.FYear
+                    },
+                });
+            }
+
+            var sharedModule = api.require('shareAction');
+
+            //返回页面时监听回调函数
+            api.addEventListener({
+                name: 'viewappear'
+            }, function (ret, err) {
+                myapp.getshoplist(1);
+            });
+
+            jw.data.jtget("navtab", function (ret) {
+                myapp.type2 = ret;
+                myapp.getshoplist();
+            });
+
+            var myapp = new Vue({
+                "el": "#app",
+                data: {
+                    list: [], // 茶仓列表
+                    type2: api.pageParam.type2, //tab栏
+                },
+                created: function () {
+                    this.getshoplist();
+                },
+                methods: {
+                    // 获取产品
+                    getshoplist: function () {
+                        var _this = this;
+                        jw.submit("api46896", { //移动端sql > 二期 > 茶仓修改 > 我的茶仓列表api46896
+                            FUserId: jw.data.get("userid"),
+                            FBusinessId:api.pageParam.FBusinessId,
+                            type2: 1,
+                        }, function (ret) {
+                            setTimeout(function () {
+                                api.refreshHeaderLoadDone();
+                            }, 500);
+                            if (ret.ds != undefined && ret.ds[0].status == "000000") {
+                                _this.list = ret.ds1;
+                                _this.$nextTick(function () {
+                                    $(".chacang_list").find(".img").height($(
+                                        ".chacang_list").find(".img").width());
+                                });
+                            } else {
+                                jw.ts.toast(ret.ds[0].msg);
+                            }
+                        }, {
+                            jz: false
+                        });
+
+                    },
+                    // 传入下个页面数据
+                    goshop: function (item) {
+                        /* 普通商品*/
+                        jw.openWin({
+                            name: "zhouchou_details",
+                            url: "zhouchou_details3.html",
+                            pageParam: {
+                                FActiviteID: item.FActiviteID
+                            }
+                        });
+                    },
+                    share: function (item, index) {
+                        var _this = this;
+                        var url = "http://www.yunpuer.com/app_chashidetails/" + item
+                            .FBusinessId + "-" +
+                            item.FOnekeyResaleId + "-" + jw.data.get("userid") + ".html";
+                        var text = ''
+                        if(item.oldPrice>item.FPrice){
+                            text = item.FBusinessName+ " 原价："+item.oldPrice +" 现价："+_this.shopdetails.FPrice
+                        }else{
+                            text = item.FBusinessName+ " 现价："+item.FPrice
+                        }
+                        jw.openFrame({
+                            name: 'share',
+                            url: '../share.html',
+                            pageParam: {
+                                text: text +
+                                item.FPrice,
+                                FType: '',
+                                Fid: item.FBusinessId,
+                                path: url,
+                                thumb:item.FImageUrl
+                            }
+                        })
+                    },
+                    btncolse: function () {
+                        window.location.href = "../../index3.html";
+                    },
+                    tolist(item) {
+                        jw.openWin({
+                            'name': 'chacangdetails',
+                            'url': '../chacang/chacangdetails.html',
+                            pageParam: {
+                                FWarehouseId: item.FWarehouseId
+                            }
+                        })
+                    }
+                }
+            });
+
+        }
+
+        function imgError(imgurl) {
+            var ImgObj = new Image();
+            ImgObj.src = $(".paimaiimg").src; //图片路径
+            if (ImgObj.fileSize > 0 || (ImgObj.width > 0 && ImgObj.height > 0)) {
+                return true;
+            } else {
+                $(".paimaiimg").attr("src", "../../image/errorImg.png");
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>个人中心</title>
+    <link rel="stylesheet" href="../../css/zui.css">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+
+<div class="zui-app grzxmain" v-cloak>
+    <div class="zui-header zui-header-dark zui-row-center">
+        <div class="iconfont icon-back zui-header-icon zui-header-left" onclick="jw.back()"></div>
+        <div class="zui-header-title" onclick="api.closeToWin({'name':'root'})">我的订单</div>
+        <div class="iconfont icon-fangzi zui-header-icon zui-header-right"  style="font-size:30px"
+        onclick="jw.openWin({'name':'index','url':'../../index3.html'})"></div>
+        <!--<div class="iconfont zui-header-icon icon-sousuo zui-header-right"></div>-->
+    </div>
+    <div class="zui-row shop_nav zui-row-center grzx_warp"  style="padding: 0 15px;">
+        <div class="zui-col nav2 text-left btncolor" :class="{active:navindex==1}"  @click="navclick(1)">商城</div>
+        <div class="zui-col nav2 text-left btncolor" :class="{active:navindex==2}" @click="navclick(2)">竞价</div>
+        <div class="zui-col nav2 text-left btncolor" :class="{active:navindex==3}" @click="navclick(3)">众筹</div>
+        <div class="zui-col nav2 text-left btncolor" :class="{active:navindex==4}" @click="navclick(4)">兑换</div>
+        <div class="zui-col nav2 text-left btncolor" :class="{active:navindex==5}" @click="navclick(5)">种树</div>
+        <i class="iconfont icon-down" v-show="!nav2show" @click="shownav2(1)"></i>
+        <i class="iconfont icon-up" v-show="nav2show" @click="shownav2(2)"></i>
+    </div>
+    <div class="zui-row shop_nav2" v-show="nav2show">
+        <div class="nav fz12" :class="{'selected':navindex2==0,'zui-col':navindex!=3}" @click="navclick2(0)">{{navindex==3?"待支付尾款":"全部"}}</div>
+        <div class="zui-col nav fz12" :class="{'selected':navindex2==1}" @click="navclick2(1)">{{navindex==3?"待提货":"待付款"}}</div>
+        <div class="zui-col nav fz12" :class="{'selected':navindex2==2}" @click="navclick2(2)">{{navindex==3?"已完成":"待发货"}}</div>
+        <div class="zui-col nav fz12" :class="{'selected':navindex2==3}" @click="navclick2(3)">{{navindex==3?"已取消":"待收货"}}</div>
+        <div class="zui-col nav fz12" :class="{'selected':navindex2==4}" @click="navclick2(4)">{{navindex==3?"已退款":"待提货"}}</div>
+        <div class="zui-col nav fz12" :class="{'selected':navindex2==5}" v-show="navindex!=3" @click="navclick2(5)">待评价</div>
+    </div>
+    <div class="zui-content">
+    </div>
+
+</div>
+
+
+<script src="../../js/jquery-2.1.1.min.js"></script>
+<script src="../../res/weui/jquery-weui.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/vuefilter.js"></script>
+<script src="../../js/jw.js"></script>
+<script src="../../js/zui.js"></script>
+<script>
+    apiready = function() {
+        jw.sb.fixStatusBar(".zui-header");
+
+        /* 打开列表 */
+        function openlist() {
+            var y = $(".zui-content").offset().top;
+            jw.openFrame({
+                name: "my_order_list",
+                url: "my_order_list.html",
+                rect: {
+                    x: 0,
+                    y: y,
+                    w: "auto",
+                    h: "auto"
+                },
+                bounces: true,
+                pageParam: {
+                    // navindex: myapp.navindex,
+                    // navindex2: myapp.navindex2,
+                },
+            });
+        }
+
+        function setlist() {
+            var y = $(".zui-content").offset().top;
+            api.setFrameAttr({
+                name: 'my_order_list',
+                rect: {
+                    x: 0,
+                    y: y,
+                    w: "auto",
+                    h: "auto"
+                },
+            });
+        }
+
+
+        var myapp = new Vue({
+            "el": ".zui-app",
+            data: {
+                navindex: 1,
+                navindex2: 0,
+                nav2show: true,
+            },
+            created: function () {
+                var _this = this;
+            },
+            mounted: function(){
+                openlist();
+                setlist();
+            },
+            methods: {
+                shownav2: function () {
+                    if (this.navindex == 2 || this.navindex == 4 || this.navindex == 5){
+                        this.nav2show = false;
+                    } else {
+                        this.nav2show = !this.nav2show;
+                    }
+                    setTimeout(function () {
+                        setlist();
+                    },100);
+                },
+                navclick: function (index) {
+                    this.navindex = index;
+                    jw.data.jtset("myordernav1",index);
+                    if (this.navindex == 2 || this.navindex == 4 || this.navindex == 5){
+                        this.nav2show = false;
+                    }else {
+                        this.nav2show = true;
+                    }
+                    setTimeout(function () {
+                        setlist();
+                    },100);
+                },
+                navclick2: function (index) {
+                    this.navindex2 = index;
+                    jw.data.jtset("myordernav2",index);
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>
